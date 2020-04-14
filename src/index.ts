@@ -1,3 +1,6 @@
-import './css/main.css'
+import "./css/main.css";
+import { run } from "./anim1";
 
-document.body.innerHTML = "This is from javascript"
+const canvas = document.getElementById("renderCanvas");
+
+run(canvas as HTMLCanvasElement);
