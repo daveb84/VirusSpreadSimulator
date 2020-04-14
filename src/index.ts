@@ -1,6 +1,6 @@
-import "./css/main.css";
-import { run } from "./anim1";
+import './css/main.css'
+import { run } from './anim1'
 
-const canvas = document.getElementById("renderCanvas");
+const canvas = document.getElementById('renderCanvas')
 
-run(canvas as HTMLCanvasElement);
+run(canvas as HTMLCanvasElement)
