@@ -1,5 +1,5 @@
-import { createScene } from './scene'
+import { runScene } from './scene'
 
 export const run = (canvas: HTMLCanvasElement) => {
-  createScene(canvas)
+  runScene(canvas)
 }
