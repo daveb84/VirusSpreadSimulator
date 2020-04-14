@@ -1,6 +1,16 @@
 import './css/main.css'
-import { run } from './anim1'
+import { createApp } from './anim1'
 
-const canvas = document.getElementById('renderCanvas')
+const canvas = document.getElementById('renderCanvas') as HTMLCanvasElement
 
-run(canvas as HTMLCanvasElement)
+const app = createApp(canvas)
+
+const button = document.getElementById('test-button') as HTMLButtonElement
+
+button.addEventListener(
+  'click',
+  () => {
+    app.go()
+  },
+  true
+)

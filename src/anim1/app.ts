@@ -2,7 +2,7 @@ import { AppScene } from './scene'
 import { Box, Ball, Shape } from './shapes'
 import { Squish } from './moves'
 
-export const run = (canvas: HTMLCanvasElement) => {
+export const createApp = (canvas: HTMLCanvasElement) => {
   const scene = new AppScene(canvas)
 
   const shapes = [
@@ -13,7 +13,11 @@ export const run = (canvas: HTMLCanvasElement) => {
 
   scene.start()
 
-  loopAnimate(shapes, 1000)
+  return {
+    go: () => {
+      loopAnimate(shapes, 1000)
+    },
+  }
 }
 
 const loopAnimate = (shapes: Shape[], delay: number) => {

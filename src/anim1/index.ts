@@ -1,1 +1,1 @@
-export { run } from './app'
+export { createApp } from './app'
