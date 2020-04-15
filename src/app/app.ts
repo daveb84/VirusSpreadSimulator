@@ -9,6 +9,13 @@ export const createApp = (canvas: HTMLCanvasElement) => {
     new Box(scene.scene),
     new Box(scene.scene),
     new Ball(scene.scene),
+    new Ball(scene.scene),
+    new Ball(scene.scene),
+    new Ball(scene.scene),
+    new Ball(scene.scene),
+    new Ball(scene.scene),
+    new Ball(scene.scene),
+    new Ball(scene.scene),
   ]
 
   scene.start()

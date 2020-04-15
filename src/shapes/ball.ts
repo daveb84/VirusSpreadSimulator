@@ -1,7 +1,12 @@
-import { Scene, MeshBuilder, Node } from '@babylonjs/core'
-import { GridMaterial } from '@babylonjs/materials'
+import {
+  Scene,
+  MeshBuilder,
+  Node,
+  StandardMaterial,
+  Color3,
+} from '@babylonjs/core'
 import { Shape } from './shape'
-import { generatePosition } from '../utils/vectorGenerator'
+import { generatePosition, generateColor } from '../utils/random'
 
 export class Ball extends Shape {
   constructor(scene: Scene) {
@@ -9,7 +14,8 @@ export class Ball extends Shape {
   }
 
   createShape(): Node {
-    var material = new GridMaterial('grid', this._scene)
+    var material = new StandardMaterial('material', this._scene)
+    material.diffuseColor = generateColor()
 
     var sphere = MeshBuilder.CreateSphere(
       'sphere1',

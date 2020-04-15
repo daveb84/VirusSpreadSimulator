@@ -1,6 +1,9 @@
-import { Scene, MeshBuilder, Node } from '@babylonjs/core'
-import { GridMaterial } from '@babylonjs/materials'
-import { generatePosition, generateRotation } from '../utils/vectorGenerator'
+import { Scene, MeshBuilder, Node, StandardMaterial } from '@babylonjs/core'
+import {
+  generatePosition,
+  generateRotation,
+  generateColor,
+} from '../utils/random'
 
 import { Shape } from './shape'
 
@@ -10,7 +13,8 @@ export class Box extends Shape {
   }
 
   createShape(): Node {
-    var material = new GridMaterial('grid', this._scene)
+    var material = new StandardMaterial('material', this._scene)
+    material.diffuseColor = generateColor()
 
     var box = MeshBuilder.CreateBox(
       'box',
