@@ -1,17 +1,18 @@
 import { Vector3 } from '@babylonjs/core'
 
 export const generatePosition = () =>
-  new Vector3(
-    generateNumber(-3, 3),
-    generateNumber(-3, 3),
-    generateNumber(-3, 3)
-  )
+  generateVector(new Vector3(-3, -3, -3), new Vector3(3, 3, 3))
 
-export const generateRotation = () =>
+export const generateRotation = () => {
+  const max = 2 * Math.PI
+  return generateVector(Vector3.Zero(), new Vector3(max, max, max))
+}
+
+export const generateVector = (min: Vector3, max: Vector3) =>
   new Vector3(
-    generateNumber(0, 2 * Math.PI),
-    generateNumber(0, 2 * Math.PI),
-    generateNumber(0, 2 * Math.PI)
+    generateNumber(min.x, max.x),
+    generateNumber(min.y, max.y),
+    generateNumber(min.z, max.z)
   )
 
 export const generateNumber = (from: number, to: number) =>
