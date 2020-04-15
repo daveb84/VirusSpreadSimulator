@@ -4,11 +4,8 @@ import {
   Vector3,
   FreeCamera,
   HemisphericLight,
-  MeshBuilder,
   Color3,
-  StandardMaterial,
 } from '@babylonjs/core'
-import { GridMaterial } from '@babylonjs/materials'
 
 export class AppScene {
   private _canvas: HTMLCanvasElement

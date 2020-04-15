@@ -1,10 +1,4 @@
-import {
-  Scene,
-  MeshBuilder,
-  Node,
-  StandardMaterial,
-  Color3,
-} from '@babylonjs/core'
+import { Scene, MeshBuilder, Node, StandardMaterial } from '@babylonjs/core'
 import { Shape } from './shape'
 import { generatePosition, generateColor } from '../utils/random'
 
