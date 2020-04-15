@@ -1,13 +1,4 @@
-import {
-  Engine,
-  Scene,
-  Vector3,
-  FreeCamera,
-  HemisphericLight,
-  MeshBuilder,
-  Node,
-  Animation,
-} from '@babylonjs/core'
+import { Animation } from '@babylonjs/core'
 
 export abstract class Move {
   private _animation: Animation

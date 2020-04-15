@@ -5,7 +5,6 @@ import {
   FreeCamera,
   HemisphericLight,
   MeshBuilder,
-  Animation,
 } from '@babylonjs/core'
 import { GridMaterial } from '@babylonjs/materials'
 
