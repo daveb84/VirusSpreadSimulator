@@ -1,6 +1,6 @@
 import { AppScene } from './scene'
-import { Box, Ball, Shape } from './shapes'
-import { Squish } from './moves'
+import { Box, Ball, Shape } from '../shapes'
+import { Squish } from '../moves'
 
 export const createApp = (canvas: HTMLCanvasElement) => {
   const scene = new AppScene(canvas)

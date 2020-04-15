@@ -1,6 +1,6 @@
 import { Scene, MeshBuilder, Node } from '@babylonjs/core'
 import { GridMaterial } from '@babylonjs/materials'
-import { generatePosition, generateRotation } from '../../utils/vectorGenerator'
+import { generatePosition, generateRotation } from '../utils/vectorGenerator'
 
 import { Shape } from './shape'
 

@@ -1,7 +1,7 @@
 import { Scene, MeshBuilder, Node } from '@babylonjs/core'
 import { GridMaterial } from '@babylonjs/materials'
 import { Shape } from './shape'
-import { generatePosition } from '../../utils/vectorGenerator'
+import { generatePosition } from '../utils/vectorGenerator'
 
 export class Ball extends Shape {
   constructor(scene: Scene) {

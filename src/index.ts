@@ -1,5 +1,5 @@
 import './css/main.css'
-import { createApp } from './anim1'
+import { createApp } from './app'
 
 const canvas = document.getElementById('renderCanvas') as HTMLCanvasElement
 
