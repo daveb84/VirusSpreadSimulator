@@ -5,7 +5,10 @@ import {
   FreeCamera,
   HemisphericLight,
   Color3,
+  MeshBuilder,
+  StandardMaterial,
 } from '@babylonjs/core'
+import { minBound, maxBound } from './bounds'
 
 export class AppScene {
   private _canvas: HTMLCanvasElement
@@ -33,16 +36,41 @@ export class AppScene {
     const engine = new Engine(canvas)
 
     // Create our first scene.
-    var scene = new Scene(engine)
+    const scene = new Scene(engine)
     scene.ambientColor = new Color3(1, 1, 1)
 
     // This creates and positions a free camera (non-mesh)
-    var camera = new FreeCamera('camera1', new Vector3(0, 5, -10), scene)
+    const camera = new FreeCamera(
+      'camera1',
+      new Vector3(0, maxBound.y * 2, -15),
+      scene
+    )
     camera.setTarget(Vector3.Zero())
     camera.attachControl(canvas, true)
 
-    var light = new HemisphericLight('light1', new Vector3(0, 1, 0), scene)
+    const light = new HemisphericLight('light1', new Vector3(0, 1, 0), scene)
     light.intensity = 0.7
+
+    const bounds = MeshBuilder.CreateBox(
+      'boundBox',
+      {
+        width: maxBound.x - minBound.x,
+        height: maxBound.y - minBound.y,
+        depth: maxBound.z - minBound.z,
+      },
+      scene
+    )
+    bounds.position.x = 0
+    bounds.position.y = 0
+    bounds.position.z = 0
+
+    const material = new StandardMaterial('boundsMaterial', scene)
+    material.diffuseColor = new Color3(1, 1, 1)
+    material.wireframe = true
+    // material.alpha = 0.3
+    // material.backFaceCulling  = false
+
+    bounds.material = material
 
     this._scene = scene
     this._engine = engine
