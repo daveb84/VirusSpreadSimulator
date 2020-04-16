@@ -1,29 +1,29 @@
-import { Scene, Node, Animation } from '@babylonjs/core'
+import { Scene, Mesh, Animation } from '@babylonjs/core'
 
 export abstract class Shape {
-  private _node: Node
+  private _mesh: Mesh
   protected _scene: Scene
 
   constructor(scene: Scene) {
     this._scene = scene
-    this._node = this.createShape()
+    this._mesh = this.createShape()
   }
 
-  get node() {
-    return this._node
+  get mesh() {
+    return this._mesh
   }
 
   addAnimation(animation: Animation) {
-    if (!this._node.animations) {
-      this._node.animations = []
+    if (!this._mesh.animations) {
+      this._mesh.animations = []
     }
 
-    this._node.animations.push(animation)
+    this._mesh.animations.push(animation)
   }
 
   move() {
-    this._scene.beginAnimation(this._node, 0, 100, true)
+    this._scene.beginAnimation(this._mesh, 0, 100, true)
   }
 
-  abstract createShape(): Node
+  abstract createShape(): Mesh
 }

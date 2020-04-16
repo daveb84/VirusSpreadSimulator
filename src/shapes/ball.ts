@@ -1,4 +1,4 @@
-import { Scene, MeshBuilder, Node, StandardMaterial } from '@babylonjs/core'
+import { Scene, MeshBuilder, Mesh, StandardMaterial } from '@babylonjs/core'
 import { Shape } from './shape'
 import { generatePosition, generateColor } from '../utils/random'
 
@@ -7,7 +7,7 @@ export class Ball extends Shape {
     super(scene)
   }
 
-  createShape(): Node {
+  createShape(): Mesh {
     var material = new StandardMaterial('material', this._scene)
     material.diffuseColor = generateColor()
 

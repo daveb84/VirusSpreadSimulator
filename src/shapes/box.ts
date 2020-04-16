@@ -1,4 +1,4 @@
-import { Scene, MeshBuilder, Node, StandardMaterial } from '@babylonjs/core'
+import { Scene, MeshBuilder, Mesh, StandardMaterial } from '@babylonjs/core'
 import {
   generatePosition,
   generateRotation,
@@ -12,7 +12,7 @@ export class Box extends Shape {
     super(scene)
   }
 
-  createShape(): Node {
+  createShape(): Mesh {
     var material = new StandardMaterial('material', this._scene)
     material.diffuseColor = generateColor()
 
