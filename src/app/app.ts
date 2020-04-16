@@ -1,39 +1,31 @@
 import { AppScene } from './scene'
-import { Box, Ball, Shape } from '../shapes'
-import { Squish } from '../moves'
+import { Crawler, crawlerMaterial } from './crawler/crawler'
+import { Scene } from '@babylonjs/core'
 
 export const createApp = (canvas: HTMLCanvasElement) => {
   const scene = new AppScene(canvas)
 
-  const shapes = [
-    new Box(scene.scene),
-    new Box(scene.scene),
-    new Ball(scene.scene),
-    new Ball(scene.scene),
-    new Ball(scene.scene),
-    new Ball(scene.scene),
-    new Ball(scene.scene),
-    new Ball(scene.scene),
-    new Ball(scene.scene),
-    new Ball(scene.scene),
-  ]
+  const crawlers = createCrawlers(scene.scene, 200)
 
   scene.start()
 
   return {
-    go: () => {
-      loopAnimate(shapes, 1000)
+    start: () => {
+      crawlers.forEach((c) => c.start())
+    },
+    stop: () => {
+      crawlers.forEach((c) => c.stop())
     },
   }
 }
 
-const loopAnimate = (shapes: Shape[], delay: number) => {
-  shapes.forEach((shape, index) => {
-    const time = delay + delay * index
+const createCrawlers = (scene: Scene, quantity: number) => {
+  const crawlers: Crawler[] = []
+  const material = crawlerMaterial(scene)
 
-    setTimeout(() => {
-      shape.addAnimation(new Squish().createAnimation())
-      shape.move()
-    }, time)
-  })
+  for (let i = 0; i < quantity; i++) {
+    crawlers.push(new Crawler(scene, material))
+  }
+
+  return crawlers
 }
