@@ -1,10 +1,11 @@
 import { AppScene } from './scene'
-import { Crawler, crawlerMaterial } from './crawler/crawler'
+import { Crawler, getCrawlerSettings, Stage } from './meshes'
 import { Scene } from '@babylonjs/core'
 
 export const createApp = (canvas: HTMLCanvasElement) => {
   const scene = new AppScene(canvas)
 
+  const stage = new Stage(scene.scene)
   const crawlers = createCrawlers(scene.scene, 200)
 
   scene.start()
@@ -21,10 +22,10 @@ export const createApp = (canvas: HTMLCanvasElement) => {
 
 const createCrawlers = (scene: Scene, quantity: number) => {
   const crawlers: Crawler[] = []
-  const material = crawlerMaterial(scene)
+  const settings = getCrawlerSettings(scene)
 
   for (let i = 0; i < quantity; i++) {
-    crawlers.push(new Crawler(scene, material))
+    crawlers.push(new Crawler(scene, settings))
   }
 
   return crawlers

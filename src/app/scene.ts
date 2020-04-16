@@ -5,43 +5,28 @@ import {
   FreeCamera,
   HemisphericLight,
   Color3,
+  Mesh,
   MeshBuilder,
   StandardMaterial,
-  Texture,
 } from '@babylonjs/core'
 import { minBound, maxBound, boundsMidpoint, boundsSize } from './bounds'
-import groundImage from '../images/ground.jpg'
 
 export class AppScene {
-  private _canvas: HTMLCanvasElement
-  private _scene: Scene
-  private _engine: Engine
+  public readonly scene: Scene
+  private readonly engine: Engine
+
+  public obstacles: Mesh[] = []
 
   constructor(canvas: HTMLCanvasElement) {
-    this._canvas = canvas
-
-    this.init()
-  }
-
-  public get scene() {
-    return this._scene
-  }
-
-  public get engine() {
-    return this._engine
-  }
-
-  private init() {
-    const canvas = this._canvas
-
     // Associate a Babylon Engine to it.
-    const engine = new Engine(canvas)
-    this._engine = engine
+    this.engine = new Engine(canvas)
 
     // Create our first scene.
-    const scene = new Scene(engine)
-    this._scene = scene
+    this.scene = new Scene(this.engine)
+
+    const scene = this.scene
     scene.ambientColor = new Color3(1, 1, 1)
+    scene.collisionsEnabled = true
 
     // This creates and positions a free camera (non-mesh)
     const camera = new FreeCamera(
@@ -56,7 +41,6 @@ export class AppScene {
     light.intensity = 0.7
 
     this.addBoundingBox()
-    this.addGround()
   }
 
   private addBoundingBox() {
@@ -65,11 +49,11 @@ export class AppScene {
       {
         ...boundsSize,
       },
-      this._scene
+      this.scene
     )
     bounds.position = boundsMidpoint
 
-    const material = new StandardMaterial('boundsMaterial', this._scene)
+    const material = new StandardMaterial('boundsMaterial', this.scene)
     material.diffuseColor = new Color3(1, 1, 1)
     material.wireframe = true
     // material.alpha = 0.3
@@ -78,24 +62,9 @@ export class AppScene {
     bounds.material = material
   }
 
-  private addGround() {
-    const ground = MeshBuilder.CreateGround('ground', {
-      width: boundsSize.width,
-      height: boundsSize.depth,
-    })
-    ground.position.x = boundsMidpoint.x
-    ground.position.y = minBound.y
-    ground.position.z = boundsMidpoint.z
-
-    const material = new StandardMaterial('groundMaterial', this._scene)
-    material.diffuseTexture = new Texture(groundImage, this._scene)
-
-    ground.material = material
-  }
-
   public start() {
-    this._engine.runRenderLoop(() => {
-      this._scene.render()
+    this.engine.runRenderLoop(() => {
+      this.scene.render()
     })
   }
 }

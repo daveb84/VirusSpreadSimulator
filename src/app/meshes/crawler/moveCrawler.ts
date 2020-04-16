@@ -1,17 +1,5 @@
-import {
-  Scene,
-  Vector3,
-  FreeCamera,
-  HemisphericLight,
-  Color3,
-  Mesh,
-  MeshBuilder,
-  StandardMaterial,
-  Texture,
-  Material,
-  Animation,
-} from '@babylonjs/core'
-import { generateNumber } from '../../utils/random'
+import { Vector3, Animation } from '@babylonjs/core'
+import { generateNumber } from '../../../utils/random'
 
 const distance = 0.5
 
