@@ -1,9 +1,8 @@
 import { Vector3, Animation } from '@babylonjs/core'
-import { generateNumber } from '../../../utils/random'
 
-const distance = 0.5
+const distance = 3
 
-const createTargetVector = (angle: number) => {
+export const createTargetVector = (angle: number) => {
   const z = distance * Math.sin(angle)
   const x = distance * Math.cos(angle)
 
@@ -30,7 +29,7 @@ const createPositionAnimation = (
       value: start,
     },
     {
-      frame: frameRate,
+      frame: frameRate * 5,
       value: start + end,
     },
   ]
@@ -41,11 +40,9 @@ const createPositionAnimation = (
 
 export const createMoveAnimations = (
   currentPosition: Vector3,
+  target: Vector3,
   frameRate: number
 ) => {
-  const angle = generateNumber(0, 360)
-  const target = createTargetVector(angle)
-
   const x = createPositionAnimation(
     'position.x',
     frameRate,

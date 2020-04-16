@@ -62,7 +62,7 @@ export class Stage {
 
   private _walls: Wall[] = []
 
-  public get wall() {
+  public get walls() {
     return this._walls
   }
 

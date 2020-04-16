@@ -1,14 +1,21 @@
-import { AppScene } from './scene'
-import { Crawler, getCrawlerSettings, Stage } from './meshes'
-import { Scene } from '@babylonjs/core'
+import { Crawler, getCrawlerSettings, Stage, createScene } from './meshes'
+import { Scene, Engine } from '@babylonjs/core'
+import { processCollisions } from './obstacles/collisionWorker'
 
 export const createApp = (canvas: HTMLCanvasElement) => {
-  const scene = new AppScene(canvas)
+  const engine = new Engine(canvas)
+  const scene = createScene(engine, canvas)
 
-  const stage = new Stage(scene.scene)
-  const crawlers = createCrawlers(scene.scene, 200)
+  const stage = new Stage(scene)
+  const crawlers = createCrawlers(scene, 1)
 
-  scene.start()
+  scene.registerBeforeRender(() => {
+    processCollisions(crawlers, stage.walls)
+  })
+
+  engine.runRenderLoop(() => {
+    scene.render()
+  })
 
   return {
     start: () => {
