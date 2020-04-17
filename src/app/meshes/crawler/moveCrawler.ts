@@ -1,9 +1,10 @@
 import { Mesh, Vector3, Animation } from '@babylonjs/core'
 import { generateNumber } from '../../../utils/random'
+import { crawlerMovement } from '../../settings'
 
-const distance = 3
-const frameRate = 10
-const endFrame = 10
+const distance = crawlerMovement.distance
+const frameRate = crawlerMovement.frameRate
+const endFrame = crawlerMovement.endFrame
 
 export const createDirection = () => {
   const angle = generateNumber(0, 360)

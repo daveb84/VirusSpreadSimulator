@@ -5,6 +5,7 @@ import { CollisionState, IObstacle } from '../../collisions'
 import { traceMove } from '../../../utils/trace'
 import { traceEnabled, minBound, maxBound } from '../../settings'
 import { getCommonMaterials } from '../materials'
+import { Virus } from './virus'
 
 const dimensions = { width: 0.1, height: 0.3, depth: 0.1 }
 const positionY = minBound.y + dimensions.height / 2
@@ -15,7 +16,7 @@ export class Crawler {
 
   private moveAnimations: Animatable[] = []
   private _moving: boolean = false
-  private _infected: boolean = false
+  private virus: Virus
 
   private direction: Vector3 | null = null
   private materials = getCommonMaterials()
@@ -26,12 +27,13 @@ export class Crawler {
     this.mesh.animations = []
     this.mesh.isPickable = true
 
+    this.virus = new Virus(this)
     this.collisionState = this.createCollisionState()
     this.setRandomPosition()
   }
 
-  public get infected() {
-    return this._infected
+  public get contagious() {
+    return this.virus.contagious
   }
 
   public get moving() {
@@ -67,8 +69,7 @@ export class Crawler {
   }
 
   infect() {
-    this._infected = true
-    this.mesh.material = this.materials.infected
+    this.virus.infect()
   }
 
   public setPosition(position: Vector3) {

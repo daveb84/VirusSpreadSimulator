@@ -1,26 +1,22 @@
-import {
-  Material,
-  StandardMaterial,
-  Scene,
-  Color3,
-  Vector3,
-} from '@babylonjs/core'
+import { Vector3 } from '@babylonjs/core'
 
 export const traceEnabled = false
 export const markCollisions = false
 
-export interface IAppSettings {
-  trace: boolean
-  markCollisions: boolean
-  materials: {
-    default: Material
-    infected: Material
-    collisionMarker: Material
-  }
+export const virusDuration = {
+  incubation: 5000,
+  ill: 5000,
 }
 
-export const minBound = new Vector3(-9, -3, -3)
-export const maxBound = new Vector3(9, 4, 6)
+export const crawlerMovement = {
+  autoStart: true,
+  distance: 3,
+  frameRate: 10,
+  endFrame: 30,
+}
+
+export const minBound = new Vector3(-15, -3, -6)
+export const maxBound = new Vector3(15, 4, 12)
 
 export const boundsMidpoint = maxBound
   .add(minBound)

@@ -6,6 +6,7 @@ import {
   showOnlyTraceMovesForOwner,
   traceMoves,
 } from '../utils/trace'
+import { crawlerMovement } from './settings'
 
 export const createApp = (
   canvas: HTMLCanvasElement,
@@ -21,6 +22,7 @@ export const createApp = (
   const stageArea = new StageArea(scene)
   const crawlers = createCrawlers(scene, 200)
 
+  let moving = false
   let selected: Crawler = null
   let selectedMove: number = 0
 
@@ -36,20 +38,26 @@ export const createApp = (
     scene.render()
   })
 
-  return {
+  const app = {
     start: () => {
       if (selected) {
         selected.start()
       } else {
+        moving = true
         crawlers.forEach((c) => c.start())
       }
     },
     stop: () => {
+      moving = false
       crawlers.forEach((c) => c.stop())
     },
     add: (amount: number, infected: boolean) => {
       const newCrawlers = createCrawlers(scene, amount, infected)
       crawlers.push(...newCrawlers)
+
+      if (moving) {
+        newCrawlers.forEach((c) => c.start())
+      }
     },
     moveBack: (index: number) => {
       if (moveBack(selected, index)) {
@@ -72,6 +80,12 @@ export const createApp = (
       }
     },
   }
+
+  if (crawlerMovement.autoStart) {
+    app.start()
+  }
+
+  return app
 }
 
 const createCrawlers = (

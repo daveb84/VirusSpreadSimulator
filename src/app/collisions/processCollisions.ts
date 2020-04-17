@@ -16,18 +16,18 @@ const obstacleCollide = (crawler: Crawler, obstacle: IObstacle) => {
 }
 
 const crawlerCollide = (crawler: Crawler, other: Crawler) => {
-  if (!crawler.infected && !other.infected) {
+  if (!crawler.contagious && !other.contagious) {
     return
   }
 
   const collide = other.mesh.intersectsMesh(crawler.mesh, true)
 
   if (collide) {
-    if (!crawler.infected) {
+    if (!crawler.contagious) {
       crawler.infect()
     }
 
-    if (!other.infected) {
+    if (!other.contagious) {
       other.infect()
     }
   }
