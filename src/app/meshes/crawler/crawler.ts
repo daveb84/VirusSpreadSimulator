@@ -11,7 +11,7 @@ import {
 import { minBound, maxBound } from '../../bounds'
 import { generateNumber } from '../../../utils/random'
 import { moveCrawler, createDirection } from './moveCrawler'
-import { IObstacle } from '../../obstacles/obstacle'
+import { IObstacle } from '../../collisions/obstacle'
 
 const dimensions = { width: 0.1, height: 0.3, depth: 0.1 }
 const positionY = minBound.y + dimensions.height / 2
