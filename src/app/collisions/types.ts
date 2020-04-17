@@ -8,6 +8,6 @@ export interface IObstacle {
 export interface IMovingMesh {
   getCurrentPosition: () => Vector3
   getCurrentDirection: () => Vector3
-  stopCurrentMovement: (onStopped: () => void) => void
+  stopCurrentMovement: () => void
   startNewDirection: (direction: Vector3) => void
 }

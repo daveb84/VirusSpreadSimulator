@@ -5,11 +5,13 @@ import { minBound } from '../bounds'
 const splatSize = 0.2
 
 export interface ICollisionStateSettings {
-  splatMaterial?: Material
+  markCollisions: boolean
+  markerMaterial: Material
 }
 
 export class CollisionState {
   private current: IObstacle = null
+  private clearCurrent: boolean = false
 
   constructor(
     private scene: Scene,
@@ -17,21 +19,30 @@ export class CollisionState {
     private settings: ICollisionStateSettings
   ) {}
 
-  public onMoveComplete() {}
+  public onMoveComplete() {
+    if (this.current && this.clearCurrent) {
+      this.current = null
+    }
+
+    if (!this.clearCurrent) {
+      this.clearCurrent = true
+    }
+  }
 
   public collide(obstacle: IObstacle, position: Vector3) {
     if (this.current === obstacle) {
       return
     }
 
+    this.drawMarker(position)
+
     this.current = obstacle
-    this.drawSplat(position)
+    this.clearCurrent = false
+    this.movingMesh.stopCurrentMovement()
 
     const newDirection = this.getNewDirection(obstacle)
 
-    this.movingMesh.stopCurrentMovement(() => {
-      this.movingMesh.startNewDirection(newDirection)
-    })
+    this.movingMesh.startNewDirection(newDirection)
   }
 
   private getNewDirection(obstacle: IObstacle) {
@@ -42,21 +53,21 @@ export class CollisionState {
     return deflect
   }
 
-  private drawSplat(position: Vector3) {
-    if (!this.settings.splatMaterial) {
+  private drawMarker(position: Vector3) {
+    if (!this.settings.markCollisions) {
       return
     }
 
-    const splat = MeshBuilder.CreateSphere(
+    const marker = MeshBuilder.CreateSphere(
       'splat',
       { diameter: splatSize },
       this.scene
     )
-    splat.position = new Vector3(
+    marker.position = new Vector3(
       position.x,
       minBound.y + splatSize / 2,
       position.z
     )
-    splat.material = this.settings.splatMaterial
+    marker.material = this.settings.markerMaterial
   }
 }

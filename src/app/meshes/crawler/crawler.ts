@@ -11,41 +11,45 @@ import {
 import { minBound, maxBound } from '../../bounds'
 import { generateNumber } from '../../../utils/random'
 import { moveCrawler, createDirection } from './moveCrawler'
-import {
-  CollisionState,
-  ICollisionStateSettings,
-  IObstacle,
-} from '../../collisions'
+import { CollisionState, IObstacle } from '../../collisions'
+
+const traceEnabled = false
+const collisionMarkingEnabled = false
 
 const dimensions = { width: 0.1, height: 0.3, depth: 0.1 }
 const positionY = minBound.y + dimensions.height / 2
 
 export interface CrawlerSettings {
-  defaultMaterial: Material
-  infectedMaterial: Material
-  collisionMaterial: Material
-  traceMaterial: Material
+  materials: {
+    default: Material
+    infected: Material
+    collisionMarker: Material
+    trace: Material
+  }
+  trace: boolean
+  markCollisions: boolean
 }
 
 export const getCrawlerSettings = (scene: Scene) => {
-  const defaultMaterial = new StandardMaterial('crawlerMat1', scene)
-  const infectedMaterial = new StandardMaterial('crawlerMat2', scene)
-  const collisionMaterial = new StandardMaterial('crawlerMat3', scene)
-  const traceMaterial = new StandardMaterial('crawlerMat3', scene)
+  const materials = {
+    default: new StandardMaterial('crawlerMat1', scene),
+    infected: new StandardMaterial('crawlerMat2', scene),
+    collisionMarker: new StandardMaterial('crawlerMat3', scene),
+    trace: new StandardMaterial('crawlerMat3', scene),
+  }
 
-  defaultMaterial.diffuseColor = new Color3(0.5, 0.5, 1)
-  infectedMaterial.diffuseColor = new Color3(1, 0.4, 0.4)
+  materials.default.diffuseColor = new Color3(0.5, 0.5, 1)
+  materials.infected.diffuseColor = new Color3(1, 0.4, 0.4)
 
-  collisionMaterial.diffuseColor = new Color3(0.7, 0.3, 0.3)
-  collisionMaterial.alpha = 0.1
+  materials.collisionMarker.diffuseColor = new Color3(0.7, 0.3, 0.3)
+  materials.collisionMarker.alpha = 0.8
 
-  traceMaterial.diffuseColor = new Color3(1, 1, 1)
+  materials.trace.diffuseColor = new Color3(1, 1, 1)
 
   const settings: CrawlerSettings = {
-    defaultMaterial,
-    infectedMaterial,
-    collisionMaterial,
-    traceMaterial,
+    materials,
+    trace: traceEnabled,
+    markCollisions: collisionMarkingEnabled,
   }
 
   return settings
@@ -63,7 +67,7 @@ export class Crawler {
 
   constructor(private scene: Scene, private settings: CrawlerSettings) {
     this.mesh = MeshBuilder.CreateBox('crawler', dimensions, this.scene)
-    this.mesh.material = settings.defaultMaterial
+    this.mesh.material = settings.materials.default
     this.mesh.animations = []
 
     this.collisionState = this.createCollisionState()
@@ -100,7 +104,8 @@ export class Crawler {
     }
 
     const settings = {
-      splatMaterial: this.settings.collisionMaterial,
+      markCollisions: collisionMarkingEnabled,
+      markerMaterial: this.settings.materials.collisionMarker,
     }
 
     return new CollisionState(this.scene, movingMesh, settings)
@@ -110,7 +115,7 @@ export class Crawler {
     this.collisionState.collide(obstacle, this.mesh.position)
 
     this._infected = true
-    this.mesh.material = this.settings.infectedMaterial
+    this.mesh.material = this.settings.materials.infected
   }
 
   private setRandomPosition() {
@@ -151,11 +156,15 @@ export class Crawler {
   }
 
   private drawTrace(from: Vector3, to: Vector3) {
+    if (!this.settings.trace) {
+      return
+    }
+
     const line = MeshBuilder.CreateLines(
       'lines',
       { points: [from, to], updatable: false },
       this.scene
     )
-    line.material = this.settings.traceMaterial
+    line.material = this.settings.materials.trace
   }
 }
