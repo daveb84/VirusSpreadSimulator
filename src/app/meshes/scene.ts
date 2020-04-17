@@ -2,9 +2,9 @@ import {
   Engine,
   Scene,
   Vector3,
-  FreeCamera,
   HemisphericLight,
   Color3,
+  ArcRotateCamera,
 } from '@babylonjs/core'
 import { minBound, maxBound } from '../settings'
 
@@ -13,9 +13,12 @@ export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
   scene.ambientColor = new Color3(1, 1, 1)
   scene.collisionsEnabled = true
 
-  const camera = new FreeCamera(
-    'camera1',
-    new Vector3(0, maxBound.y * 2, minBound.z * 5),
+  const camera = new ArcRotateCamera(
+    'Camera',
+    0,
+    0,
+    15,
+    new Vector3(0, maxBound.y * 1.5, minBound.z * 1.2),
     scene
   )
 
