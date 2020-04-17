@@ -113,7 +113,9 @@ export class Crawler {
 
   collideWithObstacle(obstacle: IObstacle) {
     this.collisionState.collide(obstacle, this.mesh.position)
+  }
 
+  infect() {
     this._infected = true
     this.mesh.material = this.settings.materials.infected
   }
