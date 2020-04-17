@@ -1,5 +1,5 @@
 import { Crawler } from '../meshes/crawler/crawler'
-import { IObstacle } from './obstacle'
+import { IObstacle } from './types'
 
 export const processCollisions = (
   crawlers: Crawler[],

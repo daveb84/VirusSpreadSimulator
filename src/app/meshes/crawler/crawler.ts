@@ -11,7 +11,11 @@ import {
 import { minBound, maxBound } from '../../bounds'
 import { generateNumber } from '../../../utils/random'
 import { moveCrawler, createDirection } from './moveCrawler'
-import { IObstacle } from '../../collisions/obstacle'
+import {
+  CollisionState,
+  ICollisionStateSettings,
+  IObstacle,
+} from '../../collisions'
 
 const dimensions = { width: 0.1, height: 0.3, depth: 0.1 }
 const positionY = minBound.y + dimensions.height / 2
@@ -49,19 +53,20 @@ export const getCrawlerSettings = (scene: Scene) => {
 
 export class Crawler {
   public readonly mesh: Mesh
+  private readonly collisionState: CollisionState
 
   private moveAnimations: Animatable[] = []
   private _moving: boolean = false
   private _infected: boolean = false
 
   private direction: Vector3 | null = null
-  private collisionObstacle: IObstacle | null = null
 
   constructor(private scene: Scene, private settings: CrawlerSettings) {
     this.mesh = MeshBuilder.CreateBox('crawler', dimensions, this.scene)
     this.mesh.material = settings.defaultMaterial
     this.mesh.animations = []
 
+    this.collisionState = this.createCollisionState()
     this.setRandomPosition()
   }
 
@@ -86,19 +91,23 @@ export class Crawler {
     this.moveAnimations.splice(0, this.moveAnimations.length)
   }
 
-  collideWithObstacle(obstacle: IObstacle) {
-    if (this.collisionObstacle === obstacle) {
-      return
+  private createCollisionState() {
+    const movingMesh = {
+      getCurrentPosition: () => this.mesh.position,
+      getCurrentDirection: () => this.direction,
+      stopCurrentMovement: () => this.stop(),
+      startNewDirection: (direction: Vector3) => this.move(direction),
     }
 
-    this.collisionObstacle = obstacle
+    const settings = {
+      splatMaterial: this.settings.collisionMaterial,
+    }
 
-    this.stop()
-    this.drawCollision()
+    return new CollisionState(this.scene, movingMesh, settings)
+  }
 
-    const deflect = this.direction.multiply(obstacle.deflectVector)
-
-    this.move(deflect, true)
+  collideWithObstacle(obstacle: IObstacle) {
+    this.collisionState.collide(obstacle, this.mesh.position)
 
     this._infected = true
     this.mesh.material = this.settings.infectedMaterial
@@ -112,7 +121,7 @@ export class Crawler {
     )
   }
 
-  private move(direction?: Vector3 | undefined, isDeflection: boolean = false) {
+  private move(direction?: Vector3 | undefined) {
     if (direction === undefined) {
       direction = createDirection()
     }
@@ -125,38 +134,20 @@ export class Crawler {
     this.drawTrace(from, to)
 
     const animation = moveCrawler(this.mesh, from, to, () =>
-      this.onMoveComplete(isDeflection)
+      this.onMoveComplete()
     )
 
     this.moveAnimations.push(animation)
     this._moving = true
   }
 
-  private onMoveComplete(isDeflection: boolean = false) {
+  private onMoveComplete() {
+    this.collisionState.onMoveComplete()
     this.moveAnimations.splice(0, this.moveAnimations.length)
-
-    if (isDeflection) {
-      this.collisionObstacle = null
-    }
 
     if (this._moving) {
       this.move()
     }
-  }
-
-  private drawCollision() {
-    const splatSize = 0.2
-    const splat = MeshBuilder.CreateSphere(
-      'splat',
-      { diameter: splatSize },
-      this.scene
-    )
-    splat.position = new Vector3(
-      this.mesh.position.x,
-      minBound.y + splatSize / 2,
-      this.mesh.position.z
-    )
-    splat.material = this.settings.collisionMaterial
   }
 
   private drawTrace(from: Vector3, to: Vector3) {

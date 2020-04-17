@@ -1,5 +1,5 @@
 import { Vector3, Mesh } from '@babylonjs/core'
-import { IObstacle } from '../collisions/obstacle'
+import { IObstacle } from '../collisions/types'
 
 export class Wall implements IObstacle {
   constructor(
