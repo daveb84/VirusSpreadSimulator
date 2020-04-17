@@ -1,12 +1,22 @@
 <!doctype html>
 <html>
-  <head>
-    <title>Animation with Babylon JS</title>
-    <script src="https://code.jquery.com/pep/0.4.3/pep.js"></script> 
-  </head>
-  <body>
-    <canvas id="renderCanvas" touch-action="none"></canvas>
+
+<head>
+  <title>Animation with Babylon JS</title>
+  <script src="https://code.jquery.com/pep/0.4.3/pep.js"></script>
+</head>
+
+<body>
+  <canvas id="renderCanvas" touch-action="none"></canvas>
+  <div class="form-panel">
     <button id="start-button">Start</button>
     <button id="stop-button">Stop</button>
-  </body>
+  </div>
+  <div class="form-panel">
+    <input type="number" id="amount-tb" placeholder="Number of people..." />
+    <label><input type="checkbox" id="infected-cb" />Infected</label>
+    <button id="add-button">Add</button>
+  </div>
+</body>
+
 </html>

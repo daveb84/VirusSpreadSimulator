@@ -19,7 +19,7 @@ const collisionMarkingEnabled = false
 const dimensions = { width: 0.1, height: 0.3, depth: 0.1 }
 const positionY = minBound.y + dimensions.height / 2
 
-export interface CrawlerSettings {
+export interface ICrawlerSettings {
   materials: {
     default: Material
     infected: Material
@@ -46,7 +46,7 @@ export const getCrawlerSettings = (scene: Scene) => {
 
   materials.trace.diffuseColor = new Color3(1, 1, 1)
 
-  const settings: CrawlerSettings = {
+  const settings: ICrawlerSettings = {
     materials,
     trace: traceEnabled,
     markCollisions: collisionMarkingEnabled,
@@ -65,7 +65,7 @@ export class Crawler {
 
   private direction: Vector3 | null = null
 
-  constructor(private scene: Scene, private settings: CrawlerSettings) {
+  constructor(private scene: Scene, private settings: ICrawlerSettings) {
     this.mesh = MeshBuilder.CreateBox('crawler', dimensions, this.scene)
     this.mesh.material = settings.materials.default
     this.mesh.animations = []
