@@ -3,7 +3,11 @@ import { createApp } from './app'
 
 const canvas = document.getElementById('renderCanvas') as HTMLCanvasElement
 
-const app = createApp(canvas)
+const debug = (message: string) => {
+  document.getElementById('debug-message').innerHTML = message
+}
+
+const app = createApp(canvas, debug)
 
 const bindButton = (id: string, handler: () => void) => {
   const button = document.getElementById(id) as HTMLButtonElement
@@ -26,3 +30,19 @@ const add = () => {
 }
 
 bindButton('add-button', add)
+
+const bindReplayButton = (button: string, action: (index: number) => void) => {
+  const handler = () => {
+    const textBox = document.getElementById('replay-tb') as HTMLInputElement
+    const index = parseInt(textBox.value)
+
+    if (!isNaN(index)) {
+      action(index)
+    }
+  }
+
+  bindButton(button, handler)
+}
+
+bindReplayButton('move-button', app.moveBack)
+bindReplayButton('replay-button', app.replayMove)

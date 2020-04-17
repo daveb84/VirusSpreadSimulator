@@ -7,9 +7,16 @@ import {
 } from './meshes'
 import { Scene, Engine, PickingInfo } from '@babylonjs/core'
 import { processCollisions } from './collisions/processCollisions'
-import { initTrace, showOnlyTracesForOwner } from '../utils/trace'
+import {
+  initTrace,
+  showOnlyTraceMovesForOwner,
+  traceMoves,
+} from '../utils/trace'
 
-const initApp = (canvas: HTMLCanvasElement) => {
+export const createApp = (
+  canvas: HTMLCanvasElement,
+  debug: (message: string) => void
+) => {
   const engine = new Engine(canvas)
   const scene = createScene(engine, canvas)
 
@@ -20,8 +27,14 @@ const initApp = (canvas: HTMLCanvasElement) => {
   const stage = new Stage(scene)
   const crawlers = createCrawlers(scene, settings, 200)
 
+  let selected: Crawler = null
+  let selectedMove: number = 0
+
   scene.onPointerUp = (evt, pickResult) => {
-    clickCrawler(pickResult, crawlers)
+    selected = clickCrawler(pickResult, crawlers, debug)
+
+    if (selected) {
+    }
   }
 
   scene.registerBeforeRender(() => {
@@ -32,27 +45,40 @@ const initApp = (canvas: HTMLCanvasElement) => {
     scene.render()
   })
 
-  return { engine, crawlers, scene, settings }
-}
-
-export const createApp = (canvas: HTMLCanvasElement) => {
-  let app = initApp(canvas)
-
   return {
     start: () => {
-      app.crawlers.forEach((c) => c.start())
+      if (selected) {
+        selected.start()
+      } else {
+        crawlers.forEach((c) => c.start())
+      }
     },
     stop: () => {
-      app.crawlers.forEach((c) => c.stop())
+      crawlers.forEach((c) => c.stop())
     },
     add: (amount: number, infected: boolean) => {
-      const newCrawlers = createCrawlers(
-        app.scene,
-        app.settings,
-        amount,
-        infected
-      )
-      app.crawlers.push(...newCrawlers)
+      const newCrawlers = createCrawlers(scene, settings, amount, infected)
+      crawlers.push(...newCrawlers)
+    },
+    moveBack: (index: number) => {
+      if (moveBack(selected, index)) {
+        selectedMove = index
+      }
+    },
+    replayMove: (index: number) => {
+      if (moveBack(selected, index)) {
+        const moves = traceMoves.filter((x) => x.owner === selected.mesh)
+
+        if (index < moves.length) {
+          const matching = moves[index]
+
+          if (selectedMove !== index) {
+            selected.setPosition(matching.from)
+          }
+
+          selected.move(matching.direction)
+        }
+      }
     },
   }
 }
@@ -78,12 +104,39 @@ const createCrawlers = (
   return crawlers
 }
 
-const clickCrawler = (pick: PickingInfo, crawlers: Crawler[]) => {
+const clickCrawler = (
+  pick: PickingInfo,
+  crawlers: Crawler[],
+  debug: (message: string) => void
+) => {
   if (pick.hit) {
     const match = crawlers.find((x) => x.mesh === pick.pickedMesh)
 
     if (match) {
-      showOnlyTracesForOwner(match.mesh)
+      const moves = traceMoves.filter((x) => x.owner === match.mesh)
+      debug('Moves: ' + moves.length)
+      showOnlyTraceMovesForOwner(match.mesh)
     }
+
+    return match
   }
+}
+
+const moveBack = (selected: Crawler, index: number) => {
+  if (selected) {
+    const moves = traceMoves.filter((x) => x.owner === selected.mesh)
+
+    if (index < moves.length) {
+      const matching = moves[index]
+
+      selected.setPosition(matching.from)
+
+      return true
+    } else {
+      alert('Move cannot be found')
+    }
+  } else {
+    alert('Nothing selected')
+  }
+  return false
 }

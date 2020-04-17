@@ -12,7 +12,7 @@ import { minBound, maxBound } from '../../bounds'
 import { generateNumber } from '../../../utils/random'
 import { moveCrawler, createDirection } from './moveCrawler'
 import { CollisionState, IObstacle } from '../../collisions'
-import { traceLine } from '../../../utils/trace'
+import { traceMove } from '../../../utils/trace'
 
 const traceEnabled = true
 const collisionMarkingEnabled = false
@@ -118,6 +118,10 @@ export class Crawler {
     this.mesh.material = this.settings.materials.infected
   }
 
+  public setPosition(position: Vector3) {
+    this.mesh.position = position
+  }
+
   private setRandomPosition() {
     this.mesh.position = new Vector3(
       generateNumber(minBound.x, maxBound.x),
@@ -126,7 +130,7 @@ export class Crawler {
     )
   }
 
-  private move(direction?: Vector3 | undefined) {
+  public move(direction?: Vector3 | undefined) {
     if (direction === undefined) {
       direction = createDirection()
     }
@@ -136,7 +140,9 @@ export class Crawler {
     const from = this.mesh.position.clone()
     const to = from.add(direction)
 
-    this.drawTrace(from, to)
+    if (this.settings.trace) {
+      traceMove(from, to, direction, this.mesh)
+    }
 
     const animation = moveCrawler(this.mesh, from, to, () =>
       this.onMoveComplete()
@@ -153,13 +159,5 @@ export class Crawler {
     if (this._moving) {
       this.move()
     }
-  }
-
-  private drawTrace(from: Vector3, to: Vector3) {
-    if (!this.settings.trace) {
-      return
-    }
-
-    traceLine(from, to, this.mesh)
   }
 }
