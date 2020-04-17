@@ -18,7 +18,7 @@ interface IWallCoords {
   depth: number
   x: number
   z: number
-  deflect: Vector3
+  bounceVector: Vector3
 }
 
 const groundDimensions = {
@@ -32,28 +32,28 @@ const wallCoors = {
     depth: wallDepth,
     x: boundsMidpoint.x,
     z: minBound.z - wallDepth,
-    deflect: new Vector3(1, 1, -1),
+    bounceVector: new Vector3(1, 1, -1),
   },
   back: {
     width: groundDimensions.width,
     depth: wallDepth,
     x: boundsMidpoint.x,
     z: maxBound.z + wallDepth,
-    deflect: new Vector3(1, 1, -1),
+    bounceVector: new Vector3(1, 1, -1),
   },
   left: {
     width: wallDepth,
     depth: groundDimensions.depth,
     x: minBound.x - wallDepth,
     z: boundsMidpoint.z,
-    deflect: new Vector3(-1, 1, 1),
+    bounceVector: new Vector3(-1, 1, 1),
   },
   right: {
     width: wallDepth,
     depth: groundDimensions.depth,
     x: maxBound.x + wallDepth,
     z: boundsMidpoint.z,
-    deflect: new Vector3(-1, 1, 1),
+    bounceVector: new Vector3(-1, 1, 1),
   },
 }
 
@@ -103,6 +103,6 @@ export class Stage {
     wall.position = new Vector3(coords.x, wallPositionY, coords.z)
     wall.material = this.material
 
-    return new Wall(wall, coords.deflect)
+    return new Wall(wall)
   }
 }

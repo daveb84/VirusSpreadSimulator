@@ -1,8 +1,8 @@
-import { Mesh, Vector3, Material } from '@babylonjs/core'
+import { Mesh, Vector3 } from '@babylonjs/core'
 
 export interface IObstacle {
   readonly mesh: Mesh
-  readonly deflectVector: Vector3
+  getDeflectDirection(currentDirection: Vector3)
 }
 
 export interface IMovingMesh {

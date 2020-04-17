@@ -46,11 +46,9 @@ export class CollisionState {
   }
 
   private getNewDirection(obstacle: IObstacle) {
-    const deflect = this.movingMesh
-      .getCurrentDirection()
-      .multiply(obstacle.deflectVector)
+    const currentDirection = this.movingMesh.getCurrentDirection()
 
-    return deflect
+    return obstacle.getDeflectDirection(currentDirection)
   }
 
   private drawMarker(position: Vector3) {
