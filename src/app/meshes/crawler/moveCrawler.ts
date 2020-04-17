@@ -1,60 +1,57 @@
-import { Vector3, Animation } from '@babylonjs/core'
+import { Mesh, Vector3, Animation } from '@babylonjs/core'
+import { generateNumber } from '../../../utils/random'
 
 const distance = 3
+const frameRate = 10
+const endFrame = 10
 
-export const createTargetVector = (angle: number) => {
+export const createDirection = () => {
+  const angle = generateNumber(0, 360)
+
   const z = distance * Math.sin(angle)
   const x = distance * Math.cos(angle)
 
   return new Vector3(x, 0, z)
 }
 
-const createPositionAnimation = (
-  key: string,
-  frameRate: number,
-  start: number,
-  end: number
+export const moveCrawler = (
+  mesh: Mesh,
+  from: Vector3,
+  to: Vector3,
+  onComplete: () => void
 ) => {
+  const scene = mesh.getScene()
+
   const animation = new Animation(
-    'squish',
-    key,
+    'move',
+    'position',
     frameRate,
-    Animation.ANIMATIONTYPE_FLOAT,
+    Animation.ANIMATIONTYPE_VECTOR3,
     Animation.ANIMATIONLOOPMODE_CONSTANT
   )
 
   const keys = [
     {
       frame: 0,
-      value: start,
+      value: from,
     },
     {
-      frame: frameRate * 5,
-      value: start + end,
+      frame: endFrame,
+      value: to,
     },
   ]
 
   animation.setKeys(keys)
-  return animation
-}
 
-export const createMoveAnimations = (
-  currentPosition: Vector3,
-  target: Vector3,
-  frameRate: number
-) => {
-  const x = createPositionAnimation(
-    'position.x',
-    frameRate,
-    currentPosition.x,
-    target.x
-  )
-  const z = createPositionAnimation(
-    'position.z',
-    frameRate,
-    currentPosition.z,
-    target.z
+  const running = scene.beginDirectAnimation(
+    mesh,
+    [animation],
+    0,
+    endFrame,
+    false,
+    1,
+    onComplete
   )
 
-  return [x, z]
+  return running
 }
