@@ -10,7 +10,7 @@ export interface ICollisionStateSettings {
 }
 
 export class CollisionState {
-  private current: IObstacle = null
+  private current: IObstacle[] = []
   private clearCurrent: boolean = false
 
   constructor(
@@ -21,7 +21,7 @@ export class CollisionState {
 
   public onMoveComplete() {
     if (this.current && this.clearCurrent) {
-      this.current = null
+      this.current.splice(0, this.current.length)
     }
 
     if (!this.clearCurrent) {
@@ -30,13 +30,13 @@ export class CollisionState {
   }
 
   public collide(obstacle: IObstacle, position: Vector3) {
-    if (this.current === obstacle) {
+    if (this.current.includes(obstacle)) {
       return
     }
 
     this.drawMarker(position)
 
-    this.current = obstacle
+    this.current.push(obstacle)
     this.clearCurrent = false
     this.movingMesh.stopCurrentMovement()
 

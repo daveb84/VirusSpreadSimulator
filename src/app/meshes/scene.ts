@@ -41,6 +41,7 @@ export const addBoundingBox = (scene: Scene) => {
     scene
   )
   bounds.position = boundsMidpoint
+  bounds.isPickable = false
 
   const material = new StandardMaterial('boundsMaterial', scene)
   material.diffuseColor = new Color3(1, 1, 1)

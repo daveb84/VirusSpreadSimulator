@@ -5,24 +5,24 @@ const canvas = document.getElementById('renderCanvas') as HTMLCanvasElement
 
 const app = createApp(canvas)
 
-const startButton = document.getElementById('start-button') as HTMLButtonElement
-const stopButton = document.getElementById('stop-button') as HTMLButtonElement
-const addButton = document.getElementById('add-button') as HTMLButtonElement
+const bindButton = (id: string, handler: () => void) => {
+  const button = document.getElementById(id) as HTMLButtonElement
 
-startButton.addEventListener('click', app.start, true)
-stopButton.addEventListener('click', app.stop, true)
+  button.addEventListener('click', handler, true)
+}
 
-addButton.addEventListener(
-  'click',
-  () => {
-    const textBox = document.getElementById('amount-tb') as HTMLInputElement
-    const checkBox = document.getElementById('infected-cb') as HTMLInputElement
+bindButton('start-button', app.start)
+bindButton('stop-button', app.stop)
 
-    const amount = parseInt(textBox.value)
+const add = () => {
+  const textBox = document.getElementById('amount-tb') as HTMLInputElement
+  const checkBox = document.getElementById('infected-cb') as HTMLInputElement
 
-    if (!isNaN(amount)) {
-      app.add(amount, checkBox.checked)
-    }
-  },
-  true
-)
+  const amount = parseInt(textBox.value)
+
+  if (!isNaN(amount)) {
+    app.add(amount, checkBox.checked)
+  }
+}
+
+bindButton('add-button', add)

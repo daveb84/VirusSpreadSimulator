@@ -5,16 +5,24 @@ import {
   createScene,
   ICrawlerSettings,
 } from './meshes'
-import { Scene, Engine } from '@babylonjs/core'
+import { Scene, Engine, PickingInfo } from '@babylonjs/core'
 import { processCollisions } from './collisions/processCollisions'
+import { initTrace, showOnlyTracesForOwner } from '../utils/trace'
 
-export const createApp = (canvas: HTMLCanvasElement) => {
+const initApp = (canvas: HTMLCanvasElement) => {
   const engine = new Engine(canvas)
   const scene = createScene(engine, canvas)
+
+  initTrace(scene)
+
   const settings = getCrawlerSettings(scene)
 
   const stage = new Stage(scene)
   const crawlers = createCrawlers(scene, settings, 200)
+
+  scene.onPointerUp = (evt, pickResult) => {
+    clickCrawler(pickResult, crawlers)
+  }
 
   scene.registerBeforeRender(() => {
     processCollisions(crawlers, stage.walls)
@@ -24,16 +32,27 @@ export const createApp = (canvas: HTMLCanvasElement) => {
     scene.render()
   })
 
+  return { engine, crawlers, scene, settings }
+}
+
+export const createApp = (canvas: HTMLCanvasElement) => {
+  let app = initApp(canvas)
+
   return {
     start: () => {
-      crawlers.forEach((c) => c.start())
+      app.crawlers.forEach((c) => c.start())
     },
     stop: () => {
-      crawlers.forEach((c) => c.stop())
+      app.crawlers.forEach((c) => c.stop())
     },
     add: (amount: number, infected: boolean) => {
-      const newCrawlers = createCrawlers(scene, settings, amount, infected)
-      crawlers.push(...newCrawlers)
+      const newCrawlers = createCrawlers(
+        app.scene,
+        app.settings,
+        amount,
+        infected
+      )
+      app.crawlers.push(...newCrawlers)
     },
   }
 }
@@ -57,4 +76,14 @@ const createCrawlers = (
   }
 
   return crawlers
+}
+
+const clickCrawler = (pick: PickingInfo, crawlers: Crawler[]) => {
+  if (pick.hit) {
+    const match = crawlers.find((x) => x.mesh === pick.pickedMesh)
+
+    if (match) {
+      showOnlyTracesForOwner(match.mesh)
+    }
+  }
 }

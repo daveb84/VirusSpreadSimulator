@@ -12,8 +12,9 @@ import { minBound, maxBound } from '../../bounds'
 import { generateNumber } from '../../../utils/random'
 import { moveCrawler, createDirection } from './moveCrawler'
 import { CollisionState, IObstacle } from '../../collisions'
+import { traceLine } from '../../../utils/trace'
 
-const traceEnabled = false
+const traceEnabled = true
 const collisionMarkingEnabled = false
 
 const dimensions = { width: 0.1, height: 0.3, depth: 0.1 }
@@ -24,7 +25,6 @@ export interface ICrawlerSettings {
     default: Material
     infected: Material
     collisionMarker: Material
-    trace: Material
   }
   trace: boolean
   markCollisions: boolean
@@ -35,7 +35,6 @@ export const getCrawlerSettings = (scene: Scene) => {
     default: new StandardMaterial('crawlerMat1', scene),
     infected: new StandardMaterial('crawlerMat2', scene),
     collisionMarker: new StandardMaterial('crawlerMat3', scene),
-    trace: new StandardMaterial('crawlerMat3', scene),
   }
 
   materials.default.diffuseColor = new Color3(0.5, 0.5, 1)
@@ -43,8 +42,6 @@ export const getCrawlerSettings = (scene: Scene) => {
 
   materials.collisionMarker.diffuseColor = new Color3(0.7, 0.3, 0.3)
   materials.collisionMarker.alpha = 0.8
-
-  materials.trace.diffuseColor = new Color3(1, 1, 1)
 
   const settings: ICrawlerSettings = {
     materials,
@@ -69,6 +66,7 @@ export class Crawler {
     this.mesh = MeshBuilder.CreateBox('crawler', dimensions, this.scene)
     this.mesh.material = settings.materials.default
     this.mesh.animations = []
+    this.mesh.isPickable = true
 
     this.collisionState = this.createCollisionState()
     this.setRandomPosition()
@@ -162,11 +160,6 @@ export class Crawler {
       return
     }
 
-    const line = MeshBuilder.CreateLines(
-      'lines',
-      { points: [from, to], updatable: false },
-      this.scene
-    )
-    line.material = this.settings.materials.trace
+    traceLine(from, to, this.mesh)
   }
 }
