@@ -1,6 +1,7 @@
 import { IObstacle, IMovingMesh } from './types'
 import { Material, MeshBuilder, Scene, Vector3 } from '@babylonjs/core'
-import { minBound } from '../bounds'
+import { markCollisions, minBound } from '../settings'
+import { getCommonMaterials } from '../meshes'
 
 const splatSize = 0.2
 
@@ -12,12 +13,9 @@ export interface ICollisionStateSettings {
 export class CollisionState {
   private current: IObstacle[] = []
   private clearCurrent: boolean = false
+  private materials = getCommonMaterials()
 
-  constructor(
-    private scene: Scene,
-    public movingMesh: IMovingMesh,
-    private settings: ICollisionStateSettings
-  ) {}
+  constructor(private scene: Scene, public movingMesh: IMovingMesh) {}
 
   public onMoveComplete() {
     if (this.current && this.clearCurrent) {
@@ -53,7 +51,7 @@ export class CollisionState {
   }
 
   private drawMarker(position: Vector3) {
-    if (!this.settings.markCollisions) {
+    if (!markCollisions) {
       return
     }
 
@@ -67,6 +65,6 @@ export class CollisionState {
       minBound.y + splatSize / 2,
       position.z
     )
-    marker.material = this.settings.markerMaterial
+    marker.material = this.materials.collisionMarker
   }
 }

@@ -1,6 +1,6 @@
 import { generateNumber } from '../../utils/random'
 import { Vector3 } from '@babylonjs/core'
-import { minBound, boundsMidpoint, maxBound } from '../bounds'
+import { minBound, boundsMidpoint, maxBound } from '../settings'
 
 const deflectToCenterBounds = {
   minX: (minBound.x + boundsMidpoint.x) / 2,

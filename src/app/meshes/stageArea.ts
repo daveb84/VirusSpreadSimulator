@@ -1,6 +1,6 @@
 import { MeshBuilder, Mesh } from '@babylonjs/core/Meshes'
 import { Scene, StandardMaterial, Vector3 } from '@babylonjs/core'
-import { boundsSize, boundsMidpoint } from '../bounds'
+import { boundsSize, boundsMidpoint } from '../settings'
 import { IObstacle } from '../collisions'
 import { deflectToCenter } from '../collisions/deflections'
 

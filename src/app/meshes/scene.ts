@@ -6,7 +6,7 @@ import {
   HemisphericLight,
   Color3,
 } from '@babylonjs/core'
-import { minBound, maxBound } from '../bounds'
+import { minBound, maxBound } from '../settings'
 
 export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
   const scene = new Scene(engine)

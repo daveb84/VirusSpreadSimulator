@@ -1,11 +1,4 @@
-import {
-  Crawler,
-  getCrawlerSettings,
-  Stage,
-  createScene,
-  ICrawlerSettings,
-  StageArea,
-} from './meshes'
+import { Crawler, Stage, createScene, StageArea, initMaterials } from './meshes'
 import { Scene, Engine, PickingInfo } from '@babylonjs/core'
 import { processCollisions } from './collisions/processCollisions'
 import {
@@ -21,13 +14,12 @@ export const createApp = (
   const engine = new Engine(canvas)
   const scene = createScene(engine, canvas)
 
+  initMaterials(scene)
   initTrace(scene)
-
-  const settings = getCrawlerSettings(scene)
 
   new Stage(scene)
   const stageArea = new StageArea(scene)
-  const crawlers = createCrawlers(scene, settings, 200)
+  const crawlers = createCrawlers(scene, 200)
 
   let selected: Crawler = null
   let selectedMove: number = 0
@@ -56,7 +48,7 @@ export const createApp = (
       crawlers.forEach((c) => c.stop())
     },
     add: (amount: number, infected: boolean) => {
-      const newCrawlers = createCrawlers(scene, settings, amount, infected)
+      const newCrawlers = createCrawlers(scene, amount, infected)
       crawlers.push(...newCrawlers)
     },
     moveBack: (index: number) => {
@@ -84,14 +76,13 @@ export const createApp = (
 
 const createCrawlers = (
   scene: Scene,
-  settings: ICrawlerSettings,
   quantity: number,
   infected: boolean = false
 ) => {
   const crawlers: Crawler[] = []
 
   for (let i = 0; i < quantity; i++) {
-    const crawler = new Crawler(scene, settings)
+    const crawler = new Crawler(scene)
 
     if (infected) {
       crawler.infect()

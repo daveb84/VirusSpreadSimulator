@@ -1,56 +1,13 @@
-import {
-  Scene,
-  Vector3,
-  Color3,
-  Mesh,
-  MeshBuilder,
-  StandardMaterial,
-  Material,
-  Animatable,
-} from '@babylonjs/core'
-import { minBound, maxBound } from '../../bounds'
+import { Scene, Vector3, Mesh, MeshBuilder, Animatable } from '@babylonjs/core'
 import { generateNumber } from '../../../utils/random'
 import { moveCrawler, createDirection } from './moveCrawler'
 import { CollisionState, IObstacle } from '../../collisions'
 import { traceMove } from '../../../utils/trace'
-
-const traceEnabled = false
-const collisionMarkingEnabled = true
+import { traceEnabled, minBound, maxBound } from '../../settings'
+import { getCommonMaterials } from '../materials'
 
 const dimensions = { width: 0.1, height: 0.3, depth: 0.1 }
 const positionY = minBound.y + dimensions.height / 2
-
-export interface ICrawlerSettings {
-  materials: {
-    default: Material
-    infected: Material
-    collisionMarker: Material
-  }
-  trace: boolean
-  markCollisions: boolean
-}
-
-export const getCrawlerSettings = (scene: Scene) => {
-  const materials = {
-    default: new StandardMaterial('crawlerMat1', scene),
-    infected: new StandardMaterial('crawlerMat2', scene),
-    collisionMarker: new StandardMaterial('crawlerMat3', scene),
-  }
-
-  materials.default.diffuseColor = new Color3(0.5, 0.5, 1)
-  materials.infected.diffuseColor = new Color3(1, 0.4, 0.4)
-
-  materials.collisionMarker.diffuseColor = new Color3(0.7, 0.3, 0.3)
-  materials.collisionMarker.alpha = 0.8
-
-  const settings: ICrawlerSettings = {
-    materials,
-    trace: traceEnabled,
-    markCollisions: collisionMarkingEnabled,
-  }
-
-  return settings
-}
 
 export class Crawler {
   public readonly mesh: Mesh
@@ -61,10 +18,11 @@ export class Crawler {
   private _infected: boolean = false
 
   private direction: Vector3 | null = null
+  private materials = getCommonMaterials()
 
-  constructor(private scene: Scene, private settings: ICrawlerSettings) {
+  constructor(private scene: Scene) {
     this.mesh = MeshBuilder.CreateBox('crawler', dimensions, this.scene)
-    this.mesh.material = settings.materials.default
+    this.mesh.material = this.materials.default
     this.mesh.animations = []
     this.mesh.isPickable = true
 
@@ -101,12 +59,7 @@ export class Crawler {
       startNewDirection: (direction: Vector3) => this.move(direction),
     }
 
-    const settings = {
-      markCollisions: collisionMarkingEnabled,
-      markerMaterial: this.settings.materials.collisionMarker,
-    }
-
-    return new CollisionState(this.scene, movingMesh, settings)
+    return new CollisionState(this.scene, movingMesh)
   }
 
   collideWithObstacle(obstacle: IObstacle) {
@@ -115,7 +68,7 @@ export class Crawler {
 
   infect() {
     this._infected = true
-    this.mesh.material = this.settings.materials.infected
+    this.mesh.material = this.materials.infected
   }
 
   public setPosition(position: Vector3) {
@@ -140,7 +93,7 @@ export class Crawler {
     const from = this.mesh.position.clone()
     const to = from.add(direction)
 
-    if (this.settings.trace) {
+    if (traceEnabled) {
       traceMove(from, to, direction, this.mesh)
     }
 

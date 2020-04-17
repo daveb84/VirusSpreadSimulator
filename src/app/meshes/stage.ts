@@ -5,7 +5,7 @@ import {
   StandardMaterial,
   Texture,
 } from '@babylonjs/core'
-import { minBound, maxBound, boundsMidpoint, boundsSize } from '../bounds'
+import { minBound, maxBound, boundsMidpoint, boundsSize } from '../settings'
 import groundImage from '../../images/ground.jpg'
 import { Wall } from './wall'
 
