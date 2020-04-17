@@ -7,7 +7,7 @@ export const createApp = (canvas: HTMLCanvasElement) => {
   const scene = createScene(engine, canvas)
 
   const stage = new Stage(scene)
-  const crawlers = createCrawlers(scene, 1)
+  const crawlers = createCrawlers(scene, 200)
 
   scene.registerBeforeRender(() => {
     processCollisions(crawlers, stage.walls)

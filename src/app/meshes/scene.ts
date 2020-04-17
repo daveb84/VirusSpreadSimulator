@@ -27,6 +27,8 @@ export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
   const light = new HemisphericLight('light1', new Vector3(0, 1, 0), scene)
   light.intensity = 0.7
 
+  addBoundingBox(scene)
+
   return scene
 }
 
