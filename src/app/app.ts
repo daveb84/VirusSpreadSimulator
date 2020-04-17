@@ -4,6 +4,7 @@ import {
   Stage,
   createScene,
   ICrawlerSettings,
+  StageArea,
 } from './meshes'
 import { Scene, Engine, PickingInfo } from '@babylonjs/core'
 import { processCollisions } from './collisions/processCollisions'
@@ -24,7 +25,8 @@ export const createApp = (
 
   const settings = getCrawlerSettings(scene)
 
-  const stage = new Stage(scene)
+  new Stage(scene)
+  const stageArea = new StageArea(scene)
   const crawlers = createCrawlers(scene, settings, 200)
 
   let selected: Crawler = null
@@ -32,13 +34,10 @@ export const createApp = (
 
   scene.onPointerUp = (evt, pickResult) => {
     selected = clickCrawler(pickResult, crawlers, debug)
-
-    if (selected) {
-    }
   }
 
   scene.registerBeforeRender(() => {
-    processCollisions(crawlers, stage.walls)
+    processCollisions(crawlers, [], stageArea)
   })
 
   engine.runRenderLoop(() => {

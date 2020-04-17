@@ -18,7 +18,6 @@ interface IWallCoords {
   depth: number
   x: number
   z: number
-  bounceVector: Vector3
 }
 
 const groundDimensions = {
@@ -32,28 +31,24 @@ const wallCoors = {
     depth: wallDepth,
     x: boundsMidpoint.x,
     z: minBound.z - wallDepth,
-    bounceVector: new Vector3(1, 1, -1),
   },
   back: {
     width: groundDimensions.width,
     depth: wallDepth,
     x: boundsMidpoint.x,
     z: maxBound.z + wallDepth,
-    bounceVector: new Vector3(1, 1, -1),
   },
   left: {
     width: wallDepth,
     depth: groundDimensions.depth,
     x: minBound.x - wallDepth,
     z: boundsMidpoint.z,
-    bounceVector: new Vector3(-1, 1, 1),
   },
   right: {
     width: wallDepth,
     depth: groundDimensions.depth,
     x: maxBound.x + wallDepth,
     z: boundsMidpoint.z,
-    bounceVector: new Vector3(-1, 1, 1),
   },
 }
 

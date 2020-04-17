@@ -2,7 +2,7 @@ import { Mesh, Vector3 } from '@babylonjs/core'
 
 export interface IObstacle {
   readonly mesh: Mesh
-  getDeflectDirection(currentDirection: Vector3)
+  getDeflectDirection(currentPosition: Vector3, currentDirection: Vector3)
 }
 
 export interface IMovingMesh {

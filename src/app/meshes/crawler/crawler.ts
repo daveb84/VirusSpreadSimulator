@@ -14,8 +14,8 @@ import { moveCrawler, createDirection } from './moveCrawler'
 import { CollisionState, IObstacle } from '../../collisions'
 import { traceMove } from '../../../utils/trace'
 
-const traceEnabled = true
-const collisionMarkingEnabled = false
+const traceEnabled = false
+const collisionMarkingEnabled = true
 
 const dimensions = { width: 0.1, height: 0.3, depth: 0.1 }
 const positionY = minBound.y + dimensions.height / 2
