@@ -4,7 +4,7 @@ import { moveCrawler, createDirection } from './crawler/moveCrawler'
 import { CollisionState, IObstacle } from '../collisions'
 import { traceMove } from '../../utils/trace'
 import { traceEnabled, minBound, maxBound } from '../settings'
-import { getCommonMaterials } from './materials'
+import { getCommonMaterials } from '../materials'
 import { Virus } from './crawler/virus'
 
 const dimensions = { width: 0.1, height: 0.3, depth: 0.1 }

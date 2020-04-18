@@ -1,4 +1,5 @@
-import { Person, Stage, createScene, StageArea, initMaterials } from './meshes'
+import { Person, Stage, createScene, StageArea } from './meshes'
+import { initMaterials } from './materials'
 import { Scene, Engine, PickingInfo } from '@babylonjs/core'
 import { processCollisions } from './collisions/processCollisions'
 import {

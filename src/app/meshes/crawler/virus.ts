@@ -1,5 +1,5 @@
 import { Person } from '../person'
-import { getCommonMaterials } from '../materials'
+import { getCommonMaterials } from '../../materials'
 import { virusDuration } from '../../settings'
 
 export enum VirusState {
