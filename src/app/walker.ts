@@ -1,8 +1,6 @@
 import { Person } from './meshes'
-import { Virus } from './behaviors/virus'
-import { CollidingRandomWalk } from './behaviors/randomWalk'
+import { Virus, CollidingRandomWalk, IObstacle } from './behaviors'
 import { Scene, Vector3 } from '@babylonjs/core'
-import { IObstacle } from './collisions'
 
 export class Walker {
   private person: Person

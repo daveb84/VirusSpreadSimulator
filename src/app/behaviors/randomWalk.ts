@@ -1,8 +1,8 @@
 import { Mesh, Vector3, Animation, Animatable } from '@babylonjs/core'
-import { generateNumber } from '../../utils/random'
-import { traceMove } from '../../utils/trace'
+import { generateNumber } from '../vectors/random'
+import { traceMove } from '../utils/trace'
 import { walkerMovement } from '../settings'
-import { CollisionState, IObstacle } from '../collisions'
+import { CollisionHandler, IObstacle } from './collision'
 
 export class RandomWalk {
   private _direction: Vector3 = undefined
@@ -120,7 +120,7 @@ export class RandomWalk {
 }
 
 export class CollidingRandomWalk extends RandomWalk {
-  private collisionState: CollisionState
+  private collisionHandler: CollisionHandler
 
   constructor(
     mesh: Mesh,
@@ -130,15 +130,15 @@ export class CollidingRandomWalk extends RandomWalk {
   ) {
     super(mesh, distance, frameRate, endFrame)
 
-    this.collisionState = this.createCollisionState()
-    this.addMoveCompleteHanlder(() => this.collisionState.onMoveComplete())
+    this.collisionHandler = this.createCollisionHandler()
+    this.addMoveCompleteHanlder(() => this.collisionHandler.onMoveComplete())
   }
 
   public collide(obstacle: IObstacle) {
-    this.collisionState.collide(obstacle, this.mesh.position)
+    this.collisionHandler.collide(obstacle, this.mesh.position)
   }
 
-  private createCollisionState() {
+  private createCollisionHandler() {
     const movingMesh = {
       getCurrentPosition: () => this.mesh.position,
       getCurrentDirection: () => this.direction,
@@ -146,6 +146,6 @@ export class CollidingRandomWalk extends RandomWalk {
       startNewDirection: (direction: Vector3) => this.move(direction),
     }
 
-    return new CollisionState(this.mesh.getScene(), movingMesh)
+    return new CollisionHandler(this.mesh.getScene(), movingMesh)
   }
 }

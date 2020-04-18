@@ -7,7 +7,7 @@ import {
   MeshBuilder,
   Mesh,
 } from '@babylonjs/core'
-import { traceEnabled } from '../app/settings'
+import { traceEnabled } from '../settings'
 
 let scene: Scene = null
 let lineMaterial: Material = null

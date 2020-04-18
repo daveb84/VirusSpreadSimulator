@@ -1,8 +1,8 @@
 import { MeshBuilder, Mesh } from '@babylonjs/core/Meshes'
 import { Scene, StandardMaterial, Vector3 } from '@babylonjs/core'
 import { boundsSize, boundsMidpoint } from '../settings'
-import { IObstacle } from '../collisions'
-import { deflectToCenter } from '../collisions/deflections'
+import { IObstacle } from '../behaviors'
+import { moveTowardPointInRegion, centerRegion } from '../vectors/region'
 
 export class StageArea implements IObstacle {
   public mesh: Mesh
@@ -31,6 +31,10 @@ export class StageArea implements IObstacle {
   }
 
   getDeflectDirection(currentPosition: Vector3, currentDirection: Vector3) {
-    return deflectToCenter(currentPosition, currentDirection)
+    return moveTowardPointInRegion(
+      centerRegion,
+      currentPosition,
+      currentDirection
+    )
   }
 }

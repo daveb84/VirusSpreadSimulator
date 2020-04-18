@@ -1,5 +1,5 @@
 import { Scene, Vector3, Mesh, MeshBuilder } from '@babylonjs/core'
-import { generateNumber } from '../../utils/random'
+import { generateNumber } from '../vectors/random'
 import { minBound, maxBound } from '../settings'
 import { getCommonMaterials } from '../materials'
 

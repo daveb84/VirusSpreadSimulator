@@ -1,12 +1,12 @@
 import { Stage, createScene, StageArea } from './meshes'
 import { initMaterials } from './materials'
 import { Scene, Engine, PickingInfo } from '@babylonjs/core'
-import { processCollisions } from './collisions/processCollisions'
+import { processScene } from './appWorker'
 import {
   initTrace,
   showOnlyTraceMovesForOwner,
   traceMoves,
-} from '../utils/trace'
+} from './utils/trace'
 import { walkerMovement } from './settings'
 import { Walker } from './walker'
 
@@ -33,7 +33,7 @@ export const createApp = (
   }
 
   scene.registerBeforeRender(() => {
-    processCollisions(walkers, [], stageArea)
+    processScene(walkers, [], stageArea)
   })
 
   engine.runRenderLoop(() => {

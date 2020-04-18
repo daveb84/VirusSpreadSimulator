@@ -1,5 +1,5 @@
-import { Walker } from '../walker'
-import { IObstacle } from './types'
+import { Walker } from './walker'
+import { IObstacle } from './behaviors'
 
 const obstacleCollide = (walker: Walker, obstacle: IObstacle) => {
   if (walker.moving) {
@@ -45,7 +45,7 @@ const boundingBoxCollide = (walker: Walker, obstacle: IObstacle) => {
   }
 }
 
-export const processCollisions = (
+export const processScene = (
   walkers: Walker[],
   obstacles: IObstacle[] = [],
   boundingBox: IObstacle = null

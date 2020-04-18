@@ -1,11 +1,22 @@
-import { IObstacle, IMovingMesh } from './types'
-import { MeshBuilder, Scene, Vector3 } from '@babylonjs/core'
+import { MeshBuilder, Scene, Vector3, Mesh } from '@babylonjs/core'
 import { markCollisions, minBound } from '../settings'
 import { getCommonMaterials } from '../materials'
 
 const splatSize = 0.2
 
-export class CollisionState {
+export interface IObstacle {
+  readonly mesh: Mesh
+  getDeflectDirection(currentPosition: Vector3, currentDirection: Vector3)
+}
+
+export interface IMovingMesh {
+  getCurrentPosition: () => Vector3
+  getCurrentDirection: () => Vector3
+  stopCurrentMovement: () => void
+  startNewDirection: (direction: Vector3) => void
+}
+
+export class CollisionHandler {
   private current: IObstacle[] = []
   private clearCurrent: boolean = false
   private materials = getCommonMaterials()
