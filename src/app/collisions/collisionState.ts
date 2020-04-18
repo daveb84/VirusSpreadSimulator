@@ -1,14 +1,9 @@
 import { IObstacle, IMovingMesh } from './types'
-import { Material, MeshBuilder, Scene, Vector3 } from '@babylonjs/core'
+import { MeshBuilder, Scene, Vector3 } from '@babylonjs/core'
 import { markCollisions, minBound } from '../settings'
 import { getCommonMaterials } from '../materials'
 
 const splatSize = 0.2
-
-export interface ICollisionStateSettings {
-  markCollisions: boolean
-  markerMaterial: Material
-}
 
 export class CollisionState {
   private current: IObstacle[] = []
