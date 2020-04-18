@@ -1,12 +1,12 @@
-import { Person } from '../meshes'
+import { Walker } from '../walker'
 import { IObstacle } from './types'
 
-const obstacleCollide = (person: Person, obstacle: IObstacle) => {
-  if (person.moving) {
-    const collide = obstacle.mesh.intersectsMesh(person.mesh, true)
+const obstacleCollide = (walker: Walker, obstacle: IObstacle) => {
+  if (walker.moving) {
+    const collide = obstacle.mesh.intersectsMesh(walker.mesh, true)
 
     if (collide) {
-      person.collideWithObstacle(obstacle)
+      walker.collideWithObstacle(obstacle)
 
       return true
     }
@@ -15,16 +15,16 @@ const obstacleCollide = (person: Person, obstacle: IObstacle) => {
   return false
 }
 
-const crawlerCollide = (person: Person, other: Person) => {
-  if (!person.contagious && !other.contagious) {
+const walkerCollide = (walker: Walker, other: Walker) => {
+  if (!walker.contagious && !other.contagious) {
     return
   }
 
-  const collide = other.mesh.intersectsMesh(person.mesh, true)
+  const collide = other.mesh.intersectsMesh(walker.mesh, true)
 
   if (collide) {
-    if (!person.contagious) {
-      person.infect()
+    if (!walker.contagious) {
+      walker.infect()
     }
 
     if (!other.contagious) {
@@ -33,12 +33,12 @@ const crawlerCollide = (person: Person, other: Person) => {
   }
 }
 
-const boundingBoxCollide = (person: Person, obstacle: IObstacle) => {
-  if (person.moving) {
-    const collide = obstacle.mesh.intersectsMesh(person.mesh, true)
+const boundingBoxCollide = (walker: Walker, obstacle: IObstacle) => {
+  if (walker.moving) {
+    const collide = obstacle.mesh.intersectsMesh(walker.mesh, true)
 
     if (!collide) {
-      person.collideWithObstacle(obstacle)
+      walker.collideWithObstacle(obstacle)
 
       return true
     }
@@ -46,26 +46,26 @@ const boundingBoxCollide = (person: Person, obstacle: IObstacle) => {
 }
 
 export const processCollisions = (
-  crawlers: Person[],
+  walkers: Walker[],
   obstacles: IObstacle[] = [],
   boundingBox: IObstacle = null
 ) => {
-  const checkCrawlers = [...crawlers]
-  checkCrawlers.shift()
+  const toCheck = [...walkers]
+  toCheck.shift()
 
-  crawlers.forEach((person) => {
+  walkers.forEach((walker) => {
     if (boundingBox) {
-      boundingBoxCollide(person, boundingBox)
+      boundingBoxCollide(walker, boundingBox)
     }
 
     obstacles.forEach((obstacle) => {
-      obstacleCollide(person, obstacle)
+      obstacleCollide(walker, obstacle)
     })
 
-    checkCrawlers.forEach((other) => {
-      crawlerCollide(person, other)
+    toCheck.forEach((other) => {
+      walkerCollide(walker, other)
     })
 
-    checkCrawlers.shift()
+    toCheck.shift()
   })
 }

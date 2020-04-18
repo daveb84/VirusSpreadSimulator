@@ -18,14 +18,14 @@ const makeMaterial = (scene: Scene, name: string, color: Color3) => {
 
 export const initMaterials = (scene: Scene) => {
   const materials = {
-    default: makeMaterial(scene, 'crawlerDefault', new Color3(0.9, 0.9, 0.7)),
+    default: makeMaterial(scene, 'walkerDefault', new Color3(0.9, 0.9, 0.7)),
     incubating: makeMaterial(
       scene,
-      'crawlerIncubating',
+      'walkerIncubating',
       new Color3(0.1, 0.5, 0.1)
     ),
-    ill: makeMaterial(scene, 'crawlerIll', new Color3(0, 1, 0)),
-    recovered: makeMaterial(scene, 'crawlerIll', new Color3(0.6, 0.6, 1)),
+    ill: makeMaterial(scene, 'walkerIll', new Color3(0, 1, 0)),
+    recovered: makeMaterial(scene, 'walkerIll', new Color3(0.6, 0.6, 1)),
     collisionMarker: makeMaterial(
       scene,
       'collision',

@@ -1,4 +1,4 @@
-import { Person, Stage, createScene, StageArea } from './meshes'
+import { Stage, createScene, StageArea } from './meshes'
 import { initMaterials } from './materials'
 import { Scene, Engine, PickingInfo } from '@babylonjs/core'
 import { processCollisions } from './collisions/processCollisions'
@@ -7,7 +7,8 @@ import {
   showOnlyTraceMovesForOwner,
   traceMoves,
 } from '../utils/trace'
-import { crawlerMovement } from './settings'
+import { walkerMovement } from './settings'
+import { Walker } from './walker'
 
 export const createApp = (
   canvas: HTMLCanvasElement,
@@ -21,18 +22,18 @@ export const createApp = (
 
   new Stage(scene)
   const stageArea = new StageArea(scene)
-  const people = createCrawlers(scene, 200)
+  const walkers = createWalkers(scene, 200)
 
   let moving = false
-  let selected: Person = null
+  let selected: Walker = null
   let selectedMove: number = 0
 
   scene.onPointerUp = (evt, pickResult) => {
-    selected = clickCrawler(pickResult, people, debug)
+    selected = clickWalker(pickResult, walkers, debug)
   }
 
   scene.registerBeforeRender(() => {
-    processCollisions(people, [], stageArea)
+    processCollisions(walkers, [], stageArea)
   })
 
   engine.runRenderLoop(() => {
@@ -45,19 +46,19 @@ export const createApp = (
         selected.start()
       } else {
         moving = true
-        people.forEach((c) => c.start())
+        walkers.forEach((c) => c.start())
       }
     },
     stop: () => {
       moving = false
-      people.forEach((c) => c.stop())
+      walkers.forEach((c) => c.stop())
     },
     add: (amount: number, infected: boolean) => {
-      const newCrawlers = createCrawlers(scene, amount, infected)
-      people.push(...newCrawlers)
+      const newWalkers = createWalkers(scene, amount, infected)
+      walkers.push(...newWalkers)
 
       if (moving) {
-        newCrawlers.forEach((c) => c.start())
+        newWalkers.forEach((c) => c.start())
       }
     },
     moveBack: (index: number) => {
@@ -82,40 +83,40 @@ export const createApp = (
     },
   }
 
-  if (crawlerMovement.autoStart) {
+  if (walkerMovement.autoStart) {
     app.start()
   }
 
   return app
 }
 
-const createCrawlers = (
+const createWalkers = (
   scene: Scene,
   quantity: number,
   infected: boolean = false
 ) => {
-  const people: Person[] = []
+  const walkers: Walker[] = []
 
   for (let i = 0; i < quantity; i++) {
-    const person = new Person(scene)
+    const walker = new Walker(scene)
 
     if (infected) {
-      person.infect()
+      walker.infect()
     }
 
-    people.push(person)
+    walkers.push(walker)
   }
 
-  return people
+  return walkers
 }
 
-const clickCrawler = (
+const clickWalker = (
   pick: PickingInfo,
-  crawlers: Person[],
+  walkers: Walker[],
   debug: (message: string) => void
 ) => {
   if (pick.hit) {
-    const match = crawlers.find((x) => x.mesh === pick.pickedMesh)
+    const match = walkers.find((x) => x.mesh === pick.pickedMesh)
 
     if (match) {
       const moves = traceMoves.filter((x) => x.owner === match.mesh)
@@ -127,7 +128,7 @@ const clickCrawler = (
   }
 }
 
-const moveBack = (selected: Person, index: number) => {
+const moveBack = (selected: Walker, index: number) => {
   if (selected) {
     const moves = traceMoves.filter((x) => x.owner === selected.mesh)
 

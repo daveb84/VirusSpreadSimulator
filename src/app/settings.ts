@@ -8,7 +8,7 @@ export const virusDuration = {
   ill: 5000,
 }
 
-export const crawlerMovement = {
+export const walkerMovement = {
   autoStart: true,
   distance: 3,
   frameRate: 10,

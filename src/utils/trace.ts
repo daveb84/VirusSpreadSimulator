@@ -7,6 +7,7 @@ import {
   MeshBuilder,
   Mesh,
 } from '@babylonjs/core'
+import { traceEnabled } from '../app/settings'
 
 let scene: Scene = null
 let lineMaterial: Material = null
@@ -73,6 +74,10 @@ export const traceMove = (
   direction: Vector3,
   owner: Mesh
 ) => {
+  if (!traceEnabled) {
+    return
+  }
+
   const trace = createLine(from, to)
 
   traceMoves.push({

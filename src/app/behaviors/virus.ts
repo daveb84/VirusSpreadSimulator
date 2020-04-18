@@ -1,6 +1,6 @@
-import { Person } from '../person'
-import { getCommonMaterials } from '../../materials'
-import { virusDuration } from '../../settings'
+import { getCommonMaterials } from '../materials'
+import { virusDuration } from '../settings'
+import { Mesh } from '@babylonjs/core'
 
 export enum VirusState {
   NotCaught = 0,
@@ -23,7 +23,7 @@ export class Virus {
     )
   }
 
-  constructor(public readonly person: Person) {
+  constructor(public readonly mesh: Mesh) {
     this._state = VirusState.NotCaught
   }
 
@@ -36,13 +36,13 @@ export class Virus {
   private setState(state: VirusState) {
     this._state = state
     if (state === VirusState.Incubating) {
-      this.person.mesh.material = this.materials.incubating
+      this.mesh.material = this.materials.incubating
       this.setStateDelayed(VirusState.Ill, virusDuration.incubation)
     } else if (state === VirusState.Ill) {
-      this.person.mesh.material = this.materials.ill
+      this.mesh.material = this.materials.ill
       this.setStateDelayed(VirusState.Recovered, virusDuration.ill)
     } else if (state === VirusState.Recovered) {
-      this.person.mesh.material = this.materials.recovered
+      this.mesh.material = this.materials.recovered
     }
   }
 
