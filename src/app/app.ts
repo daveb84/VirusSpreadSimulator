@@ -1,4 +1,4 @@
-import { Crawler, Stage, createScene, StageArea, initMaterials } from './meshes'
+import { Person, Stage, createScene, StageArea, initMaterials } from './meshes'
 import { Scene, Engine, PickingInfo } from '@babylonjs/core'
 import { processCollisions } from './collisions/processCollisions'
 import {
@@ -20,18 +20,18 @@ export const createApp = (
 
   new Stage(scene)
   const stageArea = new StageArea(scene)
-  const crawlers = createCrawlers(scene, 200)
+  const people = createCrawlers(scene, 200)
 
   let moving = false
-  let selected: Crawler = null
+  let selected: Person = null
   let selectedMove: number = 0
 
   scene.onPointerUp = (evt, pickResult) => {
-    selected = clickCrawler(pickResult, crawlers, debug)
+    selected = clickCrawler(pickResult, people, debug)
   }
 
   scene.registerBeforeRender(() => {
-    processCollisions(crawlers, [], stageArea)
+    processCollisions(people, [], stageArea)
   })
 
   engine.runRenderLoop(() => {
@@ -44,16 +44,16 @@ export const createApp = (
         selected.start()
       } else {
         moving = true
-        crawlers.forEach((c) => c.start())
+        people.forEach((c) => c.start())
       }
     },
     stop: () => {
       moving = false
-      crawlers.forEach((c) => c.stop())
+      people.forEach((c) => c.stop())
     },
     add: (amount: number, infected: boolean) => {
       const newCrawlers = createCrawlers(scene, amount, infected)
-      crawlers.push(...newCrawlers)
+      people.push(...newCrawlers)
 
       if (moving) {
         newCrawlers.forEach((c) => c.start())
@@ -93,24 +93,24 @@ const createCrawlers = (
   quantity: number,
   infected: boolean = false
 ) => {
-  const crawlers: Crawler[] = []
+  const people: Person[] = []
 
   for (let i = 0; i < quantity; i++) {
-    const crawler = new Crawler(scene)
+    const person = new Person(scene)
 
     if (infected) {
-      crawler.infect()
+      person.infect()
     }
 
-    crawlers.push(crawler)
+    people.push(person)
   }
 
-  return crawlers
+  return people
 }
 
 const clickCrawler = (
   pick: PickingInfo,
-  crawlers: Crawler[],
+  crawlers: Person[],
   debug: (message: string) => void
 ) => {
   if (pick.hit) {
@@ -126,7 +126,7 @@ const clickCrawler = (
   }
 }
 
-const moveBack = (selected: Crawler, index: number) => {
+const moveBack = (selected: Person, index: number) => {
   if (selected) {
     const moves = traceMoves.filter((x) => x.owner === selected.mesh)
 

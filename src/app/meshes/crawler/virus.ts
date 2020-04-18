@@ -1,4 +1,4 @@
-import { Crawler } from './crawler'
+import { Person } from '../person'
 import { getCommonMaterials } from '../materials'
 import { virusDuration } from '../../settings'
 
@@ -23,7 +23,7 @@ export class Virus {
     )
   }
 
-  constructor(public readonly crawler: Crawler) {
+  constructor(public readonly person: Person) {
     this._state = VirusState.NotCaught
   }
 
@@ -36,13 +36,13 @@ export class Virus {
   private setState(state: VirusState) {
     this._state = state
     if (state === VirusState.Incubating) {
-      this.crawler.mesh.material = this.materials.incubating
+      this.person.mesh.material = this.materials.incubating
       this.setStateDelayed(VirusState.Ill, virusDuration.incubation)
     } else if (state === VirusState.Ill) {
-      this.crawler.mesh.material = this.materials.ill
+      this.person.mesh.material = this.materials.ill
       this.setStateDelayed(VirusState.Recovered, virusDuration.ill)
     } else if (state === VirusState.Recovered) {
-      this.crawler.mesh.material = this.materials.recovered
+      this.person.mesh.material = this.materials.recovered
     }
   }
 

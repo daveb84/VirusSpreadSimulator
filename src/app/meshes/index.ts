@@ -1,5 +1,5 @@
 export * from './stage'
-export * from './crawler/crawler'
+export * from './person'
 export * from './scene'
 export * from './stageArea'
 export * from './materials'

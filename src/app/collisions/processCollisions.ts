@@ -1,12 +1,12 @@
-import { Crawler } from '../meshes/crawler/crawler'
+import { Person } from '../meshes'
 import { IObstacle } from './types'
 
-const obstacleCollide = (crawler: Crawler, obstacle: IObstacle) => {
-  if (crawler.moving) {
-    const collide = obstacle.mesh.intersectsMesh(crawler.mesh, true)
+const obstacleCollide = (person: Person, obstacle: IObstacle) => {
+  if (person.moving) {
+    const collide = obstacle.mesh.intersectsMesh(person.mesh, true)
 
     if (collide) {
-      crawler.collideWithObstacle(obstacle)
+      person.collideWithObstacle(obstacle)
 
       return true
     }
@@ -15,16 +15,16 @@ const obstacleCollide = (crawler: Crawler, obstacle: IObstacle) => {
   return false
 }
 
-const crawlerCollide = (crawler: Crawler, other: Crawler) => {
-  if (!crawler.contagious && !other.contagious) {
+const crawlerCollide = (person: Person, other: Person) => {
+  if (!person.contagious && !other.contagious) {
     return
   }
 
-  const collide = other.mesh.intersectsMesh(crawler.mesh, true)
+  const collide = other.mesh.intersectsMesh(person.mesh, true)
 
   if (collide) {
-    if (!crawler.contagious) {
-      crawler.infect()
+    if (!person.contagious) {
+      person.infect()
     }
 
     if (!other.contagious) {
@@ -33,12 +33,12 @@ const crawlerCollide = (crawler: Crawler, other: Crawler) => {
   }
 }
 
-const boundingBoxCollide = (crawler: Crawler, obstacle: IObstacle) => {
-  if (crawler.moving) {
-    const collide = obstacle.mesh.intersectsMesh(crawler.mesh, true)
+const boundingBoxCollide = (person: Person, obstacle: IObstacle) => {
+  if (person.moving) {
+    const collide = obstacle.mesh.intersectsMesh(person.mesh, true)
 
     if (!collide) {
-      crawler.collideWithObstacle(obstacle)
+      person.collideWithObstacle(obstacle)
 
       return true
     }
@@ -46,24 +46,24 @@ const boundingBoxCollide = (crawler: Crawler, obstacle: IObstacle) => {
 }
 
 export const processCollisions = (
-  crawlers: Crawler[],
+  crawlers: Person[],
   obstacles: IObstacle[] = [],
   boundingBox: IObstacle = null
 ) => {
   const checkCrawlers = [...crawlers]
   checkCrawlers.shift()
 
-  crawlers.forEach((crawler) => {
+  crawlers.forEach((person) => {
     if (boundingBox) {
-      boundingBoxCollide(crawler, boundingBox)
+      boundingBoxCollide(person, boundingBox)
     }
 
     obstacles.forEach((obstacle) => {
-      obstacleCollide(crawler, obstacle)
+      obstacleCollide(person, obstacle)
     })
 
     checkCrawlers.forEach((other) => {
-      crawlerCollide(crawler, other)
+      crawlerCollide(person, other)
     })
 
     checkCrawlers.shift()

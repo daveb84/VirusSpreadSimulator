@@ -1,16 +1,16 @@
 import { Scene, Vector3, Mesh, MeshBuilder, Animatable } from '@babylonjs/core'
-import { generateNumber } from '../../../utils/random'
-import { moveCrawler, createDirection } from './moveCrawler'
-import { CollisionState, IObstacle } from '../../collisions'
-import { traceMove } from '../../../utils/trace'
-import { traceEnabled, minBound, maxBound } from '../../settings'
-import { getCommonMaterials } from '../materials'
-import { Virus } from './virus'
+import { generateNumber } from '../../utils/random'
+import { moveCrawler, createDirection } from './crawler/moveCrawler'
+import { CollisionState, IObstacle } from '../collisions'
+import { traceMove } from '../../utils/trace'
+import { traceEnabled, minBound, maxBound } from '../settings'
+import { getCommonMaterials } from './materials'
+import { Virus } from './crawler/virus'
 
 const dimensions = { width: 0.1, height: 0.3, depth: 0.1 }
 const positionY = minBound.y + dimensions.height / 2
 
-export class Crawler {
+export class Person {
   public readonly mesh: Mesh
   private readonly collisionState: CollisionState
 
@@ -22,7 +22,7 @@ export class Crawler {
   private materials = getCommonMaterials()
 
   constructor(private scene: Scene) {
-    this.mesh = MeshBuilder.CreateBox('crawler', dimensions, this.scene)
+    this.mesh = MeshBuilder.CreateBox('person', dimensions, this.scene)
     this.mesh.material = this.materials.default
     this.mesh.animations = []
     this.mesh.isPickable = true
