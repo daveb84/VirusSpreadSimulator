@@ -18,7 +18,7 @@ export class CollisionState {
   constructor(private scene: Scene, public movingMesh: IMovingMesh) {}
 
   public onMoveComplete() {
-    if (this.current && this.clearCurrent) {
+    if (this.current.length > 0 && this.clearCurrent) {
       this.current.splice(0, this.current.length)
     }
 

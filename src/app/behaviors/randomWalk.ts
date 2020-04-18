@@ -131,7 +131,7 @@ export class CollidingRandomWalk extends RandomWalk {
     super(mesh, distance, frameRate, endFrame)
 
     this.collisionState = this.createCollisionState()
-    this.addMoveCompleteHanlder(() => this.collisionState.onMoveComplete)
+    this.addMoveCompleteHanlder(() => this.collisionState.onMoveComplete())
   }
 
   public collide(obstacle: IObstacle) {
