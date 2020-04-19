@@ -6,6 +6,9 @@ export interface ICommonMaterials {
   ill: Material
   recovered: Material
   collisionMarker: Material
+  homeBuilding: Material
+  workBuilding: Material
+  shopBuilding: Material
 }
 
 let _materials: ICommonMaterials = null
@@ -31,6 +34,9 @@ export const initMaterials = (scene: Scene) => {
       'collision',
       new Color3(0.7, 0.3, 0.3)
     ),
+    homeBuilding: makeMaterial(scene, 'home', new Color3(1, 0.7, 0.7)),
+    workBuilding: makeMaterial(scene, 'work', new Color3(0.7, 0.7, 1)),
+    shopBuilding: makeMaterial(scene, 'shop', new Color3(0.7, 1, 0.7)),
   }
 
   materials.collisionMarker.alpha = 0.8

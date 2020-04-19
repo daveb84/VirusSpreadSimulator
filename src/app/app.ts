@@ -9,6 +9,7 @@ import {
 } from './utils/trace'
 import { walkerMovement } from './settings'
 import { Walker } from './walker'
+import { placeBuildings } from './buildings'
 
 class App {
   private readonly engine: Engine
@@ -30,6 +31,7 @@ class App {
 
     initMaterials(this.scene)
     initTrace(this.scene)
+    placeBuildings(this.scene)
 
     const stage = new Stage(this.scene)
     this.walkers = this.createWalkers(0)
