@@ -6,7 +6,11 @@ const splatSize = 0.2
 
 export interface IObstacle {
   readonly mesh: Mesh
-  getDeflectDirection(currentPosition: Vector3, currentDirection: Vector3)
+  getDeflectDirection(
+    currentPosition: Vector3,
+    currentDirection: Vector3,
+    distance: number
+  )
 }
 
 export interface IMovingMesh {
@@ -33,7 +37,11 @@ export class CollisionHandler {
     }
   }
 
-  public collide(obstacle: IObstacle, position: Vector3) {
+  public collide(
+    obstacle: IObstacle,
+    position: Vector3,
+    deflectionDistance: number
+  ) {
     if (this.current.includes(obstacle)) {
       return
     }
@@ -44,16 +52,16 @@ export class CollisionHandler {
     this.clearCurrent = false
     this.movingMesh.stopCurrentMovement()
 
-    const newDirection = this.getNewDirection(obstacle)
+    const newDirection = this.getNewDirection(obstacle, deflectionDistance)
 
     this.movingMesh.startNewDirection(newDirection)
   }
 
-  private getNewDirection(obstacle: IObstacle) {
+  private getNewDirection(obstacle: IObstacle, distance: number) {
     const position = this.movingMesh.getCurrentPosition()
     const direction = this.movingMesh.getCurrentDirection()
 
-    return obstacle.getDeflectDirection(position, direction)
+    return obstacle.getDeflectDirection(position, direction, distance)
   }
 
   private drawMarker(position: Vector3) {

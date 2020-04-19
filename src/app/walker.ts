@@ -1,6 +1,7 @@
 import { Person } from './meshes'
 import { Virus, CollidingRandomWalk, IObstacle } from './behaviors'
 import { Scene, Vector3 } from '@babylonjs/core'
+import { walkerMovement, regions } from './settings'
 
 export class Walker {
   private person: Person
@@ -11,6 +12,9 @@ export class Walker {
     this.person = new Person(scene)
     this.virus = new Virus(this.person.mesh)
     this.collidingWalk = new CollidingRandomWalk(this.person.mesh)
+
+    const startPosition = regions.walker.getRandomPoint()
+    this.setPosition(startPosition)
   }
 
   public get moving() {
@@ -46,6 +50,6 @@ export class Walker {
   }
 
   collideWithObstacle(obstacle: IObstacle) {
-    this.collidingWalk.collide(obstacle)
+    this.collidingWalk.collide(obstacle, walkerMovement.distance)
   }
 }

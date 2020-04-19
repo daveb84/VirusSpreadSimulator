@@ -15,8 +15,8 @@ const bindButton = (id: string, handler: () => void) => {
   button.addEventListener('click', handler, true)
 }
 
-bindButton('start-button', app.start)
-bindButton('stop-button', app.stop)
+bindButton('start-button', () => app.start())
+bindButton('stop-button', () => app.stop())
 
 const add = () => {
   const textBox = document.getElementById('amount-tb') as HTMLInputElement
@@ -44,5 +44,5 @@ const bindReplayButton = (button: string, action: (index: number) => void) => {
   bindButton(button, handler)
 }
 
-bindReplayButton('move-button', app.moveBack)
-bindReplayButton('replay-button', app.replayMove)
+bindReplayButton('move-button', (index: number) => app.moveBack(index))
+bindReplayButton('replay-button', (index: number) => app.replayMove(index))

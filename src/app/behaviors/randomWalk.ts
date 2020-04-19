@@ -134,8 +134,12 @@ export class CollidingRandomWalk extends RandomWalk {
     this.addMoveCompleteHanlder(() => this.collisionHandler.onMoveComplete())
   }
 
-  public collide(obstacle: IObstacle) {
-    this.collisionHandler.collide(obstacle, this.mesh.position)
+  public collide(obstacle: IObstacle, deflectionDistance: number) {
+    this.collisionHandler.collide(
+      obstacle,
+      this.mesh.position,
+      deflectionDistance
+    )
   }
 
   private createCollisionHandler() {

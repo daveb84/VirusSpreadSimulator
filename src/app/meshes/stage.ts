@@ -4,14 +4,19 @@ import {
   MeshBuilder,
   StandardMaterial,
   Texture,
+  Mesh,
 } from '@babylonjs/core'
-import { minBound, maxBound, boundsMidpoint, boundsSize } from '../settings'
+import { regions } from '../settings'
 import { groundImage } from '../materials'
-import { Wall } from './wall'
+import { IObstacle } from '../behaviors'
+import { FlatRegion } from '../vectors/region'
+
+const stageRegion = regions.stage
+const walkerRegion = regions.walker
 
 const wallHeight = 0.1
 const wallDepth = 0.2
-const wallPositionY = minBound.y + wallHeight / 2
+const wallPositionY = stageRegion.y + wallHeight / 2
 
 interface IWallCoords {
   width: number
@@ -21,44 +26,44 @@ interface IWallCoords {
 }
 
 const groundDimensions = {
-  width: boundsSize.width + wallDepth * 2.5,
-  depth: boundsSize.depth + wallDepth * 2.5,
+  width: stageRegion.width + wallDepth * 2.5,
+  depth: stageRegion.depth + wallDepth * 2.5,
 }
 
 const wallCoors = {
   front: {
     width: groundDimensions.width,
     depth: wallDepth,
-    x: boundsMidpoint.x,
-    z: minBound.z - wallDepth,
+    x: stageRegion.midX,
+    z: stageRegion.minZ - wallDepth,
   },
   back: {
     width: groundDimensions.width,
     depth: wallDepth,
-    x: boundsMidpoint.x,
-    z: maxBound.z + wallDepth,
+    x: stageRegion.midX,
+    z: stageRegion.maxZ + wallDepth,
   },
   left: {
     width: wallDepth,
     depth: groundDimensions.depth,
-    x: minBound.x - wallDepth,
-    z: boundsMidpoint.z,
+    x: stageRegion.minX - wallDepth,
+    z: stageRegion.midZ,
   },
   right: {
     width: wallDepth,
     depth: groundDimensions.depth,
-    x: maxBound.x + wallDepth,
-    z: boundsMidpoint.z,
+    x: stageRegion.maxX + wallDepth,
+    z: stageRegion.midZ,
   },
 }
 
 export class Stage {
   private material: StandardMaterial
 
-  private _walls: Wall[] = []
+  private _bounds
 
-  public get walls() {
-    return this._walls
+  public get bounds() {
+    return this._bounds
   }
 
   constructor(private scene: Scene) {
@@ -71,22 +76,22 @@ export class Stage {
     })
 
     ground.position = new Vector3(
-      boundsMidpoint.x,
-      minBound.y,
-      boundsMidpoint.z
+      stageRegion.midX,
+      stageRegion.y,
+      stageRegion.midZ
     )
     ground.material = this.material
+
+    this._bounds = new StageBounds(scene)
 
     this.createWalls()
   }
 
   private createWalls() {
-    var front = this.createWall(wallCoors.front)
-    var back = this.createWall(wallCoors.back)
-    var left = this.createWall(wallCoors.left)
-    var right = this.createWall(wallCoors.right)
-
-    this._walls = [front, back, left, right]
+    this.createWall(wallCoors.front)
+    this.createWall(wallCoors.back)
+    this.createWall(wallCoors.left)
+    this.createWall(wallCoors.right)
   }
 
   private createWall(coords: IWallCoords) {
@@ -97,7 +102,56 @@ export class Stage {
     )
     wall.position = new Vector3(coords.x, wallPositionY, coords.z)
     wall.material = this.material
+  }
+}
 
-    return new Wall(wall)
+export class StageBounds implements IObstacle {
+  public mesh: Mesh
+
+  private deflectTarget: FlatRegion
+
+  constructor(scene: Scene) {
+    const bounds = MeshBuilder.CreateBox(
+      'boundBox',
+      {
+        width: stageRegion.width,
+        height: 1,
+        depth: stageRegion.depth,
+      },
+      scene
+    )
+    bounds.position = new Vector3(
+      stageRegion.midX,
+      stageRegion.y + 0.5,
+      stageRegion.midZ
+    )
+    bounds.isPickable = false
+
+    const material = new StandardMaterial('boundsMaterial', scene)
+    // material.diffuseColor = new Color3(1, 1, 1)
+    // material.wireframe = true
+    material.alpha = 0
+    // material.alpha = 0.3
+    // material.backFaceCulling  = false
+
+    bounds.material = material
+
+    this.mesh = bounds
+
+    this.deflectTarget = walkerRegion.copy()
+    this.deflectTarget.resize(
+      walkerRegion.width * 0.75,
+      walkerRegion.depth * 0.75
+    )
+
+    // this.deflectTarget.draw(scene)
+  }
+
+  getDeflectDirection(
+    currentPosition: Vector3,
+    currentDirection: Vector3,
+    distance: number
+  ) {
+    return this.deflectTarget.getDirectionTowardPoint(currentPosition, distance)
   }
 }
