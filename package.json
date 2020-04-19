@@ -6,11 +6,13 @@
   "scripts": {
     "start": "webpack-dev-server --open --config webpack.dev.js",
     "build": "npx webpack --config webpack.prod.js",
+    "circular": "npx webpack --config webpack.circular.js",
     "prettier": "prettier --write ./**/*.ts"
   },
   "author": "Davital",
   "license": "ISC",
   "devDependencies": {
+    "circular-dependency-plugin": "^5.2.0",
     "clean-webpack-plugin": "^3.0.0",
     "css-loader": "^3.5.2",
     "file-loader": "^6.0.0",
