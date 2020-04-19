@@ -9,7 +9,7 @@ import {
 import { regions } from '../settings'
 import { groundImage } from '../materials'
 import { IObstacle } from '../behaviors'
-import { FlatRegion } from '../vectors/region'
+import { FlatRegion } from '../vectors'
 
 const stageRegion = regions.stage
 const walkerRegion = regions.walker
@@ -145,6 +145,7 @@ export class StageBounds implements IObstacle {
     )
 
     // this.deflectTarget.draw(scene)
+    regions.grid.drawAll(scene)
   }
 
   getDeflectDirection(

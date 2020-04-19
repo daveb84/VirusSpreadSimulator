@@ -1,7 +1,4 @@
 import { Vector3, Color3 } from '@babylonjs/core'
-import { minBound, maxBound } from '../settings'
-
-export const generatePosition = () => generateVector(minBound, maxBound)
 
 export const generateRotation = () => {
   const max = 2 * Math.PI

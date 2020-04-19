@@ -1,5 +1,5 @@
 import { MeshBuilder, Scene, Vector3, Mesh } from '@babylonjs/core'
-import { markCollisions, minBound } from '../settings'
+import { markCollisions } from '../settings'
 import { getCommonMaterials } from '../materials'
 
 const splatSize = 0.2
@@ -74,11 +74,7 @@ export class CollisionHandler {
       { diameter: splatSize },
       this.scene
     )
-    marker.position = new Vector3(
-      position.x,
-      minBound.y + splatSize / 2,
-      position.z
-    )
+    marker.position = position
     marker.material = this.materials.collisionMarker
   }
 }

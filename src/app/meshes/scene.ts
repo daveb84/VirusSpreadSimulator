@@ -6,7 +6,7 @@ import {
   Color3,
   ArcRotateCamera,
 } from '@babylonjs/core'
-import { minBound, maxBound } from '../settings'
+import { cameraPosition } from '../settings'
 
 export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
   const scene = new Scene(engine)
@@ -17,8 +17,8 @@ export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
     'Camera',
     0,
     0,
-    15,
-    new Vector3(0, maxBound.y * 1.5, minBound.z * 1.2),
+    Math.PI / 3,
+    cameraPosition,
     scene
   )
 

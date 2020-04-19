@@ -1,8 +1,8 @@
 import { Vector3 } from '@babylonjs/core'
-import { FlatRegion } from './vectors/region'
+import { FlatRegion, Grid } from './vectors'
 
 export const traceEnabled = false
-export const markCollisions = false
+export const markCollisions = true
 
 export const virusDuration = {
   incubation: 5000,
@@ -16,12 +16,10 @@ export const walkerMovement = {
   endFrame: 30,
 }
 
-export const minBound = new Vector3(-3, -3, -3)
-export const maxBound = new Vector3(3, 4, 6)
+const minBound = new Vector3(-6, 0, -6)
+const maxBound = new Vector3(6, 4, 6)
 
-export const boundsMidpoint = maxBound
-  .add(minBound)
-  .multiply(new Vector3(0.5, 0.5, 0.5))
+export const cameraPosition = new Vector3(0, 10, 6)
 
 export const boundsSize = {
   width: maxBound.x - minBound.x,
@@ -47,9 +45,12 @@ const createRegions = () => {
     y: stageRegionPoints.y + personHeight / 2,
   })
 
+  const walkerGrid = new Grid(walkerRegion, 10, 10)
+
   return {
     stage: stageRegion,
     walker: walkerRegion,
+    grid: walkerGrid,
   }
 }
 

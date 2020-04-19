@@ -1,5 +1,5 @@
 import { Mesh, Vector3, Animation, Animatable } from '@babylonjs/core'
-import { generateNumber } from '../vectors/random'
+import { generateNumber } from '../vectors'
 import { traceMove } from '../utils/trace'
 import { walkerMovement } from '../settings'
 import { CollisionHandler, IObstacle } from './collision'

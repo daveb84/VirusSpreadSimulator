@@ -39,7 +39,9 @@ class App {
     }
 
     this.scene.registerBeforeRender(() => {
-      processScene(this.walkers, [], stage.bounds)
+      if (this.moving) {
+        processScene(this.walkers, [], stage.bounds)
+      }
     })
 
     this.engine.runRenderLoop(() => {

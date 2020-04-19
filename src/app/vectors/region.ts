@@ -16,6 +16,8 @@ export interface IFlatRegion {
   maxZ: number
 }
 
+let defaultMaterial: Material
+
 export class FlatRegion implements IFlatRegion {
   private _y: number
   private _minX: number
@@ -28,6 +30,8 @@ export class FlatRegion implements IFlatRegion {
 
   private _midX: number
   private _midZ: number
+
+  private _points: Vector3[] = []
 
   public get y() {
     return this._y
@@ -59,7 +63,9 @@ export class FlatRegion implements IFlatRegion {
     return this._midZ
   }
 
-  private _material: Material
+  public get points() {
+    return this._points
+  }
 
   constructor(region: IFlatRegion) {
     this._y = region.y
@@ -68,37 +74,42 @@ export class FlatRegion implements IFlatRegion {
     this._maxX = region.maxX
     this._maxZ = region.maxZ
 
-    this.initPoints()
+    this.initValues()
   }
 
-  private initPoints() {
+  private initValues() {
     this._width = this.maxX - this.minX
     this._depth = this.maxZ - this.minZ
 
     this._midX = (this.minX + this.maxX) / 2
     this._midZ = (this.minZ + this.maxZ) / 2
+
+    this._points = [
+      new Vector3(this.minX, this.y, this.minZ),
+      new Vector3(this.maxX, this.y, this.minZ),
+      new Vector3(this.maxX, this.y, this.maxZ),
+      new Vector3(this.minX, this.y, this.maxZ),
+    ]
   }
 
   public draw(scene: Scene, material?: Material) {
     if (!material) {
-      if (!this._material) {
+      if (!defaultMaterial) {
         const mat = new StandardMaterial('regionMat', scene)
         mat.diffuseColor = new Color3(1, 0, 0)
 
-        this._material = mat
+        defaultMaterial = mat
       }
 
-      material = this._material
+      material = defaultMaterial
     }
 
-    const plane = MeshBuilder.CreatePlane(
-      'regionPlane',
-      { width: this.width, height: this.depth },
+    const lines = MeshBuilder.CreateLines(
+      'region',
+      { points: this._points },
       scene
     )
-    plane.rotation = new Vector3(Math.PI / 2, 0, 0)
-    plane.material = material
-    plane.position = new Vector3(this.midX, this.y, this.midZ)
+    lines.material = material
   }
 
   public resize(width: number, depth: number) {
@@ -114,7 +125,7 @@ export class FlatRegion implements IFlatRegion {
     this._minZ = zMid - dHalf
     this._maxZ = zMid + dHalf
 
-    this.initPoints()
+    this.initValues()
   }
 
   public copy(override?: {
