@@ -7,14 +7,15 @@ import {
   showOnlyTraceMovesForOwner,
   traceMoves,
 } from './utils/trace'
-import { walkerMovement } from './settings'
-import { placeBuildings } from './buildings'
+import { walkerMovement, regions } from './settings'
+import { buildingConfig, BuildingPopulation } from './buildings'
 
 class App {
   private readonly engine: Engine
   private readonly scene: Scene
 
   private readonly walkers: Walker[]
+  private buildings: BuildingPopulation
 
   private selected: Walker = null
   private selectedMove: number = 0
@@ -30,8 +31,12 @@ class App {
 
     initMaterials(this.scene)
     initTrace(this.scene)
-    placeBuildings(this.scene)
 
+    this.buildings = new BuildingPopulation(
+      this.scene,
+      regions.buildingGrid,
+      buildingConfig
+    )
     const stage = new Stage(this.scene)
     this.walkers = this.createWalkers(0)
 

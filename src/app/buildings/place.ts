@@ -2,8 +2,6 @@ import { Grid, GridDivision } from '../vectors'
 import { getCommonMaterials } from '../materials/common'
 import { Vector3, Scene } from '@babylonjs/core'
 import { Building } from '../meshes'
-import { regions } from '../settings'
-import { buildingConfig } from './config'
 
 export interface IBuildingConfig {
   rows: number
@@ -24,7 +22,7 @@ interface ICellPopulation {
   [cellIndex: number]: boolean
 }
 
-class BuildingPopulation {
+export class BuildingPopulation {
   private cellPopulation: ICellPopulation
 
   constructor(
@@ -127,8 +125,4 @@ class BuildingPopulation {
         return materials.workBuilding
     }
   }
-}
-
-export const placeBuildings = (scene: Scene) => {
-  new BuildingPopulation(scene, regions.buildingGrid, buildingConfig)
 }
