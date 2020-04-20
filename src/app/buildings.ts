@@ -9,6 +9,8 @@ export interface IBuildingConfig {
   columns: number
   height: number
   type: BuildingType
+  rowIndex?: number
+  columnIndex?: number
 }
 
 export enum BuildingType {
@@ -22,7 +24,7 @@ interface ICellPopulation {
 }
 
 class BuildingPopulation {
-  private cellPopulation: ICellPopulation = {}
+  private cellPopulation: ICellPopulation
 
   constructor(
     private scene: Scene,
@@ -33,11 +35,13 @@ class BuildingPopulation {
   }
 
   populate() {
+    this.cellPopulation = {}
+
     this.buildings.forEach((building) => {
       const locations = this.getAvailableLocations(building)
+      const location = this.chooseLocation(building, locations)
 
-      if (locations.length > 0) {
-        const location = this.chooseLocation(locations)
+      if (location) {
         const material = this.getMaterial(building)
 
         const buildingMesh = new Building(
@@ -54,7 +58,9 @@ class BuildingPopulation {
           location.midZ
         )
 
-        location.cellIndexes.forEach((x) => (this.cellPopulation[x] = true))
+        location.cells.forEach((x) => {
+          this.cellPopulation[x.index] = true
+        })
       }
     })
   }
@@ -63,15 +69,45 @@ class BuildingPopulation {
     const locations = this.grid.getDivisions(building.rows, building.columns)
 
     return locations.filter((location) => {
-      const taken = location.cellIndexes.some(
-        (index) => this.cellPopulation[index]
-      )
+      const taken = location.cells.some((cell) => {
+        const indexTaken = this.cellPopulation[cell.index]
+
+        return indexTaken
+      })
+
+      if (taken) {
+        // location.draw(this.scene)
+      }
 
       return !taken
     })
   }
 
-  private chooseLocation(locations: GridDivision[]) {
+  private chooseLocation(building: IBuildingConfig, locations: GridDivision[]) {
+    if (!locations.length) {
+      return null
+    }
+
+    if (building.rowIndex) {
+      locations = locations.filter(
+        (l) => l.cells[0].rowIndex === building.rowIndex
+      )
+    }
+
+    if (building.columnIndex) {
+      locations = locations.filter(
+        (l) => l.cells[0].columnIndex === building.columnIndex
+      )
+    }
+
+    if (!locations.length) {
+      return null
+    }
+
+    if (locations.length === 1) {
+      return locations[0]
+    }
+
     const index = Math.floor(Math.random() * locations.length)
 
     return locations[index]

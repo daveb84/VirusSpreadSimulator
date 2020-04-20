@@ -145,7 +145,7 @@ export class StageBounds implements IObstacle {
     )
 
     // this.deflectTarget.draw(scene)
-    regions.buildingGrid.drawAll(scene)
+    // regions.buildingGrid.drawAll(scene)
   }
 
   getDeflectDirection(

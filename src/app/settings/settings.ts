@@ -22,6 +22,8 @@ export const personHeight = 0.3
 
 const minBound = new Vector3(-6, 0, -6)
 const maxBound = new Vector3(6, 4, 6)
+const gridRows = 20
+const gridColumns = 20
 
 const createRegions = () => {
   const stageRegionPoints = {
@@ -39,7 +41,7 @@ const createRegions = () => {
     y: stageRegionPoints.y + personHeight / 2,
   })
 
-  const buildingGrid = new Grid(stageRegion, 10, 10)
+  const buildingGrid = new Grid(stageRegion, gridRows, gridColumns)
 
   return {
     stage: stageRegion,

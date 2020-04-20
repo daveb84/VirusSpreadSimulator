@@ -9,20 +9,16 @@ import {
 } from '@babylonjs/core'
 import { traceEnabled } from '../settings'
 
+const lineColor: Color3 = new Color3(1, 0, 1)
+
 let scene: Scene = null
-let lineMaterial: Material = null
 let pointMaterial: Material = null
 
 export const initTrace = (appScene: Scene) => {
   scene = appScene
 
-  const line = new StandardMaterial('traceLineMaterial', scene)
-  line.diffuseColor = new Color3(1, 1, 1)
-
-  const point = new StandardMaterial('traceLineMaterial', scene)
+  const point = new StandardMaterial('tracePointMaterial', scene)
   point.diffuseColor = new Color3(1, 0, 1)
-
-  lineMaterial = line
   pointMaterial = point
 }
 
@@ -33,7 +29,7 @@ const createLine = (from: Vector3, to: Vector3) => {
     scene
   )
 
-  line.material = lineMaterial
+  line.color = lineColor
 
   return line
 }
@@ -87,6 +83,14 @@ export const traceMove = (
     owner,
     trace,
   })
+}
+
+export const tracePoint = (position: Vector3, owner: Mesh) => {
+  const scene = owner.getScene()
+
+  const point = new Mesh('point', scene)
+  point.position = position
+  point.material = pointMaterial
 }
 
 export const showOnlyTracesForOwner = (owner: Mesh) => {

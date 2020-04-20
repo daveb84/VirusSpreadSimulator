@@ -1,8 +1,6 @@
 import { FlatRegion, IFlatRegion } from './region'
 import { Scene, Material, StandardMaterial, Color3 } from '@babylonjs/core'
 
-let defaultMaterial: Material
-
 export class Grid {
   private _rows: number
   private _columns: number
@@ -67,41 +65,14 @@ export class Grid {
     }
   }
 
-  public drawAll(scene: Scene, material?: Material) {
-    if (!material) {
-      if (!defaultMaterial) {
-        const mat = new StandardMaterial('regionMat', scene)
-        mat.diffuseColor = new Color3(0.5, 0.5, 1)
-
-        defaultMaterial = mat
-      }
-
-      material = defaultMaterial
-    }
-
+  public drawAll(scene: Scene, color?: Color3) {
     this._cells.forEach((x) => {
-      x.draw(scene, material)
+      x.draw(scene, color)
     })
   }
 
-  public drawCell(
-    row: number,
-    column: number,
-    scene: Scene,
-    material?: Material
-  ) {
-    if (!material) {
-      if (!defaultMaterial) {
-        const mat = new StandardMaterial('regionMat', scene)
-        mat.diffuseColor = new Color3(0.5, 0.5, 1)
-
-        defaultMaterial = mat
-      }
-
-      material = defaultMaterial
-    }
-
-    this._cellLookup[row][column].draw(scene, material)
+  public drawCell(row: number, column: number, scene: Scene, color?: Color3) {
+    this._cellLookup[row][column].draw(scene, color)
   }
 
   public getDivisions(rowsWide: number, columnsWide: number) {
@@ -137,7 +108,7 @@ export class Grid {
               maxZ: endCell.maxZ,
             }
 
-            const indexes = this.getCellIndexes(
+            const indexes = this.getCells(
               rowStart,
               rowEnd,
               columnStart,
@@ -160,16 +131,16 @@ export class Grid {
     return divisions
   }
 
-  private getCellIndexes(rowStart, rowEnd, columnStart, columnEnd) {
-    const indexes: number[] = []
+  private getCells(rowStart, rowEnd, columnStart, columnEnd) {
+    const cells: GridCell[] = []
     let row = rowStart
 
-    while (row < rowEnd) {
+    while (row <= rowEnd) {
       let column = columnStart
 
-      while (column < columnEnd) {
+      while (column <= columnEnd) {
         const cell = this._cellLookup[row][column]
-        indexes.push(cell.index)
+        cells.push(cell)
 
         column++
       }
@@ -177,7 +148,7 @@ export class Grid {
       row++
     }
 
-    return indexes
+    return cells
   }
 }
 
@@ -210,7 +181,7 @@ class GridCell extends FlatRegion {
 }
 
 export class GridDivision extends FlatRegion {
-  constructor(region: IFlatRegion, public cellIndexes: number[]) {
+  constructor(region: IFlatRegion, public readonly cells: GridCell[]) {
     super(region)
   }
 }

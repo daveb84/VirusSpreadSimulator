@@ -13,9 +13,19 @@ export interface ICommonMaterials {
 
 let _materials: ICommonMaterials = null
 
-const makeMaterial = (scene: Scene, name: string, color: Color3) => {
+export const makeMaterial = (
+  scene: Scene,
+  name: string,
+  color: Color3,
+  alpha?: number
+) => {
   const material = new StandardMaterial(name, scene)
   material.diffuseColor = color
+
+  if (alpha !== undefined) {
+    material.alpha = alpha
+  }
+
   return material
 }
 
@@ -34,9 +44,9 @@ export const initMaterials = (scene: Scene) => {
       'collision',
       new Color3(0.7, 0.3, 0.3)
     ),
-    homeBuilding: makeMaterial(scene, 'home', new Color3(1, 0.7, 0.7)),
-    workBuilding: makeMaterial(scene, 'work', new Color3(0.7, 0.7, 1)),
-    shopBuilding: makeMaterial(scene, 'shop', new Color3(0.7, 1, 0.7)),
+    homeBuilding: makeMaterial(scene, 'home', new Color3(1, 0.7, 0.7), 0.5),
+    workBuilding: makeMaterial(scene, 'work', new Color3(0.7, 0.7, 1), 0.5),
+    shopBuilding: makeMaterial(scene, 'shop', new Color3(0.7, 1, 0.7), 0.5),
   }
 
   materials.collisionMarker.alpha = 0.8
@@ -47,3 +57,15 @@ export const initMaterials = (scene: Scene) => {
 }
 
 export const getCommonMaterials = () => _materials
+
+export const lazyMaterial = (scene: Scene, color: Color3, alpha?: number) => {
+  let material: Material = null
+
+  return () => {
+    if (!material) {
+      material = makeMaterial(scene, 'lazy', color, alpha)
+    }
+
+    return material
+  }
+}

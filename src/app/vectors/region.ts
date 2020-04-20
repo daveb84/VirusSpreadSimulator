@@ -1,12 +1,5 @@
 import { generateNumber } from './random'
-import {
-  Vector3,
-  Scene,
-  MeshBuilder,
-  StandardMaterial,
-  Color3,
-  Material,
-} from '@babylonjs/core'
+import { Vector3, Scene, MeshBuilder, Color3 } from '@babylonjs/core'
 
 export interface IFlatRegion {
   y: number
@@ -16,7 +9,7 @@ export interface IFlatRegion {
   maxZ: number
 }
 
-let defaultMaterial: Material
+const defaultColor = new Color3(1, 0, 0)
 
 export class FlatRegion implements IFlatRegion {
   private _y: number
@@ -92,24 +85,16 @@ export class FlatRegion implements IFlatRegion {
     ]
   }
 
-  public draw(scene: Scene, material?: Material) {
-    if (!material) {
-      if (!defaultMaterial) {
-        const mat = new StandardMaterial('regionMat', scene)
-        mat.diffuseColor = new Color3(1, 0, 0)
-
-        defaultMaterial = mat
-      }
-
-      material = defaultMaterial
+  public draw(scene: Scene, color?: Color3) {
+    if (!color) {
+      color = defaultColor
     }
 
-    const lines = MeshBuilder.CreateLines(
-      'region',
-      { points: this._points },
-      scene
-    )
-    lines.material = material
+    const points = this._points.map((x) => x)
+    points.push(points[0])
+
+    const lines = MeshBuilder.CreateLines('region', { points }, scene)
+    lines.color = color
   }
 
   public resize(width: number, depth: number) {
