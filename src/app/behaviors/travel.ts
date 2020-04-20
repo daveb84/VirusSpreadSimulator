@@ -1,10 +1,19 @@
 import { Mesh, Vector3, Animation, Animatable } from '@babylonjs/core'
-import { generateNumber } from '../vectors'
 import { traceMove } from '../utils/trace'
-import { walkerMovement } from '../settings'
-import { CollisionHandler, IObstacle } from './collision'
+import { CollisionHandler, IObstacle } from '.'
 
-export class RandomWalk {
+export interface ITravelMove {
+  endFrame: number
+  target: Vector3
+  animations: Animation[]
+  direction: Vector3
+}
+
+export interface ITravelMoveFactory {
+  createNextMove: (position: Vector3, direction?: Vector3) => ITravelMove
+}
+
+export class Travel {
   private _direction: Vector3 = undefined
   private moveFrom: Vector3
   private moveTo: Vector3
@@ -14,12 +23,7 @@ export class RandomWalk {
 
   private moveCompleteHandlers: Array<() => void> = []
 
-  constructor(
-    public mesh: Mesh,
-    public distance: number = walkerMovement.distance,
-    public frameRate: number = walkerMovement.frameRate,
-    public endFrame: number = walkerMovement.endFrame
-  ) {}
+  constructor(public mesh: Mesh, private moveFactory: ITravelMoveFactory) {}
 
   public get moving() {
     return this._moving
@@ -47,17 +51,22 @@ export class RandomWalk {
   }
 
   public move(direction?: Vector3 | undefined) {
-    this.createTarget(direction)
+    this.moveFrom = this.mesh.position.clone()
 
-    const animation = this.createAnimation()
+    const nextMove = this.moveFactory.createNextMove(this.moveFrom, direction)
+
+    this.moveTo = nextMove.target
+    this._direction = nextMove.direction
+
+    traceMove(this.moveFrom, this.moveTo, this._direction, this.mesh)
 
     const running = this.mesh
       .getScene()
       .beginDirectAnimation(
         this.mesh,
-        [animation],
+        nextMove.animations,
         0,
-        this.endFrame,
+        nextMove.endFrame,
         false,
         1,
         () => this.onMoveComplete()
@@ -75,60 +84,13 @@ export class RandomWalk {
       this.move()
     }
   }
-
-  private createTarget(direction?: Vector3 | undefined) {
-    this.moveFrom = this.mesh.position.clone()
-    if (direction === undefined) {
-      const angle = generateNumber(0, 360)
-
-      const z = this.distance * Math.sin(angle)
-      const x = this.distance * Math.cos(angle)
-
-      direction = new Vector3(x, 0, z)
-    }
-    this._direction = direction
-
-    this.moveTo = this.moveFrom.add(this._direction)
-
-    traceMove(this.moveFrom, this.moveTo, this._direction, this.mesh)
-  }
-
-  private createAnimation() {
-    const animation = new Animation(
-      'move',
-      'position',
-      this.frameRate,
-      Animation.ANIMATIONTYPE_VECTOR3,
-      Animation.ANIMATIONLOOPMODE_CONSTANT
-    )
-
-    const keys = [
-      {
-        frame: 0,
-        value: this.moveFrom,
-      },
-      {
-        frame: this.endFrame,
-        value: this.moveTo,
-      },
-    ]
-
-    animation.setKeys(keys)
-
-    return animation
-  }
 }
 
-export class CollidingRandomWalk extends RandomWalk {
+export class CollidingTravel extends Travel {
   private collisionHandler: CollisionHandler
 
-  constructor(
-    mesh: Mesh,
-    distance: number = walkerMovement.distance,
-    frameRate: number = walkerMovement.frameRate,
-    endFrame: number = walkerMovement.endFrame
-  ) {
-    super(mesh, distance, frameRate, endFrame)
+  constructor(mesh: Mesh, moveFactory: ITravelMoveFactory) {
+    super(mesh, moveFactory)
 
     this.collisionHandler = this.createCollisionHandler()
     this.addMoveCompleteHanlder(() => this.collisionHandler.onMoveComplete())

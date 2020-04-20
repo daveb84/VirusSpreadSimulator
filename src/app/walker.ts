@@ -1,24 +1,32 @@
 import { Person } from './meshes'
-import { Virus, CollidingRandomWalk, IObstacle } from './behaviors'
+import {
+  Virus,
+  CollidingTravel,
+  IObstacle,
+  Travel,
+  RandomMoveFactory,
+} from './behaviors'
 import { Scene, Vector3 } from '@babylonjs/core'
 import { walkerMovement, regions } from './settings'
 
 export class Walker {
   private person: Person
   private virus: Virus
-  private collidingWalk: CollidingRandomWalk
+  private travel: CollidingTravel
+  private travelMoves: RandomMoveFactory
 
   constructor(private scene: Scene) {
     this.person = new Person(scene)
     this.virus = new Virus(this.person.mesh)
-    this.collidingWalk = new CollidingRandomWalk(this.person.mesh)
+    this.travelMoves = new RandomMoveFactory()
+    this.travel = new CollidingTravel(this.person.mesh, this.travelMoves)
 
     const startPosition = regions.walker.getRandomPoint()
     this.setPosition(startPosition)
   }
 
   public get moving() {
-    return this.collidingWalk.moving
+    return this.travel.moving
   }
 
   public get contagious() {
@@ -30,11 +38,11 @@ export class Walker {
   }
 
   start() {
-    this.collidingWalk.start()
+    this.travel.start()
   }
 
   stop() {
-    this.collidingWalk.stop()
+    this.travel.stop()
   }
 
   infect() {
@@ -46,10 +54,10 @@ export class Walker {
   }
 
   move(direction: Vector3) {
-    this.collidingWalk.move(direction)
+    this.travel.move(direction)
   }
 
   collideWithObstacle(obstacle: IObstacle) {
-    this.collidingWalk.collide(obstacle, walkerMovement.distance)
+    this.travel.collide(obstacle, walkerMovement.distance)
   }
 }

@@ -1,3 +1,4 @@
 export * from './collision'
-export * from './randomWalk'
+export * from './travel'
+export * from './travelRandom'
 export * from './virus'
