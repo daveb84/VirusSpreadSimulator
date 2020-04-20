@@ -7,7 +7,7 @@ import {
   showOnlyTraceMovesForOwner,
   traceMoves,
 } from './utils/trace'
-import { walkerMovement, regions } from './settings'
+import { travelConfig, regions } from './settings'
 import { buildingConfig, BuildingPopulation } from './buildings'
 
 class App {
@@ -156,7 +156,7 @@ export const createApp = (
 ) => {
   const app = new App(canvas, debug)
 
-  if (walkerMovement.autoStart) {
+  if (travelConfig.autoStart) {
     app.start()
   }
 

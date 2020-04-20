@@ -1,9 +1,17 @@
 import { ITravelMove, ITravelMoveFactory } from './travel'
 import { Vector3, Animation } from '@babylonjs/core'
-import { generateNumber } from '../vectors'
+import { generateNumber, FlatRegion } from '../vectors'
 import { travelConfig } from '../settings'
 
-export class RandomMoveFactory implements ITravelMoveFactory {
+interface ITimeSlot {
+  targets: FlatRegion[]
+  fromFrame: number
+  toFrame: number
+}
+
+let routineTick: number = 0
+
+export class RoutineMoveFactory implements ITravelMoveFactory {
   constructor(
     public distance: number = travelConfig.distance,
     public frameRate: number = travelConfig.frameRate,
@@ -11,7 +19,7 @@ export class RandomMoveFactory implements ITravelMoveFactory {
   ) {}
 
   createNextMove(position: Vector3, direction?: Vector3) {
-    const target = this.createTarget(position, direction)
+    const target = this.createTarget(position, [])
 
     const animation = this.createAnimation(position, target.target)
 
@@ -24,17 +32,15 @@ export class RandomMoveFactory implements ITravelMoveFactory {
     return move
   }
 
-  private createTarget(position: Vector3, direction: Vector3 = undefined) {
-    if (direction === undefined) {
-      const angle = generateNumber(0, 360)
-
-      const z = this.distance * Math.sin(angle)
-      const x = this.distance * Math.cos(angle)
-
-      direction = new Vector3(x, 0, z)
+  private createTarget(position: Vector3, targets: FlatRegion[]) {
+    if (!targets.length) {
+      return null
     }
 
-    const target = position.add(direction)
+    const index = generateNumber(0, targets.length - 1, true)
+    const target = targets[index].getRandomPoint()
+
+    const direction = target.subtract(position)
 
     return {
       target,

@@ -9,7 +9,7 @@ export const virusDuration = {
   ill: 5000,
 }
 
-export const walkerMovement = {
+export const travelConfig = {
   autoStart: false,
   distance: 3,
   frameRate: 10,

@@ -7,7 +7,7 @@ import {
   RandomMoveFactory,
 } from '../behaviors'
 import { Scene, Vector3 } from '@babylonjs/core'
-import { walkerMovement, regions } from '../settings'
+import { travelConfig, regions } from '../settings'
 
 export class Walker {
   private person: Person
@@ -58,6 +58,6 @@ export class Walker {
   }
 
   collideWithObstacle(obstacle: IObstacle) {
-    this.travel.collide(obstacle, walkerMovement.distance)
+    this.travel.collide(obstacle, travelConfig.distance)
   }
 }
