@@ -1,13 +1,13 @@
-import { Person } from './meshes'
+import { Person } from '../meshes'
 import {
   Virus,
   CollidingTravel,
   IObstacle,
   Travel,
   RandomMoveFactory,
-} from './behaviors'
+} from '../behaviors'
 import { Scene, Vector3 } from '@babylonjs/core'
-import { walkerMovement, regions } from './settings'
+import { walkerMovement, regions } from '../settings'
 
 export class Walker {
   private person: Person

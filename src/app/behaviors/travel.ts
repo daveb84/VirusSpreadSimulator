@@ -1,6 +1,6 @@
 import { Mesh, Vector3, Animation, Animatable } from '@babylonjs/core'
 import { traceMove } from '../utils/trace'
-import { CollisionHandler, IObstacle } from '.'
+import { CollisionHandler, IObstacle } from './collision'
 
 export interface ITravelMove {
   endFrame: number

@@ -1,14 +1,13 @@
 import { Stage, createScene } from './meshes'
 import { initMaterials } from './materials'
 import { Scene, Engine, PickingInfo } from '@babylonjs/core'
-import { processScene } from './appWorker'
+import { processWalkers, Walker } from './walkers'
 import {
   initTrace,
   showOnlyTraceMovesForOwner,
   traceMoves,
 } from './utils/trace'
 import { walkerMovement } from './settings'
-import { Walker } from './walker'
 import { placeBuildings } from './buildings'
 
 class App {
@@ -42,7 +41,7 @@ class App {
 
     this.scene.registerBeforeRender(() => {
       if (this.moving) {
-        processScene(this.walkers, [], stage.bounds)
+        processWalkers(this.walkers, [], stage.bounds)
       }
     })
 

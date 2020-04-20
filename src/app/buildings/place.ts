@@ -1,8 +1,9 @@
-import { Grid, GridDivision } from './vectors'
-import { getCommonMaterials } from './materials/common'
+import { Grid, GridDivision } from '../vectors'
+import { getCommonMaterials } from '../materials/common'
 import { Vector3, Scene } from '@babylonjs/core'
-import { Building } from './meshes'
-import { buildingConfig, regions } from './settings'
+import { Building } from '../meshes'
+import { regions } from '../settings'
+import { buildingConfig } from './config'
 
 export interface IBuildingConfig {
   rows: number

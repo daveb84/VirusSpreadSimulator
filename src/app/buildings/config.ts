@@ -1,4 +1,4 @@
-import { IBuildingConfig, BuildingType } from '../buildings'
+import { IBuildingConfig, BuildingType } from './place'
 
 interface IBuildingConfigOptions {
   rows?: number
