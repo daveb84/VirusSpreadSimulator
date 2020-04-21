@@ -55,12 +55,24 @@ export interface IBuildingTimeSlot {
   toStep: number
 }
 
+const configAmounts = {
+  homes: 50,
+  walkerHomesFrom: 1,
+  walkerHomesTo: 4,
+  works: 20,
+  walkerWorksFrom: 1,
+  walkerWorksTo: 2,
+  shops: 20,
+  walkerShopsFrom: 0,
+  walkerShopsTo: 10,
+}
+
 export const createPopulationConfig = () => {
-  const homes = generateBuildings(10, home)
+  const homes = generateBuildings(configAmounts.homes, home)
 
-  const works = generateBuildings(5, work)
+  const works = generateBuildings(configAmounts.works, work)
 
-  const shops = generateBuildings(5, shop)
+  const shops = generateBuildings(configAmounts.shops, shop)
 
   const buildings: IBuildingWalkers[] = [...homes, ...works, ...shops].map(
     (building, index) => ({
@@ -85,11 +97,23 @@ export const createPopulationConfig = () => {
   const walkers: IWalkerBuildings[] = []
 
   homeFiltered.forEach((home) => {
-    const walkersAmount = generateNumber(0, 4, true)
+    const walkersAmount = generateNumber(
+      configAmounts.walkerHomesFrom,
+      configAmounts.walkerHomesTo,
+      true
+    )
 
     for (let i = 0; i < walkersAmount; i++) {
-      const work = pickRandom(0, 2, workFiltered)
-      const shop = pickRandom(1, 4, shopFiltered)
+      const work = pickRandom(
+        configAmounts.walkerWorksFrom,
+        configAmounts.walkerWorksTo,
+        workFiltered
+      )
+      const shop = pickRandom(
+        configAmounts.walkerShopsFrom,
+        configAmounts.walkerShopsTo,
+        shopFiltered
+      )
 
       const walkerBuildings = [home, ...work, ...shop]
 

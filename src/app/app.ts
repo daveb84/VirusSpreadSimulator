@@ -10,6 +10,8 @@ import {
 import { travelConfig } from './settings'
 import * as cannon from 'cannon'
 
+const traceOnClick = false
+
 class App {
   private readonly engine: Engine
   private readonly scene: Scene
@@ -44,7 +46,7 @@ class App {
     populateWalkers(this.scene, this.walkers, this.processor)
 
     this.scene.onPointerUp = (evt, pickResult) => {
-      this.selected = this.clickWalker(pickResult)
+      this.clickWalker(pickResult)
     }
 
     this.engine.runRenderLoop(() => {
@@ -124,9 +126,14 @@ class App {
       const match = this.walkers.find((x) => x.mesh === pick.pickedMesh)
 
       if (match) {
-        const moves = traceMoves.filter((x) => x.owner === match.mesh)
-        this.debug('Moves: ' + moves.length)
-        showOnlyTraceMovesForOwner(match.mesh)
+        if (traceOnClick) {
+          this.selected = match
+          const moves = traceMoves.filter((x) => x.owner === match.mesh)
+          this.debug('Moves: ' + moves.length)
+          showOnlyTraceMovesForOwner(match.mesh)
+        } else {
+          match.infect()
+        }
       }
 
       return match

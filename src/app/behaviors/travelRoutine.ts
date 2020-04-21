@@ -37,13 +37,17 @@ export class RoutineMoveFactory implements ITravelMoveFactory {
       return target
     }
 
+    if (!this.targets.length) {
+      return position
+    }
+
     const step = this.currentStep()
-    const currentMoves = this.targets.filter(
+    let currentMoves = this.targets.filter(
       (x) => x.fromStep <= step && x.toStep >= step && x.target !== null
     )
 
     if (!currentMoves.length) {
-      return position
+      currentMoves = this.targets
     }
 
     const index = generateNumber(0, currentMoves.length - 1, true)

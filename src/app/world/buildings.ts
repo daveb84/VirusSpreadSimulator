@@ -30,9 +30,7 @@ export class BuildingPopulation {
     private scene: Scene,
     private grid: Grid,
     private buildings: IBuildingConfig[]
-  ) {
-    this.populate()
-  }
+  ) {}
 
   public get placedBuildings() {
     return this._placedBuildings
