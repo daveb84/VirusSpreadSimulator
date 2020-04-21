@@ -1,6 +1,7 @@
 import { Walker } from './walker'
 import { IObstacle } from '../behaviors'
 import { Scene, Observer } from '@babylonjs/core'
+import { travelConfig } from '../settings'
 
 const obstacleCollide = (walker: Walker, obstacle: IObstacle) => {
   if (walker.moving) {
@@ -54,6 +55,7 @@ export class WalkerProcessor {
     private scene: Scene,
     private walkers: Walker[],
     private boundingBox: IObstacle,
+    private writeStep: (message: string) => void,
     private obstacles: IObstacle[] = []
   ) {}
 
@@ -77,7 +79,9 @@ export class WalkerProcessor {
   }
 
   private process(stepId: number) {
-    this.routineStep = stepId % 26
+    const timeUnit = Math.floor(stepId * travelConfig.processorStepRatio)
+    this.routineStep = timeUnit % (travelConfig.timeSlots + 1)
+    this.writeStep(`Step: ${this.routineStep}`)
 
     const { walkers, boundingBox, obstacles } = this
 

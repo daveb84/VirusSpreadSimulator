@@ -11,10 +11,12 @@ export const virusDuration = {
 
 export const travelConfig = {
   autoStart: false,
-  distance: 3,
+  distance: 0.5,
   frameRate: 10,
-  endFrame: 30,
-  timeStep: 1 / 10,
+  endFrame: 5,
+  timeStep: 0.1,
+  processorStepRatio: 0.05,
+  timeSlots: 200,
 }
 
 export const cameraPosition = new Vector3(0, 10, 6)

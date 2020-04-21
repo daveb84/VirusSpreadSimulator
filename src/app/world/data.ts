@@ -1,5 +1,6 @@
 import { IBuildingConfig, BuildingType } from './buildings'
 import { generateNumber } from '../vectors'
+import { travelConfig } from '../settings'
 
 interface IBuildingConfigOptions {
   rows?: number
@@ -56,10 +57,10 @@ export interface IBuildingTimeSlot {
 }
 
 const configAmounts = {
-  homes: 50,
+  homes: 60,
   walkerHomesFrom: 1,
   walkerHomesTo: 4,
-  works: 20,
+  works: 5,
   walkerWorksFrom: 1,
   walkerWorksTo: 2,
   shops: 20,
@@ -122,9 +123,9 @@ export const createPopulationConfig = () => {
         buildings: [],
       }
 
-      walkerBuildings.forEach((building, index) => {
-        const timeSlot = getTimeSlot(walkerBuildings, index)
-        walker.buildings.push(timeSlot)
+      assignTimeSlots(walker, walkerBuildings)
+
+      walkerBuildings.forEach((building) => {
         building.walkers.push(walkerIndex)
       })
 
@@ -163,28 +164,29 @@ const generateBuildings = (
   return created
 }
 
-const timeSlots = [
-  { type: BuildingType.Home, fromStep: 0, toStep: 5 },
-  { type: BuildingType.Work, fromStep: 5, toStep: 10 },
-  { type: BuildingType.Shop, fromStep: 10, toStep: 12 },
-  { type: BuildingType.Work, fromStep: 12, toStep: 15 },
-  { type: BuildingType.Shop, fromStep: 15, toStep: 18 },
-  { type: BuildingType.Home, fromStep: 18, toStep: 25 },
-]
+const assignTimeSlots = (
+  walker: IWalkerBuildings,
+  buildings: IBuildingWalkers[]
+) => {
+  const increment = Math.floor(travelConfig.timeSlots / buildings.length)
 
-const getTimeSlot = (
-  buildings: IBuildingWalkers[],
-  index: number
-): IBuildingTimeSlot => {
-  const building = buildings[index]
+  let current = 0
+  for (let i = 0; i < buildings.length - 1; i++) {
+    const building = buildings[i]
+    const end = current + increment
 
-  const allowed = timeSlots.filter((x) => x.type === building.building.type)
+    walker.buildings.push({
+      building: building.index,
+      fromStep: current,
+      toStep: current + increment,
+    })
 
-  const picked = allowed[generateNumber(0, allowed.length - 1, true)]
-
-  return {
-    building: index,
-    fromStep: picked.fromStep,
-    toStep: picked.toStep,
+    current = end
   }
+
+  walker.buildings.push({
+    building: buildings[buildings.length - 1].index,
+    fromStep: current,
+    toStep: travelConfig.timeSlots,
+  })
 }

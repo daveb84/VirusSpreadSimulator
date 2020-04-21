@@ -41,7 +41,12 @@ class App {
 
     const stage = new Stage(this.scene)
     this.walkers = []
-    this.processor = new WalkerProcessor(this.scene, this.walkers, stage.bounds)
+    this.processor = new WalkerProcessor(
+      this.scene,
+      this.walkers,
+      stage.bounds,
+      this.debug
+    )
 
     populateWalkers(this.scene, this.walkers, this.processor)
 

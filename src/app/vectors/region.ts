@@ -158,4 +158,13 @@ export class FlatRegion implements IFlatRegion {
 
     return scaledTarget
   }
+
+  public containsPosition(position: Vector3) {
+    return (
+      position.x >= this.minX &&
+      position.x <= this.maxX &&
+      position.z >= this.minZ &&
+      position.z <= this.maxZ
+    )
+  }
 }
