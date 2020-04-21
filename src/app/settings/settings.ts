@@ -14,6 +14,7 @@ export const travelConfig = {
   distance: 3,
   frameRate: 10,
   endFrame: 30,
+  timeStep: 1 / 10,
 }
 
 export const cameraPosition = new Vector3(0, 10, 6)

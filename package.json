@@ -30,7 +30,8 @@
   },
   "dependencies": {
     "@babylonjs/core": "^4.1.0",
-    "@babylonjs/materials": "^4.1.0"
+    "@babylonjs/materials": "^4.1.0",
+    "cannon": "^0.6.2"
   },
   "husky": {
     "hooks": {

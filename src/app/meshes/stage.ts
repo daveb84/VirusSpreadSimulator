@@ -60,7 +60,7 @@ const wallCoors = {
 export class Stage {
   private material: StandardMaterial
 
-  private _bounds
+  private _bounds: StageBounds
 
   public get bounds() {
     return this._bounds

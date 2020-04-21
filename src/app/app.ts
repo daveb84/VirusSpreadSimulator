@@ -1,13 +1,14 @@
 import { Stage, createScene } from './meshes'
 import { initMaterials } from './materials'
-import { Scene, Engine, PickingInfo } from '@babylonjs/core'
-import { processWalkers, Walker } from './walkers'
+import { Scene, Engine, PickingInfo, CannonJSPlugin } from '@babylonjs/core'
+import { Walker, WalkerProcessor } from './walkers'
 import {
   initTrace,
   showOnlyTraceMovesForOwner,
   traceMoves,
 } from './utils/trace'
 import { travelConfig, regions } from './settings'
+import * as cannon from 'cannon'
 import { buildingConfig, BuildingPopulation } from './buildings'
 
 class App {
@@ -15,7 +16,7 @@ class App {
   private readonly scene: Scene
 
   private readonly walkers: Walker[]
-  private buildings: BuildingPopulation
+  private processor: WalkerProcessor
 
   private selected: Walker = null
   private selectedMove: number = 0
@@ -26,13 +27,18 @@ class App {
     canvas: HTMLCanvasElement,
     private debug: (message: string) => void
   ) {
-    this.engine = new Engine(canvas)
+    this.engine = new Engine(canvas, false, {
+      deterministicLockstep: true,
+      lockstepMaxSteps: 4,
+    })
     this.scene = createScene(this.engine, canvas)
+    this.scene.enablePhysics(null, new CannonJSPlugin(false, 10, cannon))
+    this.scene.getPhysicsEngine().setTimeStep(travelConfig.timeStep)
 
     initMaterials(this.scene)
     initTrace(this.scene)
 
-    this.buildings = new BuildingPopulation(
+    const buildings = new BuildingPopulation(
       this.scene,
       regions.buildingGrid,
       buildingConfig
@@ -44,11 +50,7 @@ class App {
       this.selected = this.clickWalker(pickResult)
     }
 
-    this.scene.registerBeforeRender(() => {
-      if (this.moving) {
-        processWalkers(this.walkers, [], stage.bounds)
-      }
-    })
+    this.processor = new WalkerProcessor(this.scene, this.walkers, stage.bounds)
 
     this.engine.runRenderLoop(() => {
       this.scene.render()
@@ -56,6 +58,8 @@ class App {
   }
 
   start() {
+    this.processor.start()
+
     if (this.selected) {
       this.selected.start()
     } else {
@@ -65,6 +69,8 @@ class App {
   }
 
   stop() {
+    this.processor.stop()
+
     this.moving = false
     this.walkers.forEach((w) => w.stop())
   }

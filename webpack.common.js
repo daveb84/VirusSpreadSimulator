@@ -1,4 +1,6 @@
 const path = require('path')
+const webpack = require('webpack')
+
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 
@@ -17,6 +19,9 @@ module.exports = {
   plugins: [
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({ template: './src/host/index.html' }),
+    new webpack.ProvidePlugin({
+      cannon: 'cannon',
+    }),
   ],
   module: {
     rules: [

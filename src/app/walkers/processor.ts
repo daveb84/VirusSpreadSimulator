@@ -1,5 +1,6 @@
 import { Walker } from './walker'
 import { IObstacle } from '../behaviors'
+import { Scene, Observable, Observer } from '@babylonjs/core'
 
 const obstacleCollide = (walker: Walker, obstacle: IObstacle) => {
   if (walker.moving) {
@@ -45,27 +46,51 @@ const boundingBoxCollide = (walker: Walker, obstacle: IObstacle) => {
   }
 }
 
-export const processWalkers = (
-  walkers: Walker[],
-  obstacles: IObstacle[] = [],
-  boundingBox: IObstacle = null
-) => {
-  const toCheck = [...walkers]
-  toCheck.shift()
+export class WalkerProcessor {
+  private attachedHandler: Observer<Scene>
 
-  walkers.forEach((walker) => {
-    if (boundingBox) {
-      boundingBoxCollide(walker, boundingBox)
+  constructor(
+    private scene: Scene,
+    private walkers: Walker[],
+    private boundingBox: IObstacle,
+    private obstacles: IObstacle[] = []
+  ) {}
+
+  start() {
+    if (!this.attachedHandler) {
+      this.attachedHandler = this.scene.onBeforeStepObservable.add((scene) => {
+        this.process(scene.getStepId())
+      })
     }
+  }
 
-    obstacles.forEach((obstacle) => {
-      obstacleCollide(walker, obstacle)
-    })
+  stop() {
+    if (this.attachedHandler) {
+      this.scene.onBeforeStepObservable.remove(this.attachedHandler)
+      this.attachedHandler = null
+    }
+  }
 
-    toCheck.forEach((other) => {
-      walkerCollide(walker, other)
-    })
+  private process(stepId: number) {
+    const { walkers, boundingBox, obstacles } = this
 
+    const toCheck = [...walkers]
     toCheck.shift()
-  })
+
+    walkers.forEach((walker) => {
+      if (boundingBox) {
+        boundingBoxCollide(walker, boundingBox)
+      }
+
+      obstacles.forEach((obstacle) => {
+        obstacleCollide(walker, obstacle)
+      })
+
+      toCheck.forEach((other) => {
+        walkerCollide(walker, other)
+      })
+
+      toCheck.shift()
+    })
+  }
 }
