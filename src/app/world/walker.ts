@@ -3,8 +3,9 @@ import {
   Virus,
   CollidingTravel,
   IObstacle,
-  Travel,
   RandomMoveFactory,
+  IRoutineTargets,
+  RoutineMoveFactory,
 } from '../behaviors'
 import { Scene, Vector3 } from '@babylonjs/core'
 import { travelConfig, regions } from '../settings'
@@ -13,13 +14,25 @@ export class Walker {
   private person: Person
   private virus: Virus
   private travel: CollidingTravel
-  private travelMoves: RandomMoveFactory
 
-  constructor(private scene: Scene) {
+  constructor(
+    private scene: Scene,
+    getProcessorStep: () => number,
+    routineTargets?: IRoutineTargets[]
+  ) {
     this.person = new Person(scene)
     this.virus = new Virus(this.person.mesh)
-    this.travelMoves = new RandomMoveFactory()
-    this.travel = new CollidingTravel(this.person.mesh, this.travelMoves)
+
+    if (routineTargets && routineTargets.length) {
+      const travelMoves = new RoutineMoveFactory(
+        routineTargets,
+        getProcessorStep
+      )
+      this.travel = new CollidingTravel(this.person.mesh, travelMoves)
+    } else {
+      const travelMoves = new RandomMoveFactory()
+      this.travel = new CollidingTravel(this.person.mesh, travelMoves)
+    }
 
     const startPosition = regions.walker.getRandomPoint()
     this.setPosition(startPosition)

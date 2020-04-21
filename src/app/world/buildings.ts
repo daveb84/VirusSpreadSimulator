@@ -24,6 +24,7 @@ interface ICellPopulation {
 
 export class BuildingPopulation {
   private cellPopulation: ICellPopulation
+  private _placedBuildings: PlacedBuilding[]
 
   constructor(
     private scene: Scene,
@@ -33,7 +34,16 @@ export class BuildingPopulation {
     this.populate()
   }
 
+  public get placedBuildings() {
+    return this._placedBuildings
+  }
+
   populate() {
+    this.placeBuildings()
+  }
+
+  private placeBuildings() {
+    this._placedBuildings = []
     this.cellPopulation = {}
 
     this.buildings.forEach((building) => {
@@ -60,6 +70,10 @@ export class BuildingPopulation {
         location.cells.forEach((x) => {
           this.cellPopulation[x.index] = true
         })
+
+        this._placedBuildings.push(new PlacedBuilding(building, location))
+      } else {
+        this._placedBuildings.push(new PlacedBuilding(building, null))
       }
     })
   }
@@ -125,4 +139,11 @@ export class BuildingPopulation {
         return materials.workBuilding
     }
   }
+}
+
+export class PlacedBuilding {
+  constructor(
+    public building: IBuildingConfig,
+    public location: GridDivision | null
+  ) {}
 }

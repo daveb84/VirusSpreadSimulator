@@ -48,6 +48,7 @@ const boundingBoxCollide = (walker: Walker, obstacle: IObstacle) => {
 
 export class WalkerProcessor {
   private attachedHandler: Observer<Scene>
+  private routineStep: number = 0
 
   constructor(
     private scene: Scene,
@@ -71,7 +72,13 @@ export class WalkerProcessor {
     }
   }
 
+  getProcessorStep() {
+    return this.routineStep
+  }
+
   private process(stepId: number) {
+    this.routineStep = stepId % 26
+
     const { walkers, boundingBox, obstacles } = this
 
     const toCheck = [...walkers]

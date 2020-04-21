@@ -1,18 +1,13 @@
 import { Stage, createScene } from './meshes'
 import { initMaterials } from './materials'
 import { Scene, Engine, PickingInfo, CannonJSPlugin } from '@babylonjs/core'
-import {
-  Walker,
-  WalkerProcessor,
-  buildingConfig,
-  BuildingPopulation,
-} from './world'
+import { Walker, WalkerProcessor, populateWalkers } from './world'
 import {
   initTrace,
   showOnlyTraceMovesForOwner,
   traceMoves,
 } from './utils/trace'
-import { travelConfig, regions } from './settings'
+import { travelConfig } from './settings'
 import * as cannon from 'cannon'
 
 class App {
@@ -42,19 +37,15 @@ class App {
     initMaterials(this.scene)
     initTrace(this.scene)
 
-    const buildings = new BuildingPopulation(
-      this.scene,
-      regions.buildingGrid,
-      buildingConfig
-    )
     const stage = new Stage(this.scene)
-    this.walkers = this.createWalkers(0)
+    this.walkers = []
+    this.processor = new WalkerProcessor(this.scene, this.walkers, stage.bounds)
+
+    populateWalkers(this.scene, this.walkers, this.processor)
 
     this.scene.onPointerUp = (evt, pickResult) => {
       this.selected = this.clickWalker(pickResult)
     }
-
-    this.processor = new WalkerProcessor(this.scene, this.walkers, stage.bounds)
 
     this.engine.runRenderLoop(() => {
       this.scene.render()
@@ -114,7 +105,9 @@ class App {
     const walkers: Walker[] = []
 
     for (let i = 0; i < quantity; i++) {
-      const walker = new Walker(this.scene)
+      const walker = new Walker(this.scene, () =>
+        this.processor.getProcessorStep()
+      )
 
       if (infected) {
         walker.infect()

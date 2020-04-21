@@ -3,22 +3,23 @@ import { Vector3, Animation } from '@babylonjs/core'
 import { generateNumber, FlatRegion } from '../vectors'
 import { travelConfig } from '../settings'
 
-interface ITimeSlot {
-  targets: FlatRegion[]
-  fromFrame: number
-  toFrame: number
+export interface IRoutineTargets {
+  target: FlatRegion
+  fromStep: number
+  toStep: number
 }
-
-let routineTick: number = 0
 
 export class RoutineMoveFactory implements ITravelMoveFactory {
   constructor(
+    public targets: IRoutineTargets[],
+    public currentStep: () => number,
+    public distance: number = travelConfig.distance,
     public frameRate: number = travelConfig.frameRate,
     public endFrame: number = travelConfig.endFrame
   ) {}
 
   createNextMove(position: Vector3, target?: Vector3) {
-    target = this.getTarget(position, [], target)
+    target = this.getTarget(position, target)
 
     const animation = this.createAnimation(position, target)
 
@@ -31,17 +32,25 @@ export class RoutineMoveFactory implements ITravelMoveFactory {
     return move
   }
 
-  private getTarget(position: Vector3, targets: FlatRegion[], target: Vector3) {
+  private getTarget(position: Vector3, target: Vector3) {
     if (target) {
       return target
     }
 
-    if (!targets.length) {
+    const step = this.currentStep()
+    const currentMoves = this.targets.filter(
+      (x) => x.fromStep <= step && x.toStep >= step && x.target !== null
+    )
+
+    if (!currentMoves.length) {
       return position
     }
 
-    const index = generateNumber(0, targets.length - 1, true)
-    target = targets[index].getRandomPoint()
+    const index = generateNumber(0, currentMoves.length - 1, true)
+    target = currentMoves[index].target.getRandomPointFrom(
+      position,
+      this.distance
+    )
 
     return target
   }
