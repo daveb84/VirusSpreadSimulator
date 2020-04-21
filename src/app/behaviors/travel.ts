@@ -3,20 +3,18 @@ import { traceMove } from '../utils/trace'
 import { CollisionHandler, IObstacle } from './collision'
 
 export interface ITravelMove {
-  endFrame: number
   target: Vector3
   animations: Animation[]
-  direction: Vector3
+  endFrame: number
 }
 
 export interface ITravelMoveFactory {
-  createNextMove: (position: Vector3, direction?: Vector3) => ITravelMove
+  createNextMove: (position: Vector3, target?: Vector3) => ITravelMove
 }
 
 export class Travel {
-  private _direction: Vector3 = undefined
-  private moveFrom: Vector3
-  private moveTo: Vector3
+  protected moveFrom: Vector3
+  protected moveTo: Vector3
 
   private _moving: boolean = false
   private moveAnimations: Animatable[] = []
@@ -27,10 +25,6 @@ export class Travel {
 
   public get moving() {
     return this._moving
-  }
-
-  public get direction() {
-    return this._direction
   }
 
   protected addMoveCompleteHanlder(handler: () => void) {
@@ -50,15 +44,14 @@ export class Travel {
     this.moveAnimations.splice(0, this.moveAnimations.length)
   }
 
-  public move(direction?: Vector3 | undefined) {
+  public move(target?: Vector3) {
     this.moveFrom = this.mesh.position.clone()
 
-    const nextMove = this.moveFactory.createNextMove(this.moveFrom, direction)
+    const nextMove = this.moveFactory.createNextMove(this.moveFrom, target)
 
     this.moveTo = nextMove.target
-    this._direction = nextMove.direction
 
-    traceMove(this.moveFrom, this.moveTo, this._direction, this.mesh)
+    traceMove(this.moveFrom, this.moveTo, this.mesh)
 
     const running = this.mesh
       .getScene()
@@ -107,9 +100,9 @@ export class CollidingTravel extends Travel {
   private createCollisionHandler() {
     const movingMesh = {
       getCurrentPosition: () => this.mesh.position,
-      getCurrentDirection: () => this.direction,
-      stopCurrentMovement: () => this.stop(),
-      startNewDirection: (direction: Vector3) => this.move(direction),
+      getCurrentTarget: () => this.moveTo,
+      stopCurrentMove: () => this.stop(),
+      startNewMove: (target: Vector3) => this.move(target),
     }
 
     return new CollisionHandler(this.mesh.getScene(), movingMesh)

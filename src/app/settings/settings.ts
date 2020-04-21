@@ -2,7 +2,7 @@ import { Vector3 } from '@babylonjs/core'
 import { FlatRegion, Grid } from '../vectors'
 
 export const traceEnabled = false
-export const markCollisions = true
+export const markCollisions = false
 
 export const virusDuration = {
   incubation: 5000,
@@ -22,6 +22,9 @@ export const personHeight = 0.3
 
 const minBound = new Vector3(-6, 0, -6)
 const maxBound = new Vector3(6, 4, 6)
+// const minBound = new Vector3(-3, 0, -3)
+// const maxBound = new Vector3(3, 4, 3)
+
 const gridRows = 20
 const gridColumns = 20
 

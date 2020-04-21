@@ -53,8 +53,8 @@ export class Walker {
     this.mesh.position = position
   }
 
-  move(direction: Vector3) {
-    this.travel.move(direction)
+  move(target: Vector3) {
+    this.travel.move(target)
   }
 
   collideWithObstacle(obstacle: IObstacle) {

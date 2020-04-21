@@ -59,17 +59,11 @@ export const traceLine = (from: Vector3, to: Vector3, owner: Mesh = null) => {
 interface ITraceMove extends ITraceLine {
   from: Vector3
   to: Vector3
-  direction: Vector3
 }
 
 export const traceMoves: ITraceMove[] = []
 
-export const traceMove = (
-  from: Vector3,
-  to: Vector3,
-  direction: Vector3,
-  owner: Mesh
-) => {
+export const traceMove = (from: Vector3, to: Vector3, owner: Mesh) => {
   if (!traceEnabled) {
     return
   }
@@ -79,7 +73,6 @@ export const traceMove = (
   traceMoves.push({
     from,
     to,
-    direction,
     owner,
     trace,
   })

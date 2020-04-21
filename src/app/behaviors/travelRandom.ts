@@ -10,13 +10,13 @@ export class RandomMoveFactory implements ITravelMoveFactory {
     public endFrame: number = travelConfig.endFrame
   ) {}
 
-  createNextMove(position: Vector3, direction?: Vector3) {
-    const target = this.createTarget(position, direction)
+  createNextMove(position: Vector3, target?: Vector3) {
+    target = this.getTarget(position, target)
 
-    const animation = this.createAnimation(position, target.target)
+    const animation = this.createAnimation(position, target)
 
     const move: ITravelMove = {
-      ...target,
+      target,
       endFrame: this.endFrame,
       animations: [animation],
     }
@@ -24,22 +24,21 @@ export class RandomMoveFactory implements ITravelMoveFactory {
     return move
   }
 
-  private createTarget(position: Vector3, direction: Vector3 = undefined) {
-    if (direction === undefined) {
-      const angle = generateNumber(0, 360)
-
-      const z = this.distance * Math.sin(angle)
-      const x = this.distance * Math.cos(angle)
-
-      direction = new Vector3(x, 0, z)
+  private getTarget(position: Vector3, target?: Vector3) {
+    if (target) {
+      return target
     }
 
-    const target = position.add(direction)
+    const angle = generateNumber(0, 360)
 
-    return {
-      target,
-      direction,
-    }
+    const z = this.distance * Math.sin(angle)
+    const x = this.distance * Math.cos(angle)
+
+    const direction = new Vector3(x, 0, z)
+
+    target = position.add(direction)
+
+    return target
   }
 
   private createAnimation(from: Vector3, to: Vector3) {

@@ -148,11 +148,11 @@ export class StageBounds implements IObstacle {
     // regions.buildingGrid.drawAll(scene)
   }
 
-  getDeflectDirection(
+  getDeflectTarget(
     currentPosition: Vector3,
-    currentDirection: Vector3,
+    currentTarget: Vector3,
     distance: number
   ) {
-    return this.deflectTarget.getDirectionTowardPoint(currentPosition, distance)
+    return this.deflectTarget.getRandomPointFrom(currentPosition, distance)
   }
 }

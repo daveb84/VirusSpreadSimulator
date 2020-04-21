@@ -146,19 +146,16 @@ export class FlatRegion implements IFlatRegion {
     return target
   }
 
-  public getDirectionTowardPoint(
-    start: Vector3,
-    distance: number | undefined = undefined
-  ) {
+  public getRandomPointFrom(start: Vector3, length: number) {
     const target = this.getRandomPoint()
 
     const direction = target.subtract(start)
 
-    if (distance !== undefined) {
-      const scale = distance / direction.length()
-      const scaled = direction.scale(scale)
+    const scale = length / direction.length()
+    const scaled = direction.scale(scale)
 
-      return scaled
-    }
+    const scaledTarget = start.add(scaled)
+
+    return scaledTarget
   }
 }

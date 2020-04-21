@@ -95,7 +95,7 @@ class App {
           this.selected.setPosition(matching.from)
         }
 
-        this.selected.move(matching.direction)
+        this.selected.move(matching.to)
       }
     }
   }

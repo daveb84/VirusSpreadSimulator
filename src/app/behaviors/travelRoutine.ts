@@ -13,18 +13,17 @@ let routineTick: number = 0
 
 export class RoutineMoveFactory implements ITravelMoveFactory {
   constructor(
-    public distance: number = travelConfig.distance,
     public frameRate: number = travelConfig.frameRate,
     public endFrame: number = travelConfig.endFrame
   ) {}
 
-  createNextMove(position: Vector3, direction?: Vector3) {
-    const target = this.createTarget(position, [])
+  createNextMove(position: Vector3, target?: Vector3) {
+    target = this.getTarget(position, [], target)
 
-    const animation = this.createAnimation(position, target.target)
+    const animation = this.createAnimation(position, target)
 
     const move: ITravelMove = {
-      ...target,
+      target,
       endFrame: this.endFrame,
       animations: [animation],
     }
@@ -32,20 +31,19 @@ export class RoutineMoveFactory implements ITravelMoveFactory {
     return move
   }
 
-  private createTarget(position: Vector3, targets: FlatRegion[]) {
+  private getTarget(position: Vector3, targets: FlatRegion[], target: Vector3) {
+    if (target) {
+      return target
+    }
+
     if (!targets.length) {
-      return null
+      return position
     }
 
     const index = generateNumber(0, targets.length - 1, true)
-    const target = targets[index].getRandomPoint()
+    target = targets[index].getRandomPoint()
 
-    const direction = target.subtract(position)
-
-    return {
-      target,
-      direction,
-    }
+    return target
   }
 
   private createAnimation(from: Vector3, to: Vector3) {
