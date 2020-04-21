@@ -1,7 +1,12 @@
 import { Stage, createScene } from './meshes'
 import { initMaterials } from './materials'
 import { Scene, Engine, PickingInfo, CannonJSPlugin } from '@babylonjs/core'
-import { Walker, WalkerProcessor } from './walkers'
+import {
+  Walker,
+  WalkerProcessor,
+  buildingConfig,
+  BuildingPopulation,
+} from './world'
 import {
   initTrace,
   showOnlyTraceMovesForOwner,
@@ -9,7 +14,6 @@ import {
 } from './utils/trace'
 import { travelConfig, regions } from './settings'
 import * as cannon from 'cannon'
-import { buildingConfig, BuildingPopulation } from './buildings'
 
 class App {
   private readonly engine: Engine

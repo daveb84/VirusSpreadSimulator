@@ -1,6 +1,6 @@
 import { Walker } from './walker'
 import { IObstacle } from '../behaviors'
-import { Scene, Observable, Observer } from '@babylonjs/core'
+import { Scene, Observer } from '@babylonjs/core'
 
 const obstacleCollide = (walker: Walker, obstacle: IObstacle) => {
   if (walker.moving) {

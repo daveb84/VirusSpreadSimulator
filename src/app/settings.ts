@@ -1,5 +1,5 @@
 import { Vector3 } from '@babylonjs/core'
-import { FlatRegion, Grid } from '../vectors'
+import { FlatRegion, Grid } from './vectors'
 
 export const traceEnabled = false
 export const markCollisions = false
