@@ -1,5 +1,29 @@
+@import 'reset.css';
+
+html {
+  height: 100%;
+}
 body {
   font-family: Arial, Helvetica, sans-serif;
+  height: 100%;
+}
+
+.layout {
+  height: 100%;
+  box-sizing: border-box;
+  display: grid;
+  grid-row-gap: 20px;
+  grid-column-gap: 20px;
+  grid-template-columns: auto 300px;
+  grid-template-areas: 'main controls';
+  padding: 10px;
+}
+
+@media only screen and (max-width: 768px) {
+  .grid-container {
+    grid-template-columns: auto;
+    grid-template-areas: 'main' 'controls';
+  }
 }
 
 .form-panel {
