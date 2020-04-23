@@ -1,4 +1,4 @@
-import { createPopulationConfig, IWalkerBuildings } from './data'
+import { createPopulationConfig, IWalkerBuildings } from './population'
 import { BuildingPopulation, PlacedBuilding } from './buildings'
 import { regions } from '../settings'
 import { Scene } from '@babylonjs/core'
