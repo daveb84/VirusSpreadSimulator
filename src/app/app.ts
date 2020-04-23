@@ -9,6 +9,7 @@ import {
 } from './utils/trace'
 import { travelConfig } from './settings'
 import * as cannon from 'cannon'
+import * as appEvents from './appEvents'
 
 const traceOnClick = false
 
@@ -19,15 +20,9 @@ class App {
   private readonly walkers: Walker[]
   private processor: WalkerProcessor
 
-  private selected: Walker = null
-  private selectedMove: number = 0
-
   private moving: boolean = false
 
-  constructor(
-    canvas: HTMLCanvasElement,
-    private debug: (message: string) => void
-  ) {
+  constructor(canvas: HTMLCanvasElement) {
     this.engine = new Engine(canvas, false, {
       deterministicLockstep: true,
       lockstepMaxSteps: 4,
@@ -41,12 +36,7 @@ class App {
 
     const stage = new Stage(this.scene)
     this.walkers = []
-    this.processor = new WalkerProcessor(
-      this.scene,
-      this.walkers,
-      stage.bounds,
-      this.debug
-    )
+    this.processor = new WalkerProcessor(this.scene, this.walkers, stage.bounds)
 
     populateWalkers(this.scene, this.walkers, this.processor)
 
@@ -62,12 +52,8 @@ class App {
   start() {
     this.processor.start()
 
-    if (this.selected) {
-      this.selected.start()
-    } else {
-      this.moving = true
-      this.walkers.forEach((c) => c.start())
-    }
+    this.moving = true
+    this.walkers.forEach((c) => c.start())
   }
 
   stop() {
@@ -86,26 +72,36 @@ class App {
     }
   }
 
-  moveBack(index: number) {
-    if (this.tryMoveBack(index)) {
-      this.selectedMove = index
+  moveWalker(walkerIndex: number, moveIndex: number, start: boolean) {
+    const walker = this.findWalker(walkerIndex)
+    if (!walker) {
+      return
+    }
+
+    const moves = traceMoves.filter((x) => x.owner === walker.mesh)
+
+    if (moveIndex < 0 || moveIndex >= moves.length) {
+      return
+    }
+
+    const matching = moves[moveIndex]
+    walker.setPosition(matching.from)
+
+    if (start) {
+      walker.start()
     }
   }
 
-  replayMove(index: number) {
-    if (this.tryMoveBack(index)) {
-      const moves = traceMoves.filter((x) => x.owner === this.selected.mesh)
-
-      if (index < moves.length) {
-        const matching = moves[index]
-
-        if (this.selectedMove !== index) {
-          this.selected.setPosition(matching.from)
-        }
-
-        this.selected.move(matching.to)
+  private findWalker(walkerIndex: number, publishNotFound = true) {
+    if (walkerIndex < 0 || walkerIndex >= this.walkers.length) {
+      if (publishNotFound) {
+        appEvents.onWalkerNotFound.notifyObservers(walkerIndex)
       }
+      return null
     }
+
+    const walker = this.walkers[walkerIndex]
+    return walker
   }
 
   private createWalkers(quantity: number, infected: boolean = false) {
@@ -131,45 +127,25 @@ class App {
       const match = this.walkers.find((x) => x.mesh === pick.pickedMesh)
 
       if (match) {
-        if (traceOnClick) {
-          this.selected = match
-          const moves = traceMoves.filter((x) => x.owner === match.mesh)
-          this.debug('Moves: ' + moves.length)
-          showOnlyTraceMovesForOwner(match.mesh)
-        } else {
-          match.infect()
-        }
+        match.infect()
       }
 
       return match
     }
   }
 
-  private tryMoveBack(index: number) {
-    if (this.selected) {
-      const moves = traceMoves.filter((x) => x.owner === this.selected.mesh)
-
-      if (index < moves.length) {
-        const matching = moves[index]
-
-        this.selected.setPosition(matching.from)
-
-        return true
-      } else {
-        alert('Move cannot be found')
-      }
-    } else {
-      alert('Nothing selected')
+  public showTraces(walkerIndex: number) {
+    const walker = this.findWalker(walkerIndex)
+    if (!walker) {
+      return
     }
-    return false
+
+    showOnlyTraceMovesForOwner(walker.mesh)
   }
 }
 
-export const createApp = (
-  canvas: HTMLCanvasElement,
-  debug: (message: string) => void
-) => {
-  const app = new App(canvas, debug)
+export const createApp = (canvas: HTMLCanvasElement) => {
+  const app = new App(canvas)
 
   if (travelConfig.autoStart) {
     app.start()

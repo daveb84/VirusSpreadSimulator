@@ -18,7 +18,7 @@
       <div class="form-row">
         <button id="start-button">Start</button>
         <button id="stop-button">Stop</button>
-        <span id="debug-message"></span>
+        <span id="step"></span>
       </div>
       </section>
       <section class="border">
@@ -42,13 +42,14 @@
           <input type="number" id="person-tb" placeholder="Select person..." />
         </div>
         <div class="form-row">
-          <label for="replay-tb">Move</label>
+          <label for="move-tb">Move</label>
           <span class="help">Range</span>
-          <input type="number" id="replay-tb" placeholder="Move index..." />
+          <input type="number" id="move-tb" placeholder="Move index..." />
         </div>
         <div class="form-row">
           <button id="move-button">Move</button>
           <button id="replay-button">Replay</button>
+          <span class="error-message" id="replay-error"></span>
         </div>
       </section>
     </div>

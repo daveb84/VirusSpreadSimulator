@@ -1,48 +1,48 @@
 import './css/main.css'
+import { el, onClick, val, subscribe } from './dom'
 import { createApp } from '../app'
+import * as appEvents from '../app/appEvents'
 
-const canvas = document.getElementById('renderCanvas') as HTMLCanvasElement
+const canvas = el('renderCanvas') as HTMLCanvasElement
 
-const debug = (message: string) => {
-  document.getElementById('debug-message').innerHTML = message
-}
+const app = createApp(canvas)
 
-const app = createApp(canvas, debug)
-
-const bindButton = (id: string, handler: () => void) => {
-  const button = document.getElementById(id) as HTMLButtonElement
-
-  button.addEventListener('click', handler, true)
-}
-
-bindButton('start-button', () => app.start())
-bindButton('stop-button', () => app.stop())
+onClick('start-button', () => app.start())
+onClick('stop-button', () => app.stop())
 
 const add = () => {
-  const textBox = document.getElementById('amount-tb') as HTMLInputElement
-  const checkBox = document.getElementById('infected-cb') as HTMLInputElement
+  const amountVal = val('amount-tb')
 
-  const amount = parseInt(textBox.value)
+  const checkBox = el('infected-cb') as HTMLInputElement
+
+  const amount = parseInt(amountVal)
 
   if (!isNaN(amount)) {
     app.add(amount, checkBox.checked)
   }
 }
 
-bindButton('add-button', add)
+onClick('add-button', add)
 
-const bindReplayButton = (button: string, action: (index: number) => void) => {
+const bindReplayButton = (button: string, start: boolean) => {
   const handler = () => {
-    const textBox = document.getElementById('replay-tb') as HTMLInputElement
-    const index = parseInt(textBox.value)
+    const personVal = parseInt(val('person-tb'))
+    const moveVal = parseInt(val('move-tb'))
 
-    if (!isNaN(index)) {
-      action(index)
+    if (!isNaN(personVal) && !isNaN(moveVal)) {
+      app.moveWalker(personVal, moveVal, start)
     }
   }
 
-  bindButton(button, handler)
+  onClick(button, handler)
 }
 
-bindReplayButton('move-button', (index: number) => app.moveBack(index))
-bindReplayButton('replay-button', (index: number) => app.replayMove(index))
+bindReplayButton('move-button', false)
+bindReplayButton('replay-button', true)
+
+subscribe('step', appEvents.onStep, (step) => `Step ${step}`)
+subscribe(
+  'replay-error',
+  appEvents.onWalkerNotFound,
+  (walker) => `Person not found`
+)

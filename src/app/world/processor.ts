@@ -55,7 +55,6 @@ export class WalkerProcessor {
     private scene: Scene,
     private walkers: Walker[],
     private boundingBox: IObstacle,
-    private writeStep: (message: string) => void,
     private obstacles: IObstacle[] = []
   ) {}
 
@@ -81,7 +80,6 @@ export class WalkerProcessor {
   private process(stepId: number) {
     const timeUnit = Math.floor(stepId * travelConfig.processorStepRatio)
     this.routineStep = timeUnit % (travelConfig.timeSlots + 1)
-    this.writeStep(`Step: ${this.routineStep}`)
 
     const { walkers, boundingBox, obstacles } = this
 
