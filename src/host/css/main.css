@@ -10,7 +10,6 @@ body {
 
 .layout {
   height: 100%;
-  box-sizing: border-box;
   display: grid;
   grid-row-gap: 20px;
   grid-column-gap: 20px;
@@ -20,18 +19,10 @@ body {
 }
 
 @media only screen and (max-width: 768px) {
-  .grid-container {
+  .layout {
     grid-template-columns: auto;
     grid-template-areas: 'main' 'controls';
   }
-}
-
-.form-panel {
-  padding: 10px 0;
-}
-
-#debug-message {
-  color: #f00;
 }
 
 #renderCanvas {
@@ -39,4 +30,75 @@ body {
   height: 100%;
   display: block;
   font-size: 0;
+}
+
+#debug-message {
+  color: #f00;
+}
+
+input[type='text'],
+input[type='number'] {
+  padding: 0.5em;
+}
+
+input[type='text'][readonly] {
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+input[type='text'][readonly]:focus {
+  border: 0;
+}
+
+.control-panel section.border {
+  border: 1px dashed #ccc;
+  padding: 0.5em 0.75em 0 0.75em;
+  margin-bottom: 1em;
+}
+.control-panel section.border header {
+  font-style: italic;
+  margin: 0 0 0.75em 0;
+}
+
+.form-row,
+.form-row-inline,
+.form-row-checkbox {
+  padding: 0 0 1em 0;
+}
+
+.form-row label {
+  display: inline-block;
+  font-weight: bold;
+  margin-bottom: 0.5em;
+}
+
+.form-row .help {
+  float: right;
+  font-style: italic;
+  color: #555;
+}
+
+.form-row input[type='text'],
+.form-row input[type='number'] {
+  display: block;
+  width: 100%;
+}
+
+.form-row-inline {
+  display: grid;
+  grid-template-columns: 5em auto;
+  grid-template-areas: 'label control';
+}
+.form-row-inline label {
+  font-weight: bold;
+}
+
+.form-row-checkbox label input[type='checkbox'] {
+  padding: 0;
+  margin: 0 0.75em 0 0;
+}
+
+fieldset legend {
+  font-weight: bold;
 }

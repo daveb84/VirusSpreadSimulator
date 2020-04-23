@@ -9,22 +9,48 @@
 <body>
   <div class="layout">
     <canvas id="renderCanvas" touch-action="none"></canvas>
-    <div class="controls">
-      <div class="form-panel">
+    <div class="control-panel">
+      <section>
+      <div class="form-row-inline">
+        <label for="num-people">People</label>
+        <input id="num-people" type="text" readonly value="0" />
+      </div>
+      <div class="form-row">
         <button id="start-button">Start</button>
         <button id="stop-button">Stop</button>
         <span id="debug-message"></span>
       </div>
-      <div class="form-panel">
-        <input type="number" id="amount-tb" placeholder="Number of people..." />
-        <label><input type="checkbox" id="infected-cb" />Infected</label>
-        <button id="add-button">Add</button>
-      </div>
-      <div class="form-panel">
-        <input type="number" id="replay-tb" placeholder="Move index..." />
-        <button id="move-button">Move</button>
-        <button id="replay-button">Replay</button>
-      </div>
+      </section>
+      <section class="border">
+        <header>Add people</header>
+        <div class="form-row">
+          <label for="amount-tb">People</label>
+          <input type="number" id="amount-tb" placeholder="Number of people..." />
+        </div>
+        <div class="form-row-checkbox">
+          <label><input type="checkbox" id="infected-cb" />Infected</label>
+        </div>
+        <div class="form-row">
+          <button id="add-button">Add</button>
+        </div>
+      </section>
+      <section class="border">
+        <header>Replay moves</header>
+        <div class="form-row">
+          <label for="person-tb">Selected person</label>
+          <span class="help">Range</span>
+          <input type="number" id="person-tb" placeholder="Select person..." />
+        </div>
+        <div class="form-row">
+          <label for="replay-tb">Move</label>
+          <span class="help">Range</span>
+          <input type="number" id="replay-tb" placeholder="Move index..." />
+        </div>
+        <div class="form-row">
+          <button id="move-button">Move</button>
+          <button id="replay-button">Replay</button>
+        </div>
+      </section>
     </div>
   </div>
 </body>
