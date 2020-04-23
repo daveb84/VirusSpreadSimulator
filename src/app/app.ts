@@ -9,9 +9,7 @@ import {
 } from './utils/trace'
 import { travelConfig } from './settings'
 import * as cannon from 'cannon'
-import * as appEvents from './appEvents'
-
-const traceOnClick = false
+import { onWalkerNotFound } from './appEvents'
 
 class App {
   private readonly engine: Engine
@@ -95,7 +93,7 @@ class App {
   private findWalker(walkerIndex: number, publishNotFound = true) {
     if (walkerIndex < 0 || walkerIndex >= this.walkers.length) {
       if (publishNotFound) {
-        appEvents.onWalkerNotFound.notifyObservers(walkerIndex)
+        onWalkerNotFound.notifyObservers(walkerIndex)
       }
       return null
     }

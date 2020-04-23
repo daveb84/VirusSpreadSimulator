@@ -1,6 +1,7 @@
 import { getCommonMaterials } from '../materials'
 import { virusDuration } from '../settings'
 import { Mesh } from '@babylonjs/core'
+import {} from '../appEvents'
 
 export enum VirusState {
   NotCaught = 0,
