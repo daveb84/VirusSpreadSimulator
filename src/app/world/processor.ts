@@ -2,7 +2,7 @@ import { Walker } from './walker'
 import { IObstacle } from '../behaviors'
 import { Scene, Observer } from '@babylonjs/core'
 import { travelConfig, regions } from '../settings'
-import { onStep, onProcess } from '../appEvents'
+import { onStep, onProcess, IProcessStep } from '../appEvents'
 import { GridCell } from '../vectors'
 
 interface IWalkerPosition {
@@ -12,7 +12,8 @@ interface IWalkerPosition {
 
 export class WalkerProcessor {
   private attachedHandler: Observer<Scene>
-  private routineStep = 0
+
+  private currentStep: IProcessStep = { step: 0, sceneStepId: 0 }
 
   private stoppedStepId = 0
 
@@ -54,8 +55,8 @@ export class WalkerProcessor {
     }
   }
 
-  getProcessorStep() {
-    return this.routineStep
+  getProcessStep(): IProcessStep {
+    return this.currentStep
   }
 
   private process(sceneStepId: number) {
@@ -75,10 +76,10 @@ export class WalkerProcessor {
     const timeUnit = Math.floor(sceneStepId * travelConfig.processorStepRatio)
     const step = timeUnit % (travelConfig.timeSlots + 1)
 
-    const stepChanged = step > this.routineStep
-    this.routineStep = step
+    const stepChanged = step > this.currentStep.step
+    this.currentStep = { sceneStepId: sceneStepId, step: step }
 
-    onProcess.notifyObservers({ sceneStepId: sceneStepId, step: step })
+    onProcess.notifyObservers(this.currentStep)
     if (stepChanged) {
       onStep.notifyObservers(step)
     }

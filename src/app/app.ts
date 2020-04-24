@@ -107,7 +107,7 @@ class App {
 
     for (let i = 0; i < quantity; i++) {
       const walker = new Walker(this.scene, () =>
-        this.processor.getProcessorStep()
+        this.processor.getProcessStep()
       )
 
       if (infected) {

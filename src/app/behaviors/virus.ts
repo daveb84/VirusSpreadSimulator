@@ -13,6 +13,7 @@ export enum VirusState {
 export class Virus {
   private _state: VirusState
   private materials = getCommonMaterials()
+  private isolating = false
 
   public get state() {
     return this._state
@@ -30,7 +31,8 @@ export class Virus {
 
   constructor(
     public readonly mesh: Mesh,
-    private getProcessorStep: () => number
+    private getProcessStep: () => IProcessStep,
+    private onIsolationChanged: (isolate: boolean) => void
   ) {
     this._state = VirusState.NotCaught
   }
@@ -45,7 +47,7 @@ export class Virus {
     this._state = state
     if (state === VirusState.Incubating) {
       this.mesh.material = this.materials.incubating
-      this.setStateDelayed(VirusState.Ill, virusDuration.incubation)
+      this.setStateDelayed(VirusState.Ill, virusDuration.incubation, true)
     } else if (state === VirusState.Ill) {
       this.mesh.material = this.materials.ill
       this.setStateDelayed(VirusState.Recovered, virusDuration.ill)
@@ -54,12 +56,20 @@ export class Virus {
     }
   }
 
-  private setStateDelayed(state: VirusState, delay: number) {
-    const targetStep = this.getProcessorStep() + delay
+  private setStateDelayed(state: VirusState, delay: number, isolate = false) {
+    const targetStep = this.getProcessStep().sceneStepId + delay
 
     const observer = onProcess.add((event: IProcessStep) => {
       if (event.sceneStepId >= targetStep) {
         this.setState(state)
+
+        const previousIsolating = this.isolating
+        this.isolating = isolate
+
+        if (isolate !== previousIsolating) {
+          this.onIsolationChanged(isolate)
+        }
+
         onProcess.remove(observer)
       }
     })

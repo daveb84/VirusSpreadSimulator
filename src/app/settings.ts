@@ -5,8 +5,8 @@ export const traceEnabled = false
 export const markCollisions = false
 
 export const virusDuration = {
-  incubation: 5000,
-  ill: 5000,
+  incubation: 300,
+  ill: 300,
 }
 
 export const travelConfig = {

@@ -5,14 +5,14 @@ import { Scene } from '@babylonjs/core'
 import { Walker } from './walker'
 import { IRoutineTargets } from '../behaviors'
 import { WalkerProcessor } from './processor'
-import { IWalkerBuildings } from './types'
+import { IWalkerBuildings, BuildingType } from './types'
 
 export const populateWalkers = (
   scene: Scene,
   walkers: Walker[],
   processor: WalkerProcessor
 ) => {
-  const getCurrentStep = () => processor.getProcessorStep()
+  const getCurrentStep = () => processor.getProcessStep()
   const config = createPopulationConfig()
 
   const buildingConfigs = config.buildingWalkers.map((x) => x.building)
@@ -46,6 +46,9 @@ const getRoutineTargets = (
 
     if (moveLocation) {
       const move: IRoutineTargets = {
+        home:
+          buildings[walkerBuilding.building].building.type ===
+          BuildingType.Home,
         target: moveLocation,
         fromStep: walkerBuilding.fromStep,
         toStep: walkerBuilding.toStep,

@@ -2,17 +2,19 @@ import { ITravelMove, ITravelMoveFactory } from './travel'
 import { Vector3, Animation } from '@babylonjs/core'
 import { generateNumber, FlatRegion } from '../vectors'
 import { travelConfig } from '../settings'
+import { IProcessStep } from '../appEvents'
 
 export interface IRoutineTargets {
   target: FlatRegion
   fromStep: number
   toStep: number
+  home: boolean
 }
 
 export class RoutineMoveFactory implements ITravelMoveFactory {
   constructor(
     public targets: IRoutineTargets[],
-    public currentStep: () => number,
+    public getProcessStep: () => IProcessStep,
     public distance: number = travelConfig.distance,
     public frameRate: number = travelConfig.frameRate,
     public endFrame: number = travelConfig.endFrame
@@ -41,7 +43,7 @@ export class RoutineMoveFactory implements ITravelMoveFactory {
       return position
     }
 
-    const step = this.currentStep()
+    const step = this.getProcessStep().step
     let currentMoves = this.targets.filter(
       (x) => x.fromStep <= step && x.toStep >= step && x.target !== null
     )

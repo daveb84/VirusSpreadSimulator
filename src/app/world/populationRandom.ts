@@ -27,30 +27,6 @@ interface IBuildingConfigOptions {
   columnIndex?: number
 }
 
-const defaultConfigAmounts: IRandomPopulationConfig = {
-  homes: 60,
-  walkerHomesFrom: 1,
-  walkerHomesTo: 4,
-  works: 5,
-  walkerWorksFrom: 1,
-  walkerWorksTo: 2,
-  shops: 20,
-  walkerShopsFrom: 0,
-  walkerShopsTo: 10,
-}
-
-const minimalConfigAmounts: IRandomPopulationConfig = {
-  homes: 1,
-  walkerHomesFrom: 1,
-  walkerHomesTo: 1,
-  works: 1,
-  walkerWorksFrom: 1,
-  walkerWorksTo: 1,
-  shops: 1,
-  walkerShopsFrom: 1,
-  walkerShopsTo: 1,
-}
-
 const home: IBuildingConfig = {
   rows: 1,
   columns: 1,
@@ -79,6 +55,30 @@ const createBuilding = (
   ...defaultValues,
   ...args,
 })
+
+const defaultConfigAmounts: IRandomPopulationConfig = {
+  homes: 60,
+  walkerHomesFrom: 1,
+  walkerHomesTo: 4,
+  works: 5,
+  walkerWorksFrom: 1,
+  walkerWorksTo: 2,
+  shops: 20,
+  walkerShopsFrom: 0,
+  walkerShopsTo: 10,
+}
+
+const minimalConfigAmounts: IRandomPopulationConfig = {
+  homes: 1,
+  walkerHomesFrom: 1,
+  walkerHomesTo: 1,
+  works: 1,
+  walkerWorksFrom: 1,
+  walkerWorksTo: 1,
+  shops: 1,
+  walkerShopsFrom: 1,
+  walkerShopsTo: 1,
+}
 
 export const createRandomPopulation = (
   configAmounts: IRandomPopulationConfig = defaultConfigAmounts

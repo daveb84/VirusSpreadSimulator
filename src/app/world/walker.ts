@@ -6,33 +6,42 @@ import {
   RandomMoveFactory,
   IRoutineTargets,
   RoutineMoveFactory,
+  Isolate,
 } from '../behaviors'
 import { Scene, Vector3 } from '@babylonjs/core'
 import { travelConfig, regions } from '../settings'
+import { FlatRegion } from '../vectors'
+import { IProcessStep } from '../appEvents'
 
 export class Walker {
   private person: Person
   private virus: Virus
   private travel: CollidingTravel
+  private isolate: Isolate
+  private home: FlatRegion
 
   constructor(
-    private scene: Scene,
-    getProcessorStep: () => number,
+    scene: Scene,
+    getProcessStep: () => IProcessStep,
     routineTargets?: IRoutineTargets[]
   ) {
     this.person = new Person(scene)
-    this.virus = new Virus(this.person.mesh, getProcessorStep)
 
     if (routineTargets && routineTargets.length) {
-      const travelMoves = new RoutineMoveFactory(
-        routineTargets,
-        getProcessorStep
-      )
+      const travelMoves = new RoutineMoveFactory(routineTargets, getProcessStep)
       this.travel = new CollidingTravel(this.person.mesh, travelMoves)
+
+      const home = routineTargets.find((x) => x.home)
+      this.home = home && home.target
     } else {
       const travelMoves = new RandomMoveFactory()
       this.travel = new CollidingTravel(this.person.mesh, travelMoves)
     }
+
+    this.isolate = new Isolate(this.person.mesh, this.travel, this.home)
+    this.virus = new Virus(this.person.mesh, getProcessStep, (isolate) =>
+      this.isolate.setIsolation(isolate)
+    )
 
     const startPosition = regions.walker.getRandomPoint()
     this.setPosition(startPosition)
@@ -55,7 +64,9 @@ export class Walker {
   }
 
   start() {
-    this.travel.start()
+    if (!this.isolate.isolating) {
+      this.travel.start()
+    }
   }
 
   stop() {

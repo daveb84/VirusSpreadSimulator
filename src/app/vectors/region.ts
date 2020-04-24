@@ -25,6 +25,7 @@ export class FlatRegion implements IFlatRegion {
   private _midZ: number
 
   private _points: Vector3[] = []
+  private _midPoint: Vector3
 
   public get y() {
     return this._y
@@ -60,6 +61,10 @@ export class FlatRegion implements IFlatRegion {
     return this._points
   }
 
+  public get midPoint() {
+    return this._midPoint
+  }
+
   constructor(region: IFlatRegion) {
     this._y = region.y
     this._minX = region.minX
@@ -83,6 +88,8 @@ export class FlatRegion implements IFlatRegion {
       new Vector3(this.maxX, this.y, this.maxZ),
       new Vector3(this.minX, this.y, this.maxZ),
     ]
+
+    this._midPoint = new Vector3(this.midX, this.y, this.midZ)
   }
 
   public draw(scene: Scene, color?: Color3) {
