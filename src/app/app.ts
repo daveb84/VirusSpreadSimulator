@@ -2,14 +2,15 @@ import { Stage, createScene } from './meshes'
 import { initMaterials } from './materials'
 import { Scene, Engine, PickingInfo, CannonJSPlugin } from '@babylonjs/core'
 import { Walker, WalkerProcessor, populateWalkers } from './world'
-import {
-  initTrace,
-  showOnlyTraceMovesForOwner,
-  traceMoves,
-} from './utils/trace'
+import { initTrace, traceMoves, toggleTraces } from './utils/trace'
 import { travelConfig, regions } from './settings'
 import * as cannon from 'cannon'
-import { onWalkerNotFound } from './appEvents'
+import {
+  onWalkerNotFound,
+  onWalkerMoveNotFound,
+  onWalkerSelected,
+  ISelectedWalker,
+} from './appEvents'
 import { VirusState } from './behaviors'
 
 interface IAppState {
@@ -94,6 +95,7 @@ class App {
     const moves = traceMoves.filter((x) => x.owner === walker.mesh)
 
     if (moveIndex < 0 || moveIndex >= moves.length) {
+      onWalkerMoveNotFound.notifyObservers(this.getSelectedWalker(walker))
       return
     }
 
@@ -102,6 +104,14 @@ class App {
 
     if (start) {
       walker.start()
+    }
+  }
+
+  infect(walkerIndex: number) {
+    const walker = this.findWalker(walkerIndex)
+
+    if (walker) {
+      walker.infect()
     }
   }
 
@@ -160,20 +170,30 @@ class App {
       const match = this.walkers.find((x) => x.mesh === pick.pickedMesh)
 
       if (match) {
-        match.infect()
-      }
+        const moves = traceMoves.filter((x) => x.owner === match.mesh)
 
-      return match
+        onWalkerSelected.notifyObservers(this.getSelectedWalker(match))
+      }
     }
   }
 
-  public showTraces(walkerIndex: number) {
+  private getSelectedWalker(walker: Walker): ISelectedWalker {
+    const moves = traceMoves.filter((x) => x.owner === walker.mesh)
+
+    return {
+      walkerIndex: this.walkers.indexOf(walker),
+      moveCount: moves.length,
+      canInfect: walker.canCatchVirus,
+    }
+  }
+
+  public toggleTraces(walkerIndex: number) {
     const walker = this.findWalker(walkerIndex)
     if (!walker) {
       return
     }
 
-    showOnlyTraceMovesForOwner(walker.mesh)
+    toggleTraces(walker.mesh)
   }
 }
 

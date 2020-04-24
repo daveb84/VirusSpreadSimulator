@@ -34,48 +34,37 @@ const createLine = (from: Vector3, to: Vector3) => {
   return line
 }
 
-interface ITraceLine {
-  owner: Mesh
-  trace: Mesh
-}
+const traceOwnerEnabled: any = {}
 
-const traceList: ITraceLine[] = []
-
-export const traceLine = (from: Vector3, to: Vector3, owner: Mesh = null) => {
-  if (!scene) {
-    return
-  }
-
-  const trace = createLine(from, to)
-
-  if (owner) {
-    traceList.push({
-      owner,
-      trace,
-    })
-  }
-}
-
-interface ITraceMove extends ITraceLine {
+interface ITraceMove {
   from: Vector3
   to: Vector3
+  owner: Mesh
+  trace: Mesh
 }
 
 export const traceMoves: ITraceMove[] = []
 
 export const traceMove = (from: Vector3, to: Vector3, owner: Mesh) => {
-  if (!traceEnabled) {
-    return
-  }
-
-  const trace = createLine(from, to)
+  const line = createLine(from, to)
+  line.setEnabled(!!traceOwnerEnabled[owner.uniqueId])
 
   traceMoves.push({
     from,
     to,
     owner,
-    trace,
+    trace: line,
   })
+}
+
+export const toggleTraces = (owner: Mesh) => {
+  const show = !traceOwnerEnabled[owner.uniqueId]
+
+  traceOwnerEnabled[owner.uniqueId] = show
+
+  traceMoves
+    .filter((x) => x.owner === owner)
+    .forEach((x) => x.trace.setEnabled(show))
 }
 
 export const tracePoint = (position: Vector3, owner: Mesh) => {
@@ -84,20 +73,4 @@ export const tracePoint = (position: Vector3, owner: Mesh) => {
   const point = new Mesh('point', scene)
   point.position = position
   point.material = pointMaterial
-}
-
-export const showOnlyTracesForOwner = (owner: Mesh) => {
-  traceList.forEach((t) => {
-    const show = t.owner === owner
-
-    t.trace.setEnabled(show)
-  })
-}
-
-export const showOnlyTraceMovesForOwner = (owner: Mesh) => {
-  traceMoves.forEach((t) => {
-    const show = t.owner === owner
-
-    t.trace.setEnabled(show)
-  })
 }

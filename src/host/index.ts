@@ -1,19 +1,40 @@
 import './css/main.css'
-import { el, onClick, val, subscribe } from './dom'
+import { el, onClick, val, subscribe, show } from './dom'
 import {
   createApp,
-  onWalkerNotFound,
+  onWalkerMoveNotFound,
   onProcessNextStep,
   onProcessCycleComplete,
+  onWalkerSelected,
+  onWalkerNotFound,
 } from '../app'
 
+// create app
 const canvas = el('renderCanvas') as HTMLCanvasElement
 
 const app = createApp(canvas)
 
+// bind state
+const stateElements: any = {}
+
+onProcessCycleComplete.add((step) => {
+  const state = app.getState()
+
+  for (let prop in state) {
+    if (!stateElements[prop]) {
+      stateElements[prop] = el(`count-${prop}`)
+    }
+    stateElements[prop].innerHTML = state[prop]
+  }
+})
+
+subscribe('step', onProcessNextStep, (step) => `Step ${step}`)
+
+// bind start/stop
 onClick('start-button', () => app.start())
 onClick('stop-button', () => app.stop())
 
+// bind add
 const add = () => {
   const amountVal = val('amount-tb')
 
@@ -28,34 +49,41 @@ const add = () => {
 
 onClick('add-button', add)
 
-const bindReplayButton = (button: string, start: boolean) => {
+// bind selected walker
+let selectedWalker = -1
+
+onWalkerSelected.add((walker) => {
+  selectedWalker = walker.walkerIndex
+  show('walker-selected', true)
+
+  const walkerIndexTb = el('walker-tb') as HTMLInputElement
+  walkerIndexTb.value = selectedWalker.toString()
+
+  el('walker-moves').innerHTML =
+    walker.moveCount <= 0 ? '0 available' : `0-${walker.moveCount}`
+})
+
+// bind infect walker
+onClick('infect-button', () => app.infect(selectedWalker))
+
+// bind replay moves
+const bindReplayButton = (id: string, start: boolean) => {
   const handler = () => {
-    const personVal = parseInt(val('person-tb'))
     const moveVal = parseInt(val('move-tb'))
 
-    if (!isNaN(personVal) && !isNaN(moveVal)) {
-      app.moveWalker(personVal, moveVal, start)
+    if (selectedWalker > -1 && !isNaN(moveVal)) {
+      app.moveWalker(selectedWalker, moveVal, start)
     }
   }
 
-  onClick(button, handler)
+  onClick(id, handler)
 }
 
 bindReplayButton('move-button', false)
 bindReplayButton('replay-button', true)
 
-subscribe('step', onProcessNextStep, (step) => `Step ${step}`)
-subscribe('replay-error', onWalkerNotFound, (walker) => `Person not found`)
+subscribe('move-error', onWalkerMoveNotFound, () => `Move not found`)
+subscribe('move-error', onWalkerNotFound, () => `Walker not found`)
 
-const stateElements: any = {}
-
-onProcessCycleComplete.add((step) => {
-  const state = app.getState()
-
-  for (let prop in state) {
-    if (!stateElements[prop]) {
-      stateElements[prop] = el(`count-${prop}`)
-    }
-    stateElements[prop].innerHTML = state[prop]
-  }
-})
+// bind show traces
+onClick('show-moves-button', () => app.toggleTraces(selectedWalker))

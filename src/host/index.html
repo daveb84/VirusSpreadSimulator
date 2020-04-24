@@ -54,22 +54,27 @@
           <button id="add-button">Add</button>
         </div>
       </section>
-      <section class="border">
-        <header>Replay moves</header>
+      <section class="border" id="walker-selected" style="display: none;">
+        <header>Selected Person</header>
         <div class="form-row">
-          <label for="person-tb">Selected person</label>
-          <span class="help">Range</span>
-          <input type="number" id="person-tb" placeholder="Select person..." />
+          <label for="walker-tb">Person</label>
+          <input type="number" id="walker-tb" placeholder="Person index..." />
+        </div>
+        <div class="form-row">
+          <button id="infect-button">Infect</button>
+          <button id="show-moves-button">Show Moves</button>
         </div>
         <div class="form-row">
           <label for="move-tb">Move</label>
-          <span class="help">Range</span>
+          <span class="help" id="walker-moves"></span>
           <input type="number" id="move-tb" placeholder="Move index..." />
         </div>
         <div class="form-row">
           <button id="move-button">Move</button>
           <button id="replay-button">Replay</button>
-          <span class="error-message" id="replay-error"></span>
+        </div>
+        <div class="form-row">
+          <span class="error-message" id="move-error"></span>
         </div>
       </section>
     </div>
