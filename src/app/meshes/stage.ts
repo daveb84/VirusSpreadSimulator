@@ -21,11 +21,17 @@ export class Stage extends StageBase {
     return this._bounds
   }
 
+  private _graveYard: GraveYard
+
+  public get graveYard() {
+    return this._graveYard
+  }
+
   constructor(scene: Scene) {
     super(scene, regions.stage)
 
     this._bounds = new StageBounds(scene)
-    new GraveYard(scene)
+    this._graveYard = new GraveYard(scene)
   }
 }
 

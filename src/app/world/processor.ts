@@ -3,7 +3,7 @@ import { IObstacle } from '../behaviors'
 import { Scene, Observer } from '@babylonjs/core'
 import { travelConfig, regions } from '../settings'
 import { onStep, onProcess, IProcessStep } from '../appEvents'
-import { GridCell } from '../vectors'
+import { GridCell, FlatRegion } from '../vectors'
 
 interface IWalkerPosition {
   walker: Walker
@@ -20,7 +20,8 @@ export class WalkerProcessor {
   constructor(
     private scene: Scene,
     private walkers: Walker[],
-    private boundingBox: IObstacle
+    private boundingBox: IObstacle,
+    private graveYard: FlatRegion
   ) {}
 
   start() {
@@ -87,7 +88,7 @@ export class WalkerProcessor {
 
   private processBounds(walkers: IWalkerPosition[]) {
     walkers
-      .filter((x) => !x.cell)
+      .filter((x) => !x.cell && x.walker.moving)
       .forEach((x) => {
         x.walker.collideWithObstacle(this.boundingBox)
       })

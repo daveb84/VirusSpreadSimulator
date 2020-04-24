@@ -7,7 +7,7 @@ import {
   showOnlyTraceMovesForOwner,
   traceMoves,
 } from './utils/trace'
-import { travelConfig } from './settings'
+import { travelConfig, regions } from './settings'
 import * as cannon from 'cannon'
 import { onWalkerNotFound } from './appEvents'
 
@@ -34,7 +34,12 @@ class App {
 
     const stage = new Stage(this.scene)
     this.walkers = []
-    this.processor = new WalkerProcessor(this.scene, this.walkers, stage.bounds)
+    this.processor = new WalkerProcessor(
+      this.scene,
+      this.walkers,
+      stage.bounds,
+      regions.walkerGraveYard
+    )
 
     populateWalkers(this.scene, this.walkers, this.processor)
 

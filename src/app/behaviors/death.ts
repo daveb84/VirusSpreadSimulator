@@ -12,8 +12,8 @@ export class Death {
   constructor(private mesh: Mesh, private travel: Travel) {}
 
   die() {
-    this._dead = true
     this.travel.stop()
+    this._dead = true
     this.mesh.position = regions.walkerGraveYard.getRandomPoint()
     this.mesh.rotation.z = Math.PI / 2
   }
