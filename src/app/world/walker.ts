@@ -21,7 +21,7 @@ export class Walker {
     routineTargets?: IRoutineTargets[]
   ) {
     this.person = new Person(scene)
-    this.virus = new Virus(this.person.mesh)
+    this.virus = new Virus(this.person.mesh, getProcessorStep)
 
     if (routineTargets && routineTargets.length) {
       const travelMoves = new RoutineMoveFactory(
@@ -44,6 +44,10 @@ export class Walker {
 
   public get contagious() {
     return this.virus.contagious
+  }
+
+  public get canCatchVirus() {
+    return this.virus.canCatch
   }
 
   public get mesh() {

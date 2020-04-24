@@ -1,7 +1,6 @@
 import './css/main.css'
 import { el, onClick, val, subscribe } from './dom'
-import { createApp } from '../app'
-import * as appEvents from '../app/appEvents'
+import { createApp, onWalkerNotFound, onStep } from '../app'
 
 const canvas = el('renderCanvas') as HTMLCanvasElement
 
@@ -40,9 +39,5 @@ const bindReplayButton = (button: string, start: boolean) => {
 bindReplayButton('move-button', false)
 bindReplayButton('replay-button', true)
 
-subscribe('step', appEvents.onStep, (step) => `Step ${step}`)
-subscribe(
-  'replay-error',
-  appEvents.onWalkerNotFound,
-  (walker) => `Person not found`
-)
+subscribe('step', onStep, (step) => `Step ${step}`)
+subscribe('replay-error', onWalkerNotFound, (walker) => `Person not found`)
