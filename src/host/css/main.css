@@ -49,6 +49,7 @@ input[type='text'][readonly] {
 
 input[type='text'][readonly]:focus {
   border: 0;
+  outline: none;
 }
 
 .control-panel section.border {
@@ -87,7 +88,7 @@ input[type='text'][readonly]:focus {
 
 .form-row-inline {
   display: grid;
-  grid-template-columns: 5em auto;
+  grid-template-columns: 7em auto;
   grid-template-areas: 'label control';
 }
 .form-row-inline label {

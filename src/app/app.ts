@@ -10,6 +10,16 @@ import {
 import { travelConfig, regions } from './settings'
 import * as cannon from 'cannon'
 import { onWalkerNotFound } from './appEvents'
+import { VirusState } from './behaviors'
+
+interface IAppState {
+  walkers: number
+  notCaught: number
+  incubating: number
+  isolating: number
+  recovered: number
+  died: number
+}
 
 class App {
   private readonly engine: Engine
@@ -93,6 +103,26 @@ class App {
     if (start) {
       walker.start()
     }
+  }
+
+  getState() {
+    const state: IAppState = {
+      walkers: this.walkers.length,
+      notCaught: this.walkers.filter(
+        (x) => x.virusState === VirusState.NotCaught
+      ).length,
+      incubating: this.walkers.filter(
+        (x) => x.virusState === VirusState.Incubating
+      ).length,
+      isolating: this.walkers.filter((x) => x.virusState === VirusState.Ill)
+        .length,
+      recovered: this.walkers.filter(
+        (x) => x.virusState === VirusState.Recovered
+      ).length,
+      died: this.walkers.filter((x) => x.virusState === VirusState.Died).length,
+    }
+
+    return state
   }
 
   private findWalker(walkerIndex: number, publishNotFound = true) {

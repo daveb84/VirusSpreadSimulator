@@ -65,6 +65,10 @@ export class Walker {
     return this.virus.canCatch
   }
 
+  public get virusState() {
+    return this.virus.state
+  }
+
   public get mesh() {
     return this.person.mesh
   }

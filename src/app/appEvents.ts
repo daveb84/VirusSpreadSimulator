@@ -6,5 +6,6 @@ export interface IProcessStep {
 }
 
 export const onWalkerNotFound = new Observable<number>()
-export const onStep = new Observable<number>()
-export const onProcess = new Observable<IProcessStep>()
+export const onProcessNextStep = new Observable<number>()
+export const onProcessCycleBegin = new Observable<IProcessStep>()
+export const onProcessCycleComplete = new Observable<IProcessStep>()

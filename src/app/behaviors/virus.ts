@@ -1,13 +1,14 @@
 import { getCommonMaterials } from '../materials'
 import { virusSettings } from '../settings'
 import { Mesh } from '@babylonjs/core'
-import { onProcess, IProcessStep } from '../appEvents'
+import { onProcessCycleBegin, IProcessStep } from '../appEvents'
 
 export enum VirusState {
   NotCaught = 0,
   Incubating = 1,
   Ill = 2,
   Recovered = 3,
+  Died = 4,
 }
 
 export class Virus {
@@ -56,7 +57,10 @@ export class Virus {
       if (recover) {
         this.setStateDelayed(VirusState.Recovered, virusSettings.ill)
       } else {
-        this.setDelayed(() => this.onDie(), virusSettings.ill)
+        this.setDelayed(() => {
+          this._state = VirusState.Died
+          this.onDie()
+        }, virusSettings.ill)
       }
     } else if (state === VirusState.Recovered) {
       this.mesh.material = this.materials.recovered
@@ -82,11 +86,11 @@ export class Virus {
   private setDelayed(action: () => void, delay: number) {
     const targetStep = this.getProcessStep().sceneStepId + delay
 
-    const observer = onProcess.add((event: IProcessStep) => {
+    const observer = onProcessCycleBegin.add((event: IProcessStep) => {
       if (event.sceneStepId >= targetStep) {
         action()
 
-        onProcess.remove(observer)
+        onProcessCycleBegin.remove(observer)
       }
     })
   }

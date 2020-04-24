@@ -1,6 +1,11 @@
 import './css/main.css'
 import { el, onClick, val, subscribe } from './dom'
-import { createApp, onWalkerNotFound, onStep } from '../app'
+import {
+  createApp,
+  onWalkerNotFound,
+  onProcessNextStep,
+  onProcessCycleComplete,
+} from '../app'
 
 const canvas = el('renderCanvas') as HTMLCanvasElement
 
@@ -39,5 +44,18 @@ const bindReplayButton = (button: string, start: boolean) => {
 bindReplayButton('move-button', false)
 bindReplayButton('replay-button', true)
 
-subscribe('step', onStep, (step) => `Step ${step}`)
+subscribe('step', onProcessNextStep, (step) => `Step ${step}`)
 subscribe('replay-error', onWalkerNotFound, (walker) => `Person not found`)
+
+const stateElements: any = {}
+
+onProcessCycleComplete.add((step) => {
+  const state = app.getState()
+
+  for (let prop in state) {
+    if (!stateElements[prop]) {
+      stateElements[prop] = el(`count-${prop}`)
+    }
+    stateElements[prop].innerHTML = state[prop]
+  }
+})

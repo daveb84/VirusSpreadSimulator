@@ -12,8 +12,28 @@
     <div class="control-panel">
       <section>
       <div class="form-row-inline">
-        <label for="num-people">People</label>
-        <input id="num-people" type="text" readonly value="0" />
+        <label for="count-walkers">People</label>
+        <span class="display-only" id="count-walkers">0</span>
+      </div>
+      <div class="form-row-inline">
+        <label for="count-notCaught">Not infected</label>
+        <span class="display-only" id="count-notCaught">0</span>
+      </div>
+      <div class="form-row-inline">
+        <label for="count-incubating">Infected</label>
+        <span class="display-only" id="count-incubating">0</span>
+      </div>
+      <div class="form-row-inline">
+        <label for="count-isolating">Isolating</label>
+        <span class="display-only" id="count-isolating">0</span>
+      </div>
+      <div class="form-row-inline">
+        <label for="count-recovered">Recovered</label>
+        <span class="display-only" id="count-recovered">0</span>
+      </div>
+      <div class="form-row-inline">
+        <label for="count-died">Died</label>
+        <span class="display-only" id="count-died">0</span>
       </div>
       <div class="form-row">
         <button id="start-button">Start</button>
