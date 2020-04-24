@@ -76,19 +76,21 @@
         </div>
         <div class="form-row">
           <button id="infect-button">Infect</button>
-          <button id="show-moves-button">Show Moves</button>
         </div>
-        <div class="form-row">
-          <label for="move-tb">Move</label>
-          <span class="help" id="walker-moves"></span>
-          <input type="number" id="move-tb" placeholder="Move index..." />
-        </div>
-        <div class="form-row">
-          <button id="move-button">Move</button>
-          <button id="replay-button">Replay</button>
-        </div>
-        <div class="form-row">
-          <span class="error-message" id="move-error"></span>
+        <div id="moves-panel" style="display: none;">
+          <div class="form-row">
+            <label for="move-tb">Move</label>
+            <span class="help" id="walker-moves"></span>
+            <input type="number" id="move-tb" placeholder="Move index..." />
+          </div>
+          <div class="form-row">
+            <button id="show-moves-button">Show Moves</button>
+            <button id="move-button">Move</button>
+            <button id="replay-button">Replay</button>
+          </div>
+          <div class="form-row">
+            <span class="error-message" id="move-error"></span>
+          </div>
         </div>
       </section>
     </div>

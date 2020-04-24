@@ -8,6 +8,7 @@ import {
   onWalkerSelected,
   onWalkerNotFound,
 } from '../app'
+import { traceEnabled } from '../app/settings'
 
 // create app
 const canvas = el('renderCanvas') as HTMLCanvasElement
@@ -86,4 +87,7 @@ subscribe('move-error', onWalkerMoveNotFound, () => `Move not found`)
 subscribe('move-error', onWalkerNotFound, () => `Walker not found`)
 
 // bind show traces
+if (traceEnabled) {
+  show('moves-panel', true)
+}
 onClick('show-moves-button', () => app.toggleTraces(selectedWalker))

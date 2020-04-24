@@ -46,6 +46,10 @@ interface ITraceMove {
 export const traceMoves: ITraceMove[] = []
 
 export const traceMove = (from: Vector3, to: Vector3, owner: Mesh) => {
+  if (!traceEnabled) {
+    return
+  }
+
   const line = createLine(from, to)
   line.setEnabled(!!traceOwnerEnabled[owner.uniqueId])
 
