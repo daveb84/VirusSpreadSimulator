@@ -5,6 +5,7 @@ export interface ICommonMaterials {
   incubating: Material
   ill: Material
   recovered: Material
+  died: Material
   collisionMarker: Material
   homeBuilding: Material
   workBuilding: Material
@@ -39,6 +40,7 @@ export const initMaterials = (scene: Scene) => {
     ),
     ill: makeMaterial(scene, 'walkerIll', new Color3(0, 1, 0)),
     recovered: makeMaterial(scene, 'walkerIll', new Color3(0.6, 0.6, 1)),
+    died: makeMaterial(scene, 'walkerDied', new Color3(0.2, 0.2, 0.2)),
     collisionMarker: makeMaterial(
       scene,
       'collision',

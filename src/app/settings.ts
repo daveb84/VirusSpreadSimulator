@@ -5,7 +5,7 @@ export const traceEnabled = false
 export const markCollisions = false
 
 export const virusSettings = {
-  incubation: 100,
+  incubation: 300,
   ill: 300,
   deathRate: 0.05,
 }
@@ -34,7 +34,8 @@ const gridSquareDepth = 0.5
 const infectionGridSquareRatio = 5
 
 const graveYardDistance = 0.5
-const graveYardWith = 2
+const graveYardWidth = 2
+const graveYardDepthRatio = 0.5
 
 const createRegions = () => {
   const getBound = (squareSize: number, amount: number) => {
@@ -55,9 +56,9 @@ const createRegions = () => {
   const graveYardPoints = {
     y: 1,
     minX: stageRegionPoints.maxX + graveYardDistance,
-    minZ: -maxZ,
-    maxX: stageRegionPoints.maxX + graveYardDistance + graveYardWith,
-    maxZ: maxZ,
+    minZ: -maxZ * graveYardDepthRatio,
+    maxX: stageRegionPoints.maxX + graveYardDistance + graveYardWidth,
+    maxZ: maxZ * graveYardDepthRatio,
   }
 
   const stage = new FlatRegion(stageRegionPoints)

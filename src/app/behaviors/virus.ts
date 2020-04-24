@@ -58,6 +58,7 @@ export class Virus {
         this.setStateDelayed(VirusState.Recovered, virusSettings.ill)
       } else {
         this.setDelayed(() => {
+          this.mesh.material = this.materials.died
           this._state = VirusState.Died
           this.onDie()
         }, virusSettings.ill)

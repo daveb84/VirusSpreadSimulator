@@ -2,44 +2,58 @@
 <html>
 
 <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Animation with Babylon JS</title>
   <script src="https://code.jquery.com/pep/0.4.3/pep.js"></script>
 </head>
 
 <body>
   <div class="layout">
-    <canvas id="renderCanvas" touch-action="none"></canvas>
+    <div class="intro">
+      <h1>Dave's Corona Simulator Thingy</h1>
+      <p>
+        Random experiment with 3D graphics using Babylon JS.</p>
+      <p>Click Start to see people move around. Add infected people to see how quickly the virus spreads
+      </p>
+    </div>
+    <div class="main">
+      <canvas id="renderCanvas" touch-action="none"></canvas>
+    </div>
     <div class="control-panel">
       <section>
-      <div class="form-row-inline">
-        <label for="count-walkers">People</label>
-        <span class="display-only" id="count-walkers">0</span>
-      </div>
-      <div class="form-row-inline">
-        <label for="count-notCaught">Not infected</label>
-        <span class="display-only" id="count-notCaught">0</span>
-      </div>
-      <div class="form-row-inline">
-        <label for="count-incubating">Infected</label>
-        <span class="display-only" id="count-incubating">0</span>
-      </div>
-      <div class="form-row-inline">
-        <label for="count-isolating">Isolating</label>
-        <span class="display-only" id="count-isolating">0</span>
-      </div>
-      <div class="form-row-inline">
-        <label for="count-recovered">Recovered</label>
-        <span class="display-only" id="count-recovered">0</span>
-      </div>
-      <div class="form-row-inline">
-        <label for="count-died">Died</label>
-        <span class="display-only" id="count-died">0</span>
-      </div>
-      <div class="form-row">
-        <button id="start-button">Start</button>
-        <button id="stop-button">Stop</button>
-        <span id="step"></span>
-      </div>
+        <div class="form-row">
+          <button id="start-button">Start</button>
+          <button id="stop-button">Stop</button>
+          <span id="step"></span>
+        </div>
+        <div class="form-inline-container">
+          <div class="form-row-inline">
+            <label for="count-walkers">People</label>
+            <span class="display-only" id="count-walkers">0</span>
+          </div>
+          <div class="form-row-inline">
+            <label for="count-notCaught">Not infected</label>
+            <span class="display-only" id="count-notCaught">0</span>
+          </div>
+          <div class="form-row-inline">
+            <label for="count-incubating">Infected</label>
+            <span class="display-only" id="count-incubating">0</span>
+          </div>
+          <div class="form-row-inline">
+            <label for="count-isolating">Isolating</label>
+            <span class="display-only" id="count-isolating">0</span>
+          </div>
+          <div class="form-row-inline">
+            <label for="count-recovered">Recovered</label>
+            <span class="display-only" id="count-recovered">0</span>
+          </div>
+          <div class="form-row-inline">
+            <label for="count-died">Died</label>
+            <span class="display-only" id="count-died">0</span>
+          </div>
+        </div>
       </section>
       <section class="border">
         <header>Add people</header>
