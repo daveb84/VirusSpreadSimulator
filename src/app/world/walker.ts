@@ -49,7 +49,9 @@ export class Walker {
       () => this.death.die()
     )
 
-    const startPosition = regions.walker.getRandomPoint()
+    const startPosition = this.home
+      ? this.home.getRandomPoint()
+      : regions.walker.getRandomPoint()
     this.setPosition(startPosition)
   }
 
