@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Animation with Babylon JS</title>
+  <title>Dave's Corona Simulator Thingy</title>
   <script src="https://code.jquery.com/pep/0.4.3/pep.js"></script>
 </head>
 
@@ -13,10 +13,9 @@
   <div class="layout">
     <div class="intro">
       <h1>Dave's Corona Simulator Thingy</h1>
-      <p>
-        Random experiment with 3D graphics using Babylon JS.</p>
-      <p>Click Start to see people move around. Add infected people to see how quickly the virus spreads
-      </p>
+      <p>Random experiment with 3D graphics.</p>
+      <p>Click Start to see people move around in the animation below.</p>
+      <p>Add infected people to see how quickly the virus spreads!</p>
     </div>
     <div class="main">
       <canvas id="renderCanvas" touch-action="none"></canvas>
@@ -59,10 +58,10 @@
         <header>Add people</header>
         <div class="form-row">
           <label for="amount-tb">People</label>
-          <input type="number" id="amount-tb" placeholder="Number of people..." />
+          <input type="number" id="amount-tb" placeholder="Number of people..." value="20" />
         </div>
         <div class="form-row-checkbox">
-          <label><input type="checkbox" id="infected-cb" />Infected</label>
+          <label><input type="checkbox" id="infected-cb" checked/>Infected</label>
         </div>
         <div class="form-row">
           <button id="add-button">Add</button>
