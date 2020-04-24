@@ -1,10 +1,11 @@
-import { createPopulationConfig, IWalkerBuildings } from './population'
+import { createPopulationConfig } from './population'
 import { BuildingPopulation, PlacedBuilding } from './buildings'
 import { regions } from '../settings'
 import { Scene } from '@babylonjs/core'
 import { Walker } from './walker'
 import { IRoutineTargets } from '../behaviors'
 import { WalkerProcessor } from './processor'
+import { IWalkerBuildings } from './types'
 
 export const populateWalkers = (
   scene: Scene,

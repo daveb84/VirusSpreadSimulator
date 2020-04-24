@@ -1,51 +1,13 @@
 import { Walker } from './walker'
 import { IObstacle } from '../behaviors'
 import { Scene, Observer } from '@babylonjs/core'
-import { travelConfig } from '../settings'
+import { travelConfig, regions } from '../settings'
 import { onStep, onProcess } from '../appEvents'
+import { GridCell } from '../vectors'
 
-const obstacleCollide = (walker: Walker, obstacle: IObstacle) => {
-  if (walker.moving) {
-    const collide = obstacle.mesh.intersectsMesh(walker.mesh, true)
-
-    if (collide) {
-      walker.collideWithObstacle(obstacle)
-
-      return true
-    }
-  }
-
-  return false
-}
-
-const walkerCollide = (walker: Walker, other: Walker) => {
-  if (!walker.contagious && !other.contagious) {
-    return
-  }
-
-  const collide = other.mesh.intersectsMesh(walker.mesh, true)
-
-  if (collide) {
-    if (!walker.contagious) {
-      walker.infect()
-    }
-
-    if (!other.contagious) {
-      other.infect()
-    }
-  }
-}
-
-const boundingBoxCollide = (walker: Walker, obstacle: IObstacle) => {
-  if (walker.moving) {
-    const collide = obstacle.mesh.intersectsMesh(walker.mesh, true)
-
-    if (!collide) {
-      walker.collideWithObstacle(obstacle)
-
-      return true
-    }
-  }
+interface IWalkerPosition {
+  walker: Walker
+  cell: GridCell
 }
 
 export class WalkerProcessor {
@@ -57,8 +19,7 @@ export class WalkerProcessor {
   constructor(
     private scene: Scene,
     private walkers: Walker[],
-    private boundingBox: IObstacle,
-    private obstacles: IObstacle[] = []
+    private boundingBox: IObstacle
   ) {}
 
   start() {
@@ -98,6 +59,19 @@ export class WalkerProcessor {
   }
 
   private process(sceneStepId: number) {
+    this.updateStep(sceneStepId)
+
+    const walkerPositions: IWalkerPosition[] = this.walkers.map((w) => ({
+      walker: w,
+      cell: regions.infectionGrid.getGridCell(w.mesh.position),
+    }))
+
+    this.processBounds(walkerPositions)
+
+    this.processInfection(walkerPositions)
+  }
+
+  private updateStep(sceneStepId: number) {
     const timeUnit = Math.floor(sceneStepId * travelConfig.processorStepRatio)
     const step = timeUnit % (travelConfig.timeSlots + 1)
 
@@ -108,26 +82,35 @@ export class WalkerProcessor {
     if (stepChanged) {
       onStep.notifyObservers(step)
     }
+  }
 
-    const { walkers, boundingBox, obstacles } = this
+  private processBounds(walkers: IWalkerPosition[]) {
+    walkers
+      .filter((x) => !x.cell)
+      .forEach((x) => {
+        x.walker.collideWithObstacle(this.boundingBox)
+      })
+  }
 
-    const toCheck = [...walkers]
-    toCheck.shift()
+  private processInfection(walkers: IWalkerPosition[]) {
+    const groupByGridCell: any = {}
 
-    walkers.forEach((walker) => {
-      if (boundingBox) {
-        boundingBoxCollide(walker, boundingBox)
+    walkers
+      .filter((x) => x.cell)
+      .forEach((x) => {
+        groupByGridCell[x.cell.index] = groupByGridCell[x.cell.index] || []
+
+        groupByGridCell[x.cell.index].push(x.walker)
+      })
+
+    for (let index in groupByGridCell) {
+      const canSpread = groupByGridCell[index].some((x) => x.canSpreadVirus)
+
+      if (canSpread) {
+        groupByGridCell[index]
+          .filter((x) => x.canCatchVirus)
+          .forEach((x) => x.infect())
       }
-
-      obstacles.forEach((obstacle) => {
-        obstacleCollide(walker, obstacle)
-      })
-
-      toCheck.forEach((other) => {
-        walkerCollide(walker, other)
-      })
-
-      toCheck.shift()
-    })
+    }
   }
 }

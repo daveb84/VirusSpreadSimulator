@@ -23,36 +23,50 @@ export const cameraPosition = new Vector3(0, 10, 6)
 
 export const personHeight = 0.3
 
-const minBound = new Vector3(-6, 0, -6)
-const maxBound = new Vector3(6, 4, 6)
-// const minBound = new Vector3(-3, 0, -3)
-// const maxBound = new Vector3(3, 4, 3)
-
 const gridRows = 20
 const gridColumns = 20
 
+const gridSquareWidth = 0.5
+const gridSquareDepth = 0.5
+
+const infectionGridSquareRatio = 5
+
 const createRegions = () => {
-  const stageRegionPoints = {
-    y: minBound.y,
-    minX: minBound.x,
-    minZ: minBound.z,
-    maxX: maxBound.x,
-    maxZ: maxBound.z,
+  const getBound = (squareSize: number, amount: number) => {
+    return (squareSize * amount) / 2
   }
 
-  const stageRegion = new FlatRegion(stageRegionPoints)
+  const maxX = getBound(gridSquareWidth, gridColumns)
+  const maxZ = getBound(gridSquareDepth, gridRows)
 
-  const walkerRegion = new FlatRegion({
+  const stageRegionPoints = {
+    y: 0,
+    minX: -maxX,
+    minZ: -maxZ,
+    maxX: maxX,
+    maxZ: maxZ,
+  }
+
+  const stage = new FlatRegion(stageRegionPoints)
+
+  const walker = new FlatRegion({
     ...stageRegionPoints,
     y: stageRegionPoints.y + personHeight / 2,
   })
 
-  const buildingGrid = new Grid(stageRegion, gridRows, gridColumns)
+  const buildingGrid = new Grid(stage, gridRows, gridColumns)
+
+  const infectionGrid = new Grid(
+    walker,
+    gridRows * infectionGridSquareRatio,
+    gridColumns * infectionGridSquareRatio
+  )
 
   return {
-    stage: stageRegion,
-    walker: walkerRegion,
-    buildingGrid: buildingGrid,
+    stage,
+    walker,
+    buildingGrid,
+    infectionGrid,
   }
 }
 

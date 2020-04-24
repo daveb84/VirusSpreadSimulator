@@ -1,5 +1,5 @@
 import { FlatRegion, IFlatRegion } from './region'
-import { Scene, Material, StandardMaterial, Color3 } from '@babylonjs/core'
+import { Scene, Color3, Vector3 } from '@babylonjs/core'
 
 export class Grid {
   private _rows: number
@@ -9,6 +9,7 @@ export class Grid {
 
   private _cells: GridCell[] = []
   private _cellLookup: GridCell[][] = []
+  private gridCellResolver: (position: Vector3) => GridCell
 
   public get cells() {
     return this._cells
@@ -29,7 +30,6 @@ export class Grid {
     this._rowWidth = this.parent.depth / this._rows
 
     let index = 0
-    let z = this.parent.minZ
     let row = 0
 
     while (row < this._rows) {
@@ -39,7 +39,6 @@ export class Grid {
       const rowLookup: GridCell[] = []
       this._cellLookup.push(rowLookup)
 
-      let x = this.parent.minX
       let column = 0
 
       while (column < this._columns) {
@@ -63,6 +62,26 @@ export class Grid {
 
       row++
     }
+
+    const minCell = this._cellLookup[0][0]
+
+    this.gridCellResolver = (position: Vector3) => {
+      const x = position.x - minCell.minX
+      const z = position.z - minCell.minZ
+
+      const column = Math.floor(x / this._columnWidth)
+      const row = Math.floor(z / this._rowWidth)
+
+      if (
+        row >= 0 &&
+        row < this._rows &&
+        column >= 0 &&
+        column < this._columns
+      ) {
+        return this._cellLookup[row][column]
+      }
+      return null
+    }
   }
 
   public drawAll(scene: Scene, color?: Color3) {
@@ -78,9 +97,6 @@ export class Grid {
   public getDivisions(rowsWide: number, columnsWide: number) {
     let row = 0
     let rowDiv = 0
-
-    let rowRemainder = this._rows % rowsWide
-    let columnRemainder = this._columns % columnsWide
 
     const divisions: GridDivision[] = []
 
@@ -131,6 +147,10 @@ export class Grid {
     return divisions
   }
 
+  public getGridCell(position: Vector3) {
+    return this.gridCellResolver(position)
+  }
+
   private getCells(rowStart, rowEnd, columnStart, columnEnd) {
     const cells: GridCell[] = []
     let row = rowStart
@@ -152,7 +172,7 @@ export class Grid {
   }
 }
 
-class GridCell extends FlatRegion {
+export class GridCell extends FlatRegion {
   private _index: number
   private _rowIndex: number
   private _columnIndex: number

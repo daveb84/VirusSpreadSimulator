@@ -42,8 +42,8 @@ export class Walker {
     return this.travel.moving
   }
 
-  public get contagious() {
-    return this.virus.contagious
+  public get canSpreadVirus() {
+    return this.virus.canSpread
   }
 
   public get canCatchVirus() {

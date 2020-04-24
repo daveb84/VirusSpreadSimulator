@@ -18,7 +18,7 @@ export class Virus {
     return this._state
   }
 
-  public get contagious() {
+  public get canSpread() {
     return (
       this._state === VirusState.Incubating || this._state === VirusState.Ill
     )

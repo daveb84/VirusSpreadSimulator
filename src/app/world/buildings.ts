@@ -2,21 +2,7 @@ import { Grid, GridDivision } from '../vectors'
 import { getCommonMaterials } from '../materials/common'
 import { Vector3, Scene } from '@babylonjs/core'
 import { Building } from '../meshes'
-
-export interface IBuildingConfig {
-  rows: number
-  columns: number
-  height: number
-  type: BuildingType
-  rowIndex?: number
-  columnIndex?: number
-}
-
-export enum BuildingType {
-  Home,
-  Work,
-  Shop,
-}
+import { IBuildingConfig, BuildingType } from './types'
 
 interface ICellPopulation {
   [cellIndex: number]: boolean
