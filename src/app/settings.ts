@@ -4,9 +4,10 @@ import { FlatRegion, Grid } from './vectors'
 export const traceEnabled = false
 export const markCollisions = false
 
-export const virusDuration = {
-  incubation: 300,
+export const virusSettings = {
+  incubation: 100,
   ill: 300,
+  deathRate: 0.05,
 }
 
 export const travelConfig = {
@@ -31,6 +32,9 @@ const gridSquareDepth = 0.5
 
 const infectionGridSquareRatio = 5
 
+const graveYardDistance = 0.5
+const graveYardWith = 2
+
 const createRegions = () => {
   const getBound = (squareSize: number, amount: number) => {
     return (squareSize * amount) / 2
@@ -47,7 +51,17 @@ const createRegions = () => {
     maxZ: maxZ,
   }
 
+  const graveYardPoints = {
+    y: 1,
+    minX: stageRegionPoints.maxX + graveYardDistance,
+    minZ: -maxZ,
+    maxX: stageRegionPoints.maxX + graveYardDistance + graveYardWith,
+    maxZ: maxZ,
+  }
+
   const stage = new FlatRegion(stageRegionPoints)
+
+  const graveYard = new FlatRegion(graveYardPoints)
 
   const walker = new FlatRegion({
     ...stageRegionPoints,
@@ -67,6 +81,7 @@ const createRegions = () => {
     walker,
     buildingGrid,
     infectionGrid,
+    graveYard,
   }
 }
 

@@ -1,5 +1,5 @@
 import { getCommonMaterials } from '../materials'
-import { virusDuration } from '../settings'
+import { virusSettings } from '../settings'
 import { Mesh } from '@babylonjs/core'
 import { onProcess, IProcessStep } from '../appEvents'
 
@@ -47,10 +47,10 @@ export class Virus {
     this._state = state
     if (state === VirusState.Incubating) {
       this.mesh.material = this.materials.incubating
-      this.setStateDelayed(VirusState.Ill, virusDuration.incubation, true)
+      this.setStateDelayed(VirusState.Ill, virusSettings.incubation, true)
     } else if (state === VirusState.Ill) {
       this.mesh.material = this.materials.ill
-      this.setStateDelayed(VirusState.Recovered, virusDuration.ill)
+      this.setStateDelayed(VirusState.Recovered, virusSettings.ill)
     } else if (state === VirusState.Recovered) {
       this.mesh.material = this.materials.recovered
     }

@@ -3,105 +3,29 @@ import {
   Scene,
   MeshBuilder,
   StandardMaterial,
-  Texture,
   Mesh,
 } from '@babylonjs/core'
 import { regions } from '../settings'
-import { groundImage } from '../materials'
 import { IObstacle } from '../behaviors'
 import { FlatRegion } from '../vectors'
+import { StageBase } from './stageBase'
+import { GraveYard } from './graveYard'
 
 const stageRegion = regions.stage
 const walkerRegion = regions.walker
 
-const wallHeight = 0.1
-const wallDepth = 0.2
-const wallPositionY = stageRegion.y + wallHeight / 2
-
-interface IWallCoords {
-  width: number
-  depth: number
-  x: number
-  z: number
-}
-
-const groundDimensions = {
-  width: stageRegion.width + wallDepth * 2.5,
-  depth: stageRegion.depth + wallDepth * 2.5,
-}
-
-const wallCoors = {
-  front: {
-    width: groundDimensions.width,
-    depth: wallDepth,
-    x: stageRegion.midX,
-    z: stageRegion.minZ - wallDepth,
-  },
-  back: {
-    width: groundDimensions.width,
-    depth: wallDepth,
-    x: stageRegion.midX,
-    z: stageRegion.maxZ + wallDepth,
-  },
-  left: {
-    width: wallDepth,
-    depth: groundDimensions.depth,
-    x: stageRegion.minX - wallDepth,
-    z: stageRegion.midZ,
-  },
-  right: {
-    width: wallDepth,
-    depth: groundDimensions.depth,
-    x: stageRegion.maxX + wallDepth,
-    z: stageRegion.midZ,
-  },
-}
-
-export class Stage {
-  private material: StandardMaterial
-
+export class Stage extends StageBase {
   private _bounds: StageBounds
 
   public get bounds() {
     return this._bounds
   }
 
-  constructor(private scene: Scene) {
-    this.material = new StandardMaterial('groundMaterial', this.scene)
-    this.material.diffuseTexture = new Texture(groundImage, this.scene)
-
-    const ground = MeshBuilder.CreateGround('ground', {
-      width: groundDimensions.width,
-      height: groundDimensions.depth,
-    })
-
-    ground.position = new Vector3(
-      stageRegion.midX,
-      stageRegion.y,
-      stageRegion.midZ
-    )
-    ground.material = this.material
+  constructor(scene: Scene) {
+    super(scene, regions.stage)
 
     this._bounds = new StageBounds(scene)
-
-    this.createWalls()
-  }
-
-  private createWalls() {
-    this.createWall(wallCoors.front)
-    this.createWall(wallCoors.back)
-    this.createWall(wallCoors.left)
-    this.createWall(wallCoors.right)
-  }
-
-  private createWall(coords: IWallCoords) {
-    const wall = MeshBuilder.CreateBox(
-      'north',
-      { height: wallHeight, depth: coords.depth, width: coords.width },
-      this.scene
-    )
-    wall.position = new Vector3(coords.x, wallPositionY, coords.z)
-    wall.material = this.material
+    new GraveYard(scene)
   }
 }
 

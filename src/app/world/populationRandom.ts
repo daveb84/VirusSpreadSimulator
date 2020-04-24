@@ -30,14 +30,14 @@ interface IBuildingConfigOptions {
 const home: IBuildingConfig = {
   rows: 1,
   columns: 1,
-  height: 1,
+  height: 0.5,
   type: BuildingType.Home,
 }
 
 const shop: IBuildingConfig = {
   rows: 1,
   columns: 1,
-  height: 1,
+  height: 0.75,
   type: BuildingType.Shop,
 }
 
