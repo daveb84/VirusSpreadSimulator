@@ -23,6 +23,7 @@ export const travelConfig = {
 export const cameraPosition = new Vector3(0, 10, 6)
 
 export const personHeight = 0.3
+export const personWidth = 0.1
 
 const gridRows = 20
 const gridColumns = 20
@@ -68,6 +69,11 @@ const createRegions = () => {
     y: stageRegionPoints.y + personHeight / 2,
   })
 
+  const walkerGraveYard = new FlatRegion({
+    ...graveYardPoints,
+    y: graveYardPoints.y + personWidth / 2,
+  })
+
   const buildingGrid = new Grid(stage, gridRows, gridColumns)
 
   const infectionGrid = new Grid(
@@ -82,6 +88,7 @@ const createRegions = () => {
     buildingGrid,
     infectionGrid,
     graveYard,
+    walkerGraveYard,
   }
 }
 

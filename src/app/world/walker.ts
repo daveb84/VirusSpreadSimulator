@@ -7,6 +7,7 @@ import {
   IRoutineTargets,
   RoutineMoveFactory,
   Isolate,
+  Death,
 } from '../behaviors'
 import { Scene, Vector3 } from '@babylonjs/core'
 import { travelConfig, regions } from '../settings'
@@ -18,6 +19,7 @@ export class Walker {
   private virus: Virus
   private travel: CollidingTravel
   private isolate: Isolate
+  private death: Death
   private home: FlatRegion
 
   constructor(
@@ -39,8 +41,12 @@ export class Walker {
     }
 
     this.isolate = new Isolate(this.person.mesh, this.travel, this.home)
-    this.virus = new Virus(this.person.mesh, getProcessStep, (isolate) =>
-      this.isolate.setIsolation(isolate)
+    this.death = new Death(this.person.mesh, this.travel)
+    this.virus = new Virus(
+      this.person.mesh,
+      getProcessStep,
+      (isolate) => this.isolate.setIsolation(isolate),
+      () => this.death.die()
     )
 
     const startPosition = regions.walker.getRandomPoint()
@@ -64,7 +70,7 @@ export class Walker {
   }
 
   start() {
-    if (!this.isolate.isolating) {
+    if (!this.isolate.isolating && !this.death.dead) {
       this.travel.start()
     }
   }

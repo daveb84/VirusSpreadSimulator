@@ -32,7 +32,8 @@ export class Virus {
   constructor(
     public readonly mesh: Mesh,
     private getProcessStep: () => IProcessStep,
-    private onIsolationChanged: (isolate: boolean) => void
+    private onIsolationChanged: (isolate: boolean) => void,
+    private onDie: () => void
   ) {
     this._state = VirusState.NotCaught
   }
@@ -50,25 +51,40 @@ export class Virus {
       this.setStateDelayed(VirusState.Ill, virusSettings.incubation, true)
     } else if (state === VirusState.Ill) {
       this.mesh.material = this.materials.ill
-      this.setStateDelayed(VirusState.Recovered, virusSettings.ill)
+
+      const recover = Math.random() > virusSettings.deathRate
+      if (recover) {
+        this.setStateDelayed(VirusState.Recovered, virusSettings.ill)
+      } else {
+        this.setDelayed(() => this.onDie(), virusSettings.ill)
+      }
     } else if (state === VirusState.Recovered) {
       this.mesh.material = this.materials.recovered
     }
   }
 
   private setStateDelayed(state: VirusState, delay: number, isolate = false) {
+    const action = () => this.setStateAndIsolate(state, isolate)
+    this.setDelayed(action, delay)
+  }
+
+  private setStateAndIsolate(state: VirusState, isolate = false) {
+    this.setState(state)
+
+    const previousIsolating = this.isolating
+    this.isolating = isolate
+
+    if (isolate !== previousIsolating) {
+      this.onIsolationChanged(isolate)
+    }
+  }
+
+  private setDelayed(action: () => void, delay: number) {
     const targetStep = this.getProcessStep().sceneStepId + delay
 
     const observer = onProcess.add((event: IProcessStep) => {
       if (event.sceneStepId >= targetStep) {
-        this.setState(state)
-
-        const previousIsolating = this.isolating
-        this.isolating = isolate
-
-        if (isolate !== previousIsolating) {
-          this.onIsolationChanged(isolate)
-        }
+        action()
 
         onProcess.remove(observer)
       }

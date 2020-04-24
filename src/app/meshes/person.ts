@@ -1,5 +1,5 @@
 import { Scene, Mesh, MeshBuilder } from '@babylonjs/core'
-import { personHeight } from '../settings'
+import { personHeight, personWidth } from '../settings'
 import { getCommonMaterials } from '../materials'
 
 export class Person {
@@ -9,7 +9,7 @@ export class Person {
   constructor(private scene: Scene) {
     this.mesh = MeshBuilder.CreateBox(
       'person',
-      { width: 0.1, height: personHeight, depth: 0.1 },
+      { width: personWidth, height: personHeight, depth: personWidth },
       this.scene
     )
     this.mesh.material = this.materials.default
