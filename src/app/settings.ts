@@ -12,15 +12,14 @@ export const virusSettings = {
 
 export const travelConfig = {
   autoStart: false,
-  distance: 0.5,
+  distance: 0.4,
+  distanceWithinTarget: 0.1,
   frameRate: 10,
-  endFrame: 5,
+  endFrame: 1,
   timeStep: 0.1,
   processorStepRatio: 0.05,
-  timeSlots: 200,
+  timeSlots: 24,
 }
-
-export const cameraPosition = new Vector3(0, 10, 6)
 
 export const personHeight = 0.3
 export const personWidth = 0.1
@@ -32,10 +31,6 @@ const gridSquareWidth = 0.5
 const gridSquareDepth = 0.5
 
 const infectionGridSquareRatio = 5
-
-const graveYardDistance = 0.5
-const graveYardWidth = 2
-const graveYardDepthRatio = 0.5
 
 const createRegions = () => {
   const getBound = (squareSize: number, amount: number) => {
@@ -55,10 +50,10 @@ const createRegions = () => {
 
   const graveYardPoints = {
     y: 1,
-    minX: stageRegionPoints.maxX + graveYardDistance,
-    minZ: -maxZ * graveYardDepthRatio,
-    maxX: stageRegionPoints.maxX + graveYardDistance + graveYardWidth,
-    maxZ: maxZ * graveYardDepthRatio,
+    minX: -2,
+    maxX: 2,
+    minZ: maxZ + 2,
+    maxZ: maxZ + 4,
   }
 
   const stage = new FlatRegion(stageRegionPoints)

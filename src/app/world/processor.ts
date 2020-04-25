@@ -18,7 +18,7 @@ interface IWalkerPosition {
 export class WalkerProcessor {
   private attachedHandler: Observer<Scene>
 
-  private currentStep: IProcessStep = { step: 0, sceneStepId: 0 }
+  private currentStep: IProcessStep = { step: 0, stepTotal: 0, sceneStepId: 0 }
 
   private stoppedStepId = 0
 
@@ -82,10 +82,14 @@ export class WalkerProcessor {
 
   private updateStep(sceneStepId: number) {
     const timeUnit = Math.floor(sceneStepId * travelConfig.processorStepRatio)
-    const step = timeUnit % (travelConfig.timeSlots + 1)
+    const step = timeUnit % travelConfig.timeSlots
 
     const stepChanged = step > this.currentStep.step
-    this.currentStep = { sceneStepId: sceneStepId, step: step }
+    this.currentStep = {
+      sceneStepId: sceneStepId,
+      step: step,
+      stepTotal: timeUnit,
+    }
 
     onProcessCycleBegin.notifyObservers(this.currentStep)
     if (stepChanged) {

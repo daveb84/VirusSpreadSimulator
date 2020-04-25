@@ -2,6 +2,7 @@ import { Observable } from '@babylonjs/core'
 
 export interface IProcessStep {
   step: number
+  stepTotal: number
   sceneStepId: number
 }
 

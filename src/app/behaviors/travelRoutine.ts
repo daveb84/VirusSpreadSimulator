@@ -16,6 +16,7 @@ export class RoutineMoveFactory implements ITravelMoveFactory {
     public targets: IRoutineTargets[],
     public getProcessStep: () => IProcessStep,
     public distance: number = travelConfig.distance,
+    public distanceWithinTarget: number = travelConfig.distanceWithinTarget,
     public frameRate: number = travelConfig.frameRate,
     public endFrame: number = travelConfig.endFrame
   ) {}
@@ -53,9 +54,13 @@ export class RoutineMoveFactory implements ITravelMoveFactory {
     }
 
     const index = generateNumber(0, currentMoves.length - 1, true)
+    const targetRegion = currentMoves[index].target
+
     target = currentMoves[index].target.getRandomPointFrom(
       position,
-      this.distance
+      targetRegion.containsPosition(position)
+        ? this.distanceWithinTarget
+        : this.distance
     )
 
     return target

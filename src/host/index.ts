@@ -29,7 +29,7 @@ onProcessCycleComplete.add((step) => {
   }
 })
 
-subscribe('step', onProcessNextStep, (step) => `Step ${step}`)
+subscribe('step', onProcessNextStep, (step) => `Time: ${step}:00`)
 
 // bind start/stop
 onClick('start-button', () => app.start())

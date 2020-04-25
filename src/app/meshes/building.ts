@@ -15,7 +15,7 @@ export class Building {
       { width, height, depth },
       this.scene
     )
-
+    this.mesh.isPickable = false
     this.mesh.material = material
   }
 }

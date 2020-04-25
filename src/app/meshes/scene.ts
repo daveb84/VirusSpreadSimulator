@@ -6,7 +6,7 @@ import {
   Color3,
   ArcRotateCamera,
 } from '@babylonjs/core'
-import { cameraPosition } from '../settings'
+import { regions } from '../settings'
 
 export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
   const scene = new Scene(engine)
@@ -17,12 +17,15 @@ export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
     'Camera',
     0,
     0,
-    Math.PI / 3,
-    cameraPosition,
+    regions.stage.depth,
+    Vector3.Zero(),
+    //new Vector3(0, regions.stage.depth, -regions.stage.depth),
     scene
   )
 
-  camera.setTarget(Vector3.Zero())
+  camera.setPosition(
+    new Vector3(regions.stage.midX, regions.stage.depth, -regions.stage.depth)
+  )
   camera.attachControl(canvas, true)
 
   const light = new HemisphericLight('light1', new Vector3(0, 1, 0), scene)
