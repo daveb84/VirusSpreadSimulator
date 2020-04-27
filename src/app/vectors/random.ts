@@ -32,3 +32,17 @@ const colors = [
 
 export const generateColor = () =>
   colors[generateNumber(0, colors.length - 1, true)]
+
+export const pickRandom = <T>(items: T[], min: number, max: number) => {
+  const amount = generateNumber(min, max, true)
+
+  const picked: T[] = []
+
+  for (let i = 0; i < amount; i++) {
+    const index = generateNumber(0, items.length - 1, true)
+
+    picked.push(items[index])
+  }
+
+  return picked
+}

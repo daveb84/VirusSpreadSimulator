@@ -8,7 +8,7 @@ import {
   IProcessStep,
   onProcessCycleComplete,
 } from '../appEvents'
-import { GridCell, FlatRegion } from '../vectors'
+import { GridCell } from '../vectors'
 
 interface IWalkerPosition {
   walker: Walker
@@ -25,8 +25,7 @@ export class WalkerProcessor {
   constructor(
     private scene: Scene,
     private walkers: Walker[],
-    private boundingBox: IObstacle,
-    private graveYard: FlatRegion
+    private boundingBox: IObstacle
   ) {}
 
   start() {

@@ -19,43 +19,6 @@ interface IRandomPopulationConfig {
   walkerShopsTo: number
 }
 
-interface IBuildingConfigOptions {
-  rows?: number
-  columns?: number
-  height?: number
-  rowIndex?: number
-  columnIndex?: number
-}
-
-const home: IBuildingConfig = {
-  rows: 1,
-  columns: 1,
-  height: 0.5,
-  type: BuildingType.Home,
-}
-
-const shop: IBuildingConfig = {
-  rows: 1,
-  columns: 1,
-  height: 0.75,
-  type: BuildingType.Shop,
-}
-
-const work: IBuildingConfig = {
-  rows: 2,
-  columns: 2,
-  height: 1.5,
-  type: BuildingType.Work,
-}
-
-const createBuilding = (
-  defaultValues: IBuildingConfig,
-  args?: IBuildingConfigOptions
-) => ({
-  ...defaultValues,
-  ...args,
-})
-
 const defaultConfigAmounts: IRandomPopulationConfig = {
   homes: 60,
   walkerHomesFrom: 1,
@@ -149,20 +112,6 @@ export const createRandomPopulation = (
   })
 
   return { buildingWalkers: buildings, walkerBuildings: walkers }
-}
-
-const pickRandom = <T>(min: number, max: number, buildings: T[]) => {
-  const amount = generateNumber(min, max, true)
-
-  const picked: T[] = []
-
-  for (let i = 0; i < amount; i++) {
-    const index = generateNumber(0, buildings.length - 1, true)
-
-    picked.push(buildings[index])
-  }
-
-  return picked
 }
 
 const generateBuildings = (

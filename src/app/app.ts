@@ -48,8 +48,7 @@ class App {
     this.processor = new WalkerProcessor(
       this.scene,
       this.walkers,
-      stage.bounds,
-      regions.walkerGraveYard
+      stage.bounds
     )
 
     populateWalkers(this.scene, this.walkers, this.processor)

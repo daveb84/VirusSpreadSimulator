@@ -1,5 +1,5 @@
 import { createPopulationConfig } from './population'
-import { BuildingPopulation, PlacedBuilding } from './buildings'
+import { BuildingPopulation, PlacedBuilding } from './buildingPopulation'
 import { regions } from '../settings'
 import { Scene } from '@babylonjs/core'
 import { Walker } from './walker'
@@ -18,11 +18,8 @@ export const populateWalkers = (
   const buildingConfigs = config.buildingWalkers.map((x) => x.building)
   const population = new BuildingPopulation(
     scene,
-    regions.buildingGrid,
-    buildingConfigs
+    regions.buildingGrid
   )
-
-  population.populate()
 
   config.walkerBuildings.forEach((walker) => {
     const targets = getRoutineTargets(walker, population.placedBuildings)

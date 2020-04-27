@@ -1,5 +1,5 @@
 export * from './processor'
 export * from './walker'
 export * from './population'
-export * from './buildings'
+export * from './buildingPopulation'
 export * from './setup'

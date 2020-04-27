@@ -10,71 +10,57 @@ interface ICellPopulation {
 
 export class BuildingPopulation {
   private cellPopulation: ICellPopulation
-  private _placedBuildings: PlacedBuilding[]
+  private _placedBuildings: PlacedBuilding[] = []
 
   constructor(
     private scene: Scene,
-    private grid: Grid,
-    private buildings: IBuildingConfig[]
+    private grid: Grid
   ) {}
 
   public get placedBuildings() {
     return this._placedBuildings
   }
 
-  populate() {
-    this.placeBuildings()
-  }
+  addBuilding(building: IBuildingConfig) {
+    const locations = this.getAvailableLocations(building)
+    const location = this.chooseLocation(building, locations)
 
-  private placeBuildings() {
-    this._placedBuildings = []
-    this.cellPopulation = {}
+    if (location) {
+      const material = this.getMaterial(building)
 
-    this.buildings.forEach((building) => {
-      const locations = this.getAvailableLocations(building)
-      const location = this.chooseLocation(building, locations)
+      const buildingMesh = new Building(
+        this.scene,
+        material,
+        location.width,
+        building.height,
+        location.depth
+      )
 
-      if (location) {
-        const material = this.getMaterial(building)
+      buildingMesh.mesh.position = new Vector3(
+        location.midX,
+        location.y + building.height / 2,
+        location.midZ
+      )
 
-        const buildingMesh = new Building(
-          this.scene,
-          material,
-          location.width,
-          building.height,
-          location.depth
-        )
+      location.cells.forEach((x) => {
+        this.cellPopulation[x.index] = true
+      })
 
-        buildingMesh.mesh.position = new Vector3(
-          location.midX,
-          location.y + building.height / 2,
-          location.midZ
-        )
+      const placedBuilding = new PlacedBuilding(building, location)
 
-        location.cells.forEach((x) => {
-          this.cellPopulation[x.index] = true
-        })
+      this._placedBuildings.push(placedBuilding)
 
-        this._placedBuildings.push(new PlacedBuilding(building, location))
-      } else {
-        this._placedBuildings.push(new PlacedBuilding(building, null))
-      }
-    })
+      return placedBuilding
+    }
+
+    return null
   }
 
   private getAvailableLocations(building: IBuildingConfig) {
     const locations = this.grid.getDivisions(building.rows, building.columns)
 
     return locations.filter((location) => {
-      const taken = location.cells.some((cell) => {
-        const indexTaken = this.cellPopulation[cell.index]
-
-        return indexTaken
-      })
-
-      if (taken) {
-        // location.draw(this.scene)
-      }
+      const taken = location.cells.some((cell) => this.cellPopulation[cell.index])
 
       return !taken
     })
