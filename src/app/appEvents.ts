@@ -4,6 +4,7 @@ export interface IProcessStep {
   step: number
   stepTotal: number
   sceneStepId: number
+  weekStep: number
 }
 
 export interface ISelectedWalker {
