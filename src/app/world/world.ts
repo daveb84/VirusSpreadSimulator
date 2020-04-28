@@ -6,9 +6,9 @@ import {
   createBuildingsForType,
   createBuildingForType,
 } from './buildingFactory'
-import { BuildingPopulation } from './buildingPopulation'
+import { BuildingPopulation, PlacedBuilding } from './buildingPopulation'
 import { regions } from '../settings'
-import { generateNumber, pickRandom } from '../vectors'
+import { generateNumber, pickRandom, FlatRegion } from '../vectors'
 
 const populationConfig = {
   homes: 5,
