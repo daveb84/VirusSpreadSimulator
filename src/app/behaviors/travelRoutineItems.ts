@@ -28,8 +28,8 @@ export interface IRoutineItem {
 
 const createTemplates = (
   home: FlatRegion,
-  work: FlatRegion,
-  foodShops: FlatRegion[],
+  work: FlatRegion[],
+  shops: FlatRegion[],
   entertainment: FlatRegion[]
 ) => {
   const dayTemplates: IRoutineDay[] = [
@@ -38,13 +38,13 @@ const createTemplates = (
       days: [1, 2, 3, 4, 5],
       schedule: [
         { locations: [home], end: [7.5, 9] },
-        { locations: [work], end: [12, 13] },
+        { locations: work, end: [12, 13] },
         {
-          locations: foodShops,
+          locations: shops,
           end: [12.5, 14],
           locationDuration: [0.5, 0.75],
         },
-        { locations: [work], end: [16, 18] },
+        { locations: work, end: [16, 18] },
         { locations: entertainment, end: [19, 23], chance: 0.2 },
       ],
     },
@@ -54,14 +54,14 @@ const createTemplates = (
       schedule: [
         { locations: [home], end: [9, 15] },
         {
-          locations: [...foodShops, ...entertainment],
+          locations: [...shops, ...entertainment],
           end: [11, 16],
           multipleLocations: true,
           locationDuration: [1, 2],
         },
         { locations: [home], end: [16, 20] },
         {
-          locations: [...foodShops, ...entertainment],
+          locations: [...shops, ...entertainment],
           end: [22, 27],
           multipleLocations: true,
           locationDuration: [1, 2],
@@ -89,11 +89,11 @@ const createTemplates = (
 
 export const createRoutineItems = (
   home: FlatRegion,
-  work: FlatRegion,
-  foodShops: FlatRegion[],
+  work: FlatRegion[],
+  shops: FlatRegion[],
   entertainment: FlatRegion[]
 ) => {
-  const dayTemplates = createTemplates(home, work, foodShops, entertainment)
+  const dayTemplates = createTemplates(home, work, shops, entertainment)
 
   const items: IRoutineItem[] = []
 

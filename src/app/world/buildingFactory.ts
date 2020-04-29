@@ -15,13 +15,6 @@ const home: IBuildingConfig = {
   type: BuildingType.Home,
 }
 
-const shop: IBuildingConfig = {
-  rows: 1,
-  columns: 1,
-  height: 0.75,
-  type: BuildingType.Shop,
-}
-
 const work: IBuildingConfig = {
   rows: 2,
   columns: 2,
@@ -29,14 +22,27 @@ const work: IBuildingConfig = {
   type: BuildingType.Work,
 }
 
+const shop: IBuildingConfig = {
+  rows: 1,
+  columns: 1,
+  height: 0.75,
+  type: BuildingType.Shop,
+}
+
+const entertainment: IBuildingConfig = {
+  rows: 1,
+  columns: 1,
+  height: 1.2,
+  type: BuildingType.Entertainment,
+}
+
 export const createBuilding = (
-    defaultValues: IBuildingConfig,
-    args?: IBuildingConfigOptions
-  ) : IBuildingConfig => ({
-    ...defaultValues,
-    ...args,
-  })
-  
+  defaultValues: IBuildingConfig,
+  args?: IBuildingConfigOptions
+): IBuildingConfig => ({
+  ...defaultValues,
+  ...args,
+})
 
 export const createBuildingForType = (
   type: BuildingType,
@@ -55,15 +61,19 @@ export const createBuildingForType = (
     case BuildingType.Shop:
       building = shop
       break
+
+    case BuildingType.Entertainment:
+      building = entertainment
+      break
   }
   return createBuilding(building, args)
 }
 
 export const createBuildingsForType = (amount: number, type: BuildingType) => {
-    const buildings: IBuildingConfig[] = []
-    for(let i = 0; i< amount; i++) {
-        buildings.push(createBuildingForType(type))
-    }
+  const buildings: IBuildingConfig[] = []
+  for (let i = 0; i < amount; i++) {
+    buildings.push(createBuildingForType(type))
+  }
 
-    return buildings
+  return buildings
 }

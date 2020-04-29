@@ -3,11 +3,7 @@ import {
   Virus,
   CollidingTravel,
   IObstacle,
-  RandomMoveFactory,
-  IRoutineTargets,
-  RoutineMoveFactory,
-  Isolate,
-  Death,
+  ITravelMoveFactory,
 } from '../behaviors'
 import { Scene, Vector3 } from '@babylonjs/core'
 import { travelConfig, regions } from '../settings'
@@ -18,35 +14,22 @@ export class Walker {
   private person: Person
   private virus: Virus
   private travel: CollidingTravel
-  private isolate: Isolate
-  private death: Death
-  private home: FlatRegion
 
   constructor(
     scene: Scene,
+    private home: FlatRegion,
     getProcessStep: () => IProcessStep,
-    routineTargets?: IRoutineTargets[]
+    travelMoves: ITravelMoveFactory
   ) {
     this.person = new Person(scene)
 
-    if (routineTargets && routineTargets.length) {
-      const travelMoves = new RoutineMoveFactory(routineTargets, getProcessStep)
-      this.travel = new CollidingTravel(this.person.mesh, travelMoves)
+    this.travel = new CollidingTravel(this.person.mesh, travelMoves)
 
-      const home = routineTargets.find((x) => x.home)
-      this.home = home && home.target
-    } else {
-      const travelMoves = new RandomMoveFactory()
-      this.travel = new CollidingTravel(this.person.mesh, travelMoves)
-    }
-
-    this.isolate = new Isolate(this.person.mesh, this.travel, this.home)
-    this.death = new Death(this.person.mesh, this.travel)
     this.virus = new Virus(
       this.person.mesh,
       getProcessStep,
-      (isolate) => this.isolate.setIsolation(isolate),
-      () => this.death.die()
+      this.travel,
+      this.home
     )
 
     const startPosition = this.home
@@ -76,7 +59,7 @@ export class Walker {
   }
 
   start() {
-    if (!this.isolate.isolating && !this.death.dead) {
+    if (!this.virus.isIsolating && !this.virus.isDead) {
       this.travel.start()
     }
   }

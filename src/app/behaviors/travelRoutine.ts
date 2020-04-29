@@ -19,11 +19,11 @@ export class RoutineMoveFactory implements ITravelMoveFactory {
   constructor(
     private getProcessStep: () => IProcessStep,
     home: FlatRegion,
-    work: FlatRegion,
-    foodShops: FlatRegion[],
+    work: FlatRegion[],
+    shops: FlatRegion[],
     entertainment: FlatRegion[]
   ) {
-    this.routineItems = createRoutineItems(home, work, foodShops, entertainment)
+    this.routineItems = createRoutineItems(home, work, shops, entertainment)
   }
 
   createNextMove(position: Vector3, target?: Vector3) {

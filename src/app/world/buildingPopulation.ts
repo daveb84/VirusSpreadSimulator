@@ -12,10 +12,7 @@ export class BuildingPopulation {
   private cellPopulation: ICellPopulation
   private _placedBuildings: PlacedBuilding[] = []
 
-  constructor(
-    private scene: Scene,
-    private grid: Grid
-  ) {}
+  constructor(private scene: Scene, private grid: Grid) {}
 
   public get placedBuildings() {
     return this._placedBuildings
@@ -60,7 +57,9 @@ export class BuildingPopulation {
     const locations = this.grid.getDivisions(building.rows, building.columns)
 
     return locations.filter((location) => {
-      const taken = location.cells.some((cell) => this.cellPopulation[cell.index])
+      const taken = location.cells.some(
+        (cell) => this.cellPopulation[cell.index]
+      )
 
       return !taken
     })
@@ -102,11 +101,12 @@ export class BuildingPopulation {
     switch (building.type) {
       case BuildingType.Home:
         return materials.homeBuilding
-
       case BuildingType.Shop:
         return materials.shopBuilding
-      default:
+      case BuildingType.Work:
         return materials.workBuilding
+      case BuildingType.Entertainment:
+        return materials.entertainmentBuilding
     }
   }
 }

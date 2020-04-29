@@ -11,7 +11,7 @@ export enum BuildingType {
   Home,
   Work,
   Shop,
-  Pub,
+  Entertainment,
 }
 
 export interface IBuildingWalkers {

@@ -1,7 +1,7 @@
 import { Stage, createScene } from './meshes'
 import { initMaterials } from './materials'
 import { Scene, Engine, PickingInfo, CannonJSPlugin } from '@babylonjs/core'
-import { Walker, WalkerProcessor, populateWalkers } from './world'
+import { Walker, WalkerProcessor, World } from './world'
 import { initTrace, traceMoves, toggleTraces } from './utils/trace'
 import { travelConfig, regions } from './settings'
 import * as cannon from 'cannon'
@@ -28,6 +28,7 @@ class App {
 
   private readonly walkers: Walker[]
   private processor: WalkerProcessor
+  private world: World
 
   private moving: boolean = false
 
@@ -45,13 +46,9 @@ class App {
 
     const stage = new Stage(this.scene)
     this.walkers = []
-    this.processor = new WalkerProcessor(
-      this.scene,
-      this.walkers,
-      stage.bounds
-    )
+    this.processor = new WalkerProcessor(this.scene, this.walkers, stage.bounds)
 
-    populateWalkers(this.scene, this.walkers, this.processor)
+    this.world = new World(this.scene, this.walkers, this.processor)
 
     this.scene.onPointerUp = (evt, pickResult) => {
       this.clickWalker(pickResult)
@@ -150,9 +147,7 @@ class App {
     const walkers: Walker[] = []
 
     for (let i = 0; i < quantity; i++) {
-      const walker = new Walker(this.scene, () =>
-        this.processor.getProcessStep()
-      )
+      const walker = this.world.addWalker()
 
       if (infected) {
         walker.infect()
@@ -169,8 +164,6 @@ class App {
       const match = this.walkers.find((x) => x.mesh === pick.pickedMesh)
 
       if (match) {
-        const moves = traceMoves.filter((x) => x.owner === match.mesh)
-
         onWalkerSelected.notifyObservers(this.getSelectedWalker(match))
       }
     }

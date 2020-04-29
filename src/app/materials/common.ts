@@ -10,6 +10,7 @@ export interface ICommonMaterials {
   homeBuilding: Material
   workBuilding: Material
   shopBuilding: Material
+  entertainmentBuilding: Material
 }
 
 let _materials: ICommonMaterials = null
@@ -49,6 +50,12 @@ export const initMaterials = (scene: Scene) => {
     homeBuilding: makeMaterial(scene, 'home', new Color3(1, 0.7, 0.7), 0.5),
     workBuilding: makeMaterial(scene, 'work', new Color3(0.7, 0.7, 1), 0.5),
     shopBuilding: makeMaterial(scene, 'shop', new Color3(0.7, 1, 0.7), 0.5),
+    entertainmentBuilding: makeMaterial(
+      scene,
+      'entertainment',
+      new Color3(1, 1, 0.7),
+      0.5
+    ),
   }
 
   materials.collisionMarker.alpha = 0.8
