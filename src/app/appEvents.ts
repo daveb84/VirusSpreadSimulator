@@ -16,6 +16,6 @@ export interface ISelectedWalker {
 export const onWalkerNotFound = new Observable<number>()
 export const onWalkerMoveNotFound = new Observable<ISelectedWalker>()
 export const onWalkerSelected = new Observable<ISelectedWalker>()
-export const onProcessNextHour = new Observable<number>()
+export const onProcessWeekHour = new Observable<string>()
 export const onProcessCycleBegin = new Observable<IProcessStep>()
 export const onProcessCycleComplete = new Observable<IProcessStep>()

@@ -3,13 +3,13 @@ import { IObstacle } from '../behaviors'
 import { Scene, Observer } from '@babylonjs/core'
 import { travelConfig, regions } from '../settings'
 import {
-  onProcessNextHour,
+  onProcessWeekHour,
   onProcessCycleBegin,
   IProcessStep,
   onProcessCycleComplete,
 } from '../appEvents'
 import { GridCell } from '../vectors'
-import { convertStepToHours } from '../utils'
+import { convertStepToHours, getWeekHourDisplayText } from '../utils'
 
 interface IWalkerPosition {
   walker: Walker
@@ -99,7 +99,9 @@ export class WalkerProcessor {
 
     onProcessCycleBegin.notifyObservers(this.currentStep)
     if (stepChanged) {
-      onProcessNextHour.notifyObservers(weekHoursWhole)
+      const displayText = getWeekHourDisplayText(weekHoursWhole)
+
+      onProcessWeekHour.notifyObservers(displayText)
     }
   }
 
