@@ -15,10 +15,10 @@ export const travelConfig = {
   distance: 0.4,
   distanceWithinTarget: 0.1,
   frameRate: 10,
-  endFrame: 1,
+  endFrame: 0.1,
 
   timeStep: 0.1,
-  stepHoursRatio: 0.05,
+  stepHoursRatio: 0.2,
   hoursInWeek: 24 * 7,
 }
 
