@@ -6,22 +6,12 @@ import {
   createBuildingsForType,
   createBuildingForType,
 } from './buildingFactory'
-import { BuildingPopulation, PlacedBuilding } from './buildingPopulation'
+import { BuildingPopulation } from './buildingPopulation'
 import { regions } from '../settings'
 import { generateNumber, pickRandom } from '../utils'
 import { FlatRegion } from '../vectors'
 import { RoutineMoveFactory } from '../behaviors'
-
-const populationConfig = {
-  home: 1,
-  walkerHomes: [1, 1],
-  work: 1,
-  walkerWorks: [1, 1],
-  shop: 1,
-  walkerShops: [1, 1],
-  entertainment: 1,
-  walkerEntertainment: [1, 1],
-}
+import { populationConfig } from '../settings'
 
 export class World {
   private buildingPopulation: BuildingPopulation
@@ -41,20 +31,20 @@ export class World {
 
   private populate() {
     const buildings = [
-      ...createBuildingsForType(populationConfig.shop, BuildingType.Shop),
-      ...createBuildingsForType(populationConfig.work, BuildingType.Work),
+      ...createBuildingsForType(populationConfig.shops, BuildingType.Shop),
+      ...createBuildingsForType(populationConfig.works, BuildingType.Work),
       ...createBuildingsForType(
-        populationConfig.entertainment,
+        populationConfig.entertainments,
         BuildingType.Entertainment
       ),
     ]
 
     buildings.forEach((b) => this.buildingPopulation.addBuilding(b))
 
-    for (let i = 0; i < populationConfig.home; i++) {
+    for (let i = 0; i < populationConfig.homes; i++) {
       const numberWalkers = generateNumber(
-        populationConfig.walkerHomes[0],
-        populationConfig.walkerHomes[1],
+        populationConfig.walkersPerHome[0],
+        populationConfig.walkersPerHome[1],
         true
       )
       this.addHome(numberWalkers)
@@ -87,17 +77,17 @@ export class World {
   private createWalker(home: FlatRegion) {
     const work = this.pickRandomLocation(
       BuildingType.Work,
-      populationConfig.walkerWorks
+      populationConfig.worksPerWalker
     )
 
     const shops = this.pickRandomLocation(
       BuildingType.Shop,
-      populationConfig.walkerShops
+      populationConfig.shopsPerWalker
     )
 
     const entertainment = this.pickRandomLocation(
       BuildingType.Entertainment,
-      populationConfig.walkerEntertainment
+      populationConfig.entertainmentsPerWalker
     )
 
     const getProcessStep = () => this.processor.getProcessStep()

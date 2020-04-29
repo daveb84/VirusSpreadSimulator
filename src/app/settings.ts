@@ -1,4 +1,3 @@
-import { Vector3 } from '@babylonjs/core'
 import { FlatRegion, Grid } from './vectors'
 
 export const traceEnabled = false
@@ -20,6 +19,17 @@ export const travelConfig = {
   timeStep: 0.1,
   stepHoursRatio: 0.2,
   hoursInWeek: 24 * 7,
+}
+
+export const populationConfig = {
+  homes: 30,
+  walkersPerHome: [1, 4],
+  works: 10,
+  worksPerWalker: [1, 2],
+  shops: 10,
+  shopsPerWalker: [3, 8],
+  entertainments: 10,
+  entertainmentsPerWalker: [2, 5],
 }
 
 export const personHeight = 0.3
