@@ -83,24 +83,40 @@ export class RoutineMoveFactory implements ITravelMoveFactory {
 
     if (this.isNextTimeDue(this.nextLocationTime, step)) {
       this.setNextLocation(step)
+      this.arriveTime = null
       return
     }
+
+    // this.log('No action', step)
   }
 
   private setNextSchedule(step: IProcessStep, index: number = null) {
     if (index === null) {
-      this.currentIndex++
-      if (this.currentIndex > this.routineItems.length - 1) {
-        this.currentIndex = 0
+      index =
+        this.currentIndex < this.routineItems.length - 1
+          ? this.currentIndex + 1
+          : 0
+      while (index !== this.currentIndex) {
+        if (this.routineItems[index].end[1] > step.weekHours) {
+          break
+        }
+
+        index++
+        if (index > this.routineItems.length - 1) {
+          index = 0
+          break
+        }
       }
-    } else {
-      this.currentIndex = index
     }
+
+    this.currentIndex = index
+
+    this.log('setNextSchedule', step)
 
     const next = this.routineItems[this.currentIndex]
     this.arriveTime = null
-    this.leaveTime = defaultNextTime()
     this.nextLocationTime = defaultNextTime()
+    this.leaveTime = this.getNextTime(next.end, step)
 
     this.manyTargets =
       next.locations.length > 1 && next.locationDuration !== undefined
@@ -111,6 +127,7 @@ export class RoutineMoveFactory implements ITravelMoveFactory {
   }
 
   private setNextLocation(step: IProcessStep) {
+    this.log('setNextLocation', step)
     if (!this.manyTargets) {
       this.target = this.targetOptions[0]
       return
@@ -123,15 +140,11 @@ export class RoutineMoveFactory implements ITravelMoveFactory {
     const targetIndex = generateNumber(0, this.targetOptions.length - 1, true)
     this.target = this.targetOptions.splice(targetIndex, 1)[0]
     this.targetOptionsVisited.push(this.target)
-
-    this.setNextLocationTime(step)
   }
 
   private setArrived(step: IProcessStep) {
-    const item = this.routineItems[this.currentIndex]
+    this.log('setArrived', step)
     this.arriveTime = step.weekHours
-
-    this.leaveTime = this.getNextTime(item.end, step)
     this.setNextLocationTime(step)
   }
 
@@ -207,5 +220,9 @@ export class RoutineMoveFactory implements ITravelMoveFactory {
     animation.setKeys(keys)
 
     return animation
+  }
+
+  private log(message: string, step: IProcessStep) {
+    //console.log(`${message} hours:${step.hours} weekHours: ${step.weekHours} item: ${this.routineItems[this.currentIndex].key}`)
   }
 }

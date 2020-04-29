@@ -1,5 +1,4 @@
 import { FlatRegion } from '../vectors'
-import { convertDayToHours } from '../utils'
 
 interface IRoutineDay {
   name: string
@@ -16,6 +15,7 @@ interface IRoutineDayItem {
 }
 
 export interface IRoutineItem {
+  key: string
   locations: FlatRegion[]
   locationDuration?: number[]
   multipleLocations?: boolean
@@ -46,7 +46,7 @@ const createTemplates = (
       days: [1, 2, 3, 4, 5],
       schedule: [
         { locations: [home], end: [7.5, 9] },
-        { locations: work, end: [12, 13], locationDuration: [3, 4] },
+        { locations: work, end: [12, 13] },
         {
           locations: shops,
           end: [12.5, 14],
@@ -106,22 +106,26 @@ export const createRoutineItems = (
   const items: IRoutineItem[] = []
 
   let previous: IRoutineItem = {
+    key: '',
     start: [0, 0],
     end: [0, 0],
     locations: [],
   }
   dayTemplates.forEach((dayTemplate) => {
     dayTemplate.days.forEach((day) => {
-      const dayHours = convertDayToHours(day - 1)
+      const dayHours = (day - 1) * 24
 
-      dayTemplate.schedule.forEach((schedule) => {
+      dayTemplate.schedule.forEach((schedule, index) => {
         if (schedule.chance === undefined || Math.random() < schedule.chance) {
           const item: IRoutineItem = {
+            key: `${dayTemplate.name}${day}:${dayHours} schedule:${index}`,
             locations: schedule.locations,
             locationDuration: schedule.locationDuration,
             start: previous.end,
             end: [schedule.end[0] + dayHours, schedule.end[1] + dayHours],
           }
+
+          item.key += ` end:${item.end[0]}-${item.end[1]}`
 
           items.push(item)
           previous = item

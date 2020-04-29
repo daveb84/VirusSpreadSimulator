@@ -89,6 +89,8 @@ export class WalkerProcessor {
     const weekHours = hours % travelConfig.hoursInWeek
     const weekHoursWhole = Math.floor(weekHours)
 
+    // console.log(`step: step:${step} - hours:${hours} - weekHours: ${weekHours}`)
+
     const stepChanged = weekHoursWhole > this.currentStep.weekHoursWhole
     this.currentStep = {
       step,
