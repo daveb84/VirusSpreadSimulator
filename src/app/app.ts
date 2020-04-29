@@ -31,6 +31,7 @@ class App {
   private world: World
 
   private moving: boolean = false
+  private isLockedDown: boolean = false
 
   constructor(canvas: HTMLCanvasElement) {
     this.engine = new Engine(canvas, false, {
@@ -109,6 +110,12 @@ class App {
     if (walker) {
       walker.infect()
     }
+  }
+
+  lockdown(lockdown?: boolean) {
+    this.isLockedDown = lockdown !== undefined ? lockdown : !this.isLockedDown
+
+    this.walkers.forEach((x) => x.lockdown(this.isLockedDown))
   }
 
   getState() {

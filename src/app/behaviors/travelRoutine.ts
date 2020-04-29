@@ -4,7 +4,7 @@ import { FlatRegion } from '../vectors'
 import { generateNumber, getWeekFromHours } from '../utils'
 import { travelConfig } from '../settings'
 import { IProcessStep } from '../appEvents'
-import { IRoutineItem, createRoutineItems } from './travelRoutineItems'
+import { IRoutineItem } from './travelRoutineItems'
 
 interface INextTime {
   time: number
@@ -18,8 +18,6 @@ const defaultNextTime = (): INextTime => ({
 })
 
 export class RoutineMoveFactory implements ITravelMoveFactory {
-  private routineItems: IRoutineItem[] = []
-
   private currentIndex = -1
   private arriveTime: number | null = null
 
@@ -33,12 +31,8 @@ export class RoutineMoveFactory implements ITravelMoveFactory {
 
   constructor(
     private getProcessStep: () => IProcessStep,
-    home: FlatRegion,
-    work: FlatRegion[],
-    shops: FlatRegion[],
-    entertainment: FlatRegion[]
+    private routineItems: IRoutineItem[]
   ) {
-    this.routineItems = createRoutineItems(home, work, shops, entertainment)
     this.init()
   }
 

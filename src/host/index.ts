@@ -1,5 +1,5 @@
 import './css/main.css'
-import { el, onClick, val, subscribe, show } from './dom'
+import { el, onClick, val, subscribe, show, onChange } from './dom'
 import {
   createApp,
   onWalkerMoveNotFound,
@@ -34,6 +34,11 @@ subscribe('step', onProcessWeekHour)
 // bind start/stop
 onClick('start-button', () => app.start())
 onClick('stop-button', () => app.stop())
+
+// bind lockdown
+onChange('lockdown-cb', (event) => {
+  app.lockdown((event.target as any).checked)
+})
 
 // bind add
 const add = () => {

@@ -19,7 +19,8 @@ export class Walker {
     scene: Scene,
     public home: FlatRegion,
     getProcessStep: () => IProcessStep,
-    travelMoves: ITravelMoveFactory
+    private travelMoves: ITravelMoveFactory,
+    private lockdownTravelMoves: ITravelMoveFactory
   ) {
     this.person = new Person(scene)
 
@@ -78,6 +79,12 @@ export class Walker {
     }
 
     this.virus.infect()
+  }
+
+  lockdown(lockdown: boolean) {
+    const moves = lockdown ? this.lockdownTravelMoves : this.travelMoves
+
+    this.travel.updateMoveFactory(moves)
   }
 
   setPosition(position: Vector3) {

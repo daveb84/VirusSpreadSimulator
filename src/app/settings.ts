@@ -32,6 +32,10 @@ export const populationConfig = {
   shopsPerWalker: [3, 8],
   entertainments: 10,
   entertainmentsPerWalker: [2, 5],
+
+  lockdownShopsPerWalker: [1, 3],
+  lockdownWorkRatio: 0.3,
+  lockdownShopRatio: 0.5,
 }
 
 // export const populationConfig = {

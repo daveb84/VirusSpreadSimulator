@@ -6,12 +6,16 @@ import {
   createBuildingsForType,
   createBuildingForType,
 } from './buildingFactory'
-import { BuildingPopulation } from './buildingPopulation'
+import { BuildingPopulation, PlacedBuilding } from './buildingPopulation'
 import { regions } from '../settings'
 import { generateNumber, pickRandom } from '../utils'
 import { FlatRegion } from '../vectors'
 import { RoutineMoveFactory } from '../behaviors'
 import { populationConfig } from '../settings'
+import {
+  createRoutineItems,
+  createLockdownRoutineItems,
+} from '../behaviors/travelRoutineItems'
 
 export class World {
   private buildingPopulation: BuildingPopulation
@@ -29,17 +33,36 @@ export class World {
     this.populate()
   }
 
+  private lockdownShops: PlacedBuilding[]
+
   private populate() {
-    const buildings = [
-      ...createBuildingsForType(populationConfig.shops, BuildingType.Shop),
-      ...createBuildingsForType(populationConfig.works, BuildingType.Work),
-      ...createBuildingsForType(
-        populationConfig.entertainments,
-        BuildingType.Entertainment
-      ),
-    ]
+    const shops = createBuildingsForType(
+      populationConfig.shops,
+      BuildingType.Shop
+    )
+    const work = createBuildingsForType(
+      populationConfig.works,
+      BuildingType.Work
+    )
+    const entertainment = createBuildingsForType(
+      populationConfig.entertainments,
+      BuildingType.Entertainment
+    )
+
+    const buildings = [...shops, ...work, ...entertainment]
 
     buildings.forEach((b) => this.buildingPopulation.addBuilding(b))
+
+    const placedShops = this.buildingPopulation.placedBuildings.filter(
+      (x) => x.building.type === BuildingType.Shop
+    )
+    const lockdownShopsAmount = Math.floor(
+      placedShops.length * populationConfig.lockdownShopRatio
+    )
+
+    this.lockdownShops = [
+      ...pickRandom(placedShops, lockdownShopsAmount, lockdownShopsAmount),
+    ]
 
     for (let i = 0; i < populationConfig.homes; i++) {
       const numberWalkers = generateNumber(
@@ -90,23 +113,44 @@ export class World {
       populationConfig.entertainmentsPerWalker
     )
 
+    const lockdownShops = this.pickRandomLocation(
+      BuildingType.Shop,
+      populationConfig.lockdownShopsPerWalker,
+      this.lockdownShops
+    )
+
     const getProcessStep = () => this.processor.getProcessStep()
 
-    const travelMoves = new RoutineMoveFactory(
-      getProcessStep,
+    const routineItems = createRoutineItems(home, work, shops, entertainment)
+    const lockdownRoutineItems = createLockdownRoutineItems(
       home,
       work,
-      shops,
-      entertainment
+      lockdownShops
     )
 
-    return new Walker(this.scene, home, getProcessStep, travelMoves)
+    const travelMoves = new RoutineMoveFactory(getProcessStep, routineItems)
+    const lockdownTravelMoves = new RoutineMoveFactory(
+      getProcessStep,
+      lockdownRoutineItems
+    )
+
+    return new Walker(
+      this.scene,
+      home,
+      getProcessStep,
+      travelMoves,
+      lockdownTravelMoves
+    )
   }
 
-  private pickRandomLocation(type: BuildingType, range: number[]) {
-    const buildings = this.buildingPopulation.placedBuildings.filter(
-      (x) => x.building.type === type
-    )
+  private pickRandomLocation(
+    type: BuildingType,
+    range: number[],
+    collection?: PlacedBuilding[]
+  ) {
+    const buildings = (
+      collection || this.buildingPopulation.placedBuildings
+    ).filter((x) => x.building.type === type)
 
     return pickRandom(buildings, range[0], range[1]).map((x) => x.location)
   }

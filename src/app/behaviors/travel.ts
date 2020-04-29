@@ -44,6 +44,10 @@ export class Travel {
     this.moveAnimations.splice(0, this.moveAnimations.length)
   }
 
+  public updateMoveFactory(moveFactory: ITravelMoveFactory) {
+    this.moveFactory = moveFactory
+  }
+
   public move(target?: Vector3) {
     this.moveFrom = this.mesh.position.clone()
 
