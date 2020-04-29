@@ -1,18 +1,30 @@
 import { ITravelMove, ITravelMoveFactory } from './travel'
 import { Vector3, Animation } from '@babylonjs/core'
 import { FlatRegion } from '../vectors'
-import { generateNumber } from '../utils'
+import { generateNumber, getWeekFromHours } from '../utils'
 import { travelConfig } from '../settings'
 import { IProcessStep } from '../appEvents'
 import { IRoutineItem, createRoutineItems } from './travelRoutineItems'
+
+interface INextTime {
+  time: number
+  isNextWeek: boolean
+  week: number | null
+}
+const defaultNextTime = (): INextTime => ({
+  time: null,
+  isNextWeek: false,
+  week: null,
+})
 
 export class RoutineMoveFactory implements ITravelMoveFactory {
   private routineItems: IRoutineItem[] = []
 
   private currentIndex = -1
   private arriveTime: number | null = null
-  private leaveTime: number | null = null
-  private nextLocationTime: number | null = null
+
+  private leaveTime = defaultNextTime()
+  private nextLocationTime = defaultNextTime()
 
   private manyTargets: boolean
   private target: FlatRegion
@@ -32,8 +44,8 @@ export class RoutineMoveFactory implements ITravelMoveFactory {
 
   createNextMove(position: Vector3, target?: Vector3) {
     if (!target) {
-      const weekHour = this.getProcessStep().weekHours
-      this.setTarget(weekHour, position)
+      const step = this.getProcessStep()
+      this.setTarget(step, position)
 
       target = this.target.getRandomPointFrom(
         position,
@@ -55,27 +67,27 @@ export class RoutineMoveFactory implements ITravelMoveFactory {
   }
 
   private init() {
-    this.nextSchedule(0)
+    this.setNextSchedule(this.getProcessStep(), 0)
   }
 
-  private setTarget(weekHour: number, position: Vector3) {
-    if (this.leaveTime !== null && weekHour > this.leaveTime) {
-      this.nextSchedule(weekHour)
+  private setTarget(step: IProcessStep, position: Vector3) {
+    if (this.isNextTimeDue(this.leaveTime, step)) {
+      this.setNextSchedule(step)
       return
     }
 
     if (this.arriveTime === null && this.target.containsPosition(position)) {
-      this.setArrived(weekHour)
+      this.setArrived(step)
       return
     }
 
-    if (this.nextLocationTime !== null && weekHour > this.nextLocationTime) {
-      this.nextLocation(weekHour)
+    if (this.isNextTimeDue(this.nextLocationTime, step)) {
+      this.setNextLocation(step)
       return
     }
   }
 
-  private nextSchedule(weekHour: number, index: number = null) {
+  private setNextSchedule(step: IProcessStep, index: number = null) {
     if (index === null) {
       this.currentIndex++
       if (this.currentIndex > this.routineItems.length - 1) {
@@ -87,18 +99,18 @@ export class RoutineMoveFactory implements ITravelMoveFactory {
 
     const next = this.routineItems[this.currentIndex]
     this.arriveTime = null
-    this.leaveTime = null
-    this.nextLocationTime = null
+    this.leaveTime = defaultNextTime()
+    this.nextLocationTime = defaultNextTime()
 
     this.manyTargets =
       next.locations.length > 1 && next.locationDuration !== undefined
     this.target = null
     this.targetOptions = [...next.locations]
     this.targetOptionsVisited = []
-    this.nextLocation(weekHour)
+    this.setNextLocation(step)
   }
 
-  private nextLocation(weekHour: number) {
+  private setNextLocation(step: IProcessStep) {
     if (!this.manyTargets) {
       this.target = this.targetOptions[0]
       return
@@ -112,28 +124,63 @@ export class RoutineMoveFactory implements ITravelMoveFactory {
     this.target = this.targetOptions.splice(targetIndex, 1)[0]
     this.targetOptionsVisited.push(this.target)
 
-    const item = this.routineItems[this.currentIndex]
-    this.nextLocationTime =
-      weekHour +
-      generateNumber(item.locationDuration[0], item.locationDuration[1])
+    this.setNextLocationTime(step)
   }
 
-  private setArrived(weekHour: number) {
+  private setArrived(step: IProcessStep) {
     const item = this.routineItems[this.currentIndex]
-    this.arriveTime = weekHour
+    this.arriveTime = step.weekHours
 
-    if (item.end) {
-      this.leaveTime = weekHour + generateNumber(item.end[0], item.end[1])
+    this.leaveTime = this.getNextTime(item.end, step)
+    this.setNextLocationTime(step)
+  }
+
+  private getNextTime(
+    range: number[],
+    step: IProcessStep,
+    addWeekHour = false
+  ): INextTime {
+    let time: number = null
+    let isNextWeek: boolean = false
+    let week: number = null
+
+    if (range) {
+      if (addWeekHour) {
+        time = generateNumber(range[0], range[1]) + step.weekHours
+      } else {
+        const startTime = range[0] < step.weekHours ? step.weekHours : range[0]
+        time = generateNumber(startTime, range[1])
+      }
+
+      if (time > travelConfig.hoursInWeek) {
+        isNextWeek = true
+        time = time % travelConfig.hoursInWeek
+        week = getWeekFromHours(step.hours) + 1
+      }
+    }
+    return { time, isNextWeek, week }
+  }
+
+  private setNextLocationTime(step: IProcessStep) {
+    const item = this.routineItems[this.currentIndex]
+    this.nextLocationTime = this.getNextTime(item.locationDuration, step, true)
+  }
+
+  private isNextTimeDue(time: INextTime, step: IProcessStep) {
+    if (time.time === null) {
+      return false
     }
 
-    if (item.locationDuration) {
-      this.nextLocationTime =
-        weekHour +
-        generateNumber(item.locationDuration[0], item.locationDuration[1])
+    if (time.week === null && step.weekHours > time.time) {
+      return true
     }
 
-    if (this.nextLocationTime && this.leaveTime === null) {
-      this.leaveTime = this.nextLocationTime
+    if (
+      time.week !== null &&
+      time.week <= getWeekFromHours(step.hours) &&
+      step.weekHours > time.time
+    ) {
+      return true
     }
   }
 

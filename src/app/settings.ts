@@ -23,27 +23,27 @@ export const travelConfig = {
   hoursInWeek: 24 * 7,
 }
 
-export const populationConfig = {
-  homes: 200,
-  walkersPerHome: [1, 4],
-  works: 10,
-  worksPerWalker: [1, 2],
-  shops: 10,
-  shopsPerWalker: [3, 8],
-  entertainments: 10,
-  entertainmentsPerWalker: [2, 5],
-}
-
 // export const populationConfig = {
-//   homes: 1,
-//   walkersPerHome: [1, 1],
-//   works: 2,
-//   worksPerWalker: [2, 2],
-//   shops: 1,
-//   shopsPerWalker: [1, 1],
-//   entertainments: 1,
-//   entertainmentsPerWalker: [1, 1],
+//   homes: 200,
+//   walkersPerHome: [1, 4],
+//   works: 10,
+//   worksPerWalker: [1, 2],
+//   shops: 10,
+//   shopsPerWalker: [3, 8],
+//   entertainments: 10,
+//   entertainmentsPerWalker: [2, 5],
 // }
+
+export const populationConfig = {
+  homes: 1,
+  walkersPerHome: [1, 1],
+  works: 2,
+  worksPerWalker: [2, 2],
+  shops: 1,
+  shopsPerWalker: [1, 1],
+  entertainments: 1,
+  entertainmentsPerWalker: [1, 1],
+}
 
 export const personHeight = 0.3
 export const personWidth = 0.1

@@ -7,3 +7,5 @@ export const convertDayToStep = (day: number) =>
 export const convertHoursToStep = (hours: number) =>
   hours / travelConfig.stepHoursRatio
 export const convertDayToHours = (day: number) => day * travelConfig.hoursInWeek
+export const getWeekFromHours = (hours: number) =>
+  Math.floor(hours / travelConfig.hoursInWeek)
