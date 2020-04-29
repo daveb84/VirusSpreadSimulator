@@ -12,7 +12,9 @@ export class BuildingPopulation {
   private cellPopulation: ICellPopulation
   private _placedBuildings: PlacedBuilding[] = []
 
-  constructor(private scene: Scene, private grid: Grid) {}
+  constructor(private scene: Scene, private grid: Grid) {
+    this.cellPopulation = {}
+  }
 
   public get placedBuildings() {
     return this._placedBuildings

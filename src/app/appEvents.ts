@@ -2,9 +2,9 @@ import { Observable } from '@babylonjs/core'
 
 export interface IProcessStep {
   step: number
-  stepTotal: number
-  sceneStepId: number
-  weekStep: number
+  hours: number
+  weekHours: number
+  weekHoursWhole: number
 }
 
 export interface ISelectedWalker {
@@ -16,6 +16,6 @@ export interface ISelectedWalker {
 export const onWalkerNotFound = new Observable<number>()
 export const onWalkerMoveNotFound = new Observable<ISelectedWalker>()
 export const onWalkerSelected = new Observable<ISelectedWalker>()
-export const onProcessNextStep = new Observable<number>()
+export const onProcessNextHour = new Observable<number>()
 export const onProcessCycleBegin = new Observable<IProcessStep>()
 export const onProcessCycleComplete = new Observable<IProcessStep>()

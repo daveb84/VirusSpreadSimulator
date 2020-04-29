@@ -3,7 +3,7 @@ import { el, onClick, val, subscribe, show } from './dom'
 import {
   createApp,
   onWalkerMoveNotFound,
-  onProcessNextStep,
+  onProcessNextHour,
   onProcessCycleComplete,
   onWalkerSelected,
   onWalkerNotFound,
@@ -29,7 +29,7 @@ onProcessCycleComplete.add((step) => {
   }
 })
 
-subscribe('step', onProcessNextStep, (step) => `Time: ${step}:00`)
+subscribe('step', onProcessNextHour, (step) => `Time: ${step}:00`)
 
 // bind start/stop
 onClick('start-button', () => app.start())

@@ -3,12 +3,13 @@ import { IObstacle } from '../behaviors'
 import { Scene, Observer } from '@babylonjs/core'
 import { travelConfig, regions } from '../settings'
 import {
-  onProcessNextStep,
+  onProcessNextHour,
   onProcessCycleBegin,
   IProcessStep,
   onProcessCycleComplete,
 } from '../appEvents'
 import { GridCell } from '../vectors'
+import { convertStepToHours } from '../utils'
 
 interface IWalkerPosition {
   walker: Walker
@@ -18,7 +19,12 @@ interface IWalkerPosition {
 export class WalkerProcessor {
   private attachedHandler: Observer<Scene>
 
-  private currentStep: IProcessStep = { step: 0, stepTotal: 0, sceneStepId: 0 }
+  private currentStep: IProcessStep = {
+    step: 0,
+    hours: 0,
+    weekHours: 0,
+    weekHoursWhole: 0,
+  }
 
   private stoppedStepId = 0
 
@@ -64,8 +70,8 @@ export class WalkerProcessor {
     return this.currentStep
   }
 
-  private process(sceneStepId: number) {
-    this.updateStep(sceneStepId)
+  private process(step: number) {
+    this.updateStep(step)
 
     const walkerPositions: IWalkerPosition[] = this.walkers.map((w) => ({
       walker: w,
@@ -73,26 +79,27 @@ export class WalkerProcessor {
     }))
 
     this.processBounds(walkerPositions)
-
     this.processInfection(walkerPositions)
 
     onProcessCycleComplete.notifyObservers(this.currentStep)
   }
 
-  private updateStep(sceneStepId: number) {
-    const timeUnit = Math.floor(sceneStepId * travelConfig.processorStepRatio)
-    const step = timeUnit % travelConfig.timeSlots
+  private updateStep(step: number) {
+    const hours = convertStepToHours(step * travelConfig.stepHoursRatio)
+    const weekHours = hours % travelConfig.hoursInWeek
+    const weekHoursWhole = Math.floor(weekHours)
 
-    const stepChanged = step > this.currentStep.step
+    const stepChanged = weekHoursWhole > this.currentStep.weekHoursWhole
     this.currentStep = {
-      sceneStepId: sceneStepId,
-      step: step,
-      stepTotal: timeUnit,
+      step,
+      hours,
+      weekHours,
+      weekHoursWhole,
     }
 
     onProcessCycleBegin.notifyObservers(this.currentStep)
     if (stepChanged) {
-      onProcessNextStep.notifyObservers(step)
+      onProcessNextHour.notifyObservers(weekHoursWhole)
     }
   }
 

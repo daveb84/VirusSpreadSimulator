@@ -86,23 +86,13 @@ export class Virus {
         this.die()
         break
     }
-
-    if (state === VirusState.Incubating) {
-      this.mesh.material = this.materials.incubating
-      this.setStateDelayed(VirusState.Ill, virusSettings.incubation)
-    } else if (state === VirusState.Ill) {
-      this.mesh.material = this.materials.ill
-      this.updateIsolation(true)
-    } else if (state === VirusState.Recovered) {
-      this.mesh.material = this.materials.recovered
-    }
   }
 
   private setStateDelayed(state: VirusState, delay: number) {
-    const targetStep = this.getProcessStep().sceneStepId + delay
+    const targetHour = this.getProcessStep().hours + delay
 
     const observer = onProcessCycleBegin.add((event: IProcessStep) => {
-      if (event.sceneStepId >= targetStep) {
+      if (event.hours >= targetHour) {
         this.setState(state)
 
         onProcessCycleBegin.remove(observer)

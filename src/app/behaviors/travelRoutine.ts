@@ -24,12 +24,13 @@ export class RoutineMoveFactory implements ITravelMoveFactory {
     entertainment: FlatRegion[]
   ) {
     this.routineItems = createRoutineItems(home, work, shops, entertainment)
+    this.init()
   }
 
   createNextMove(position: Vector3, target?: Vector3) {
     if (!target) {
-      const weekStep = this.getProcessStep().weekStep
-      this.setTarget(weekStep, position)
+      const weekHour = this.getProcessStep().weekHours
+      this.setTarget(weekHour, position)
 
       target = this.target.getRandomPointFrom(
         position,
@@ -50,15 +51,25 @@ export class RoutineMoveFactory implements ITravelMoveFactory {
     return move
   }
 
-  private setTarget(weekStep: number, position: Vector3) {
-    if (weekStep > this.leaveTime) {
+  private init() {
+    this.currentIndex = 0
+    this.targetOptions = [...this.routineItems[0].locations]
+    this.nextLocation()
+
+    if (!this.target) {
+      this.target = this.targetOptions[0]
+    }
+  }
+
+  private setTarget(weekHour: number, position: Vector3) {
+    if (weekHour > this.leaveTime) {
       this.nextSchedule()
     } else if (
       this.arriveTime === null &&
       this.target.containsPosition(position)
     ) {
-      this.setArrived(weekStep)
-    } else if (weekStep > this.nextLocationTime) {
+      this.setArrived(weekHour)
+    } else if (weekHour > this.nextLocationTime) {
       this.nextLocation()
     }
   }
@@ -78,21 +89,23 @@ export class RoutineMoveFactory implements ITravelMoveFactory {
   }
 
   private nextLocation() {
-    const targetIndex = generateNumber(0, this.targetOptions.length - 1, true)
-    this.target = this.targetOptions.splice(targetIndex, 1)[0]
+    if (this.targetOptions.length > 1) {
+      const targetIndex = generateNumber(0, this.targetOptions.length - 1, true)
+      this.target = this.targetOptions.splice(targetIndex, 1)[0]
+    }
   }
 
-  private setArrived(weekStep: number) {
+  private setArrived(weekHour: number) {
     const item = this.routineItems[this.currentIndex]
-    this.arriveTime = weekStep
+    this.arriveTime = weekHour
 
     if (item.end) {
-      this.leaveTime = weekStep + generateNumber(item.end[0], item.end[1])
+      this.leaveTime = weekHour + generateNumber(item.end[0], item.end[1])
     }
 
     if (item.locationDuration) {
       this.nextLocationTime =
-        weekStep +
+        weekHour +
         generateNumber(item.locationDuration[0], item.locationDuration[1])
     }
 

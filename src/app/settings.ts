@@ -5,8 +5,8 @@ export const traceEnabled = false
 export const markCollisions = false
 
 export const virusSettings = {
-  incubation: 300,
-  ill: 300,
+  incubation: 48,
+  ill: 48,
   deathRate: 0.05,
 }
 
@@ -16,9 +16,10 @@ export const travelConfig = {
   distanceWithinTarget: 0.1,
   frameRate: 10,
   endFrame: 1,
+
   timeStep: 0.1,
-  processorStepRatio: 0.05,
-  timeSlots: 24,
+  stepHoursRatio: 0.05,
+  hoursInWeek: 24 * 7,
 }
 
 export const personHeight = 0.3

@@ -1,7 +1,8 @@
 import { travelConfig } from '../settings'
 
-export const convertToHours = (sceneStepId: number) => Math.floor(sceneStepId * travelConfig.processorStepRatio)
-
-export const convertHoursToSceneStepId = (hours: number) => hours / travelConfig.processorStepRatio
-
-export const convertDayToSceneStepId = (day: number) => convertHoursToSceneStepId(day * travelConfig.timeSlots)
+export const convertStepToHours = (step: number) =>
+  step * travelConfig.stepHoursRatio
+export const convertDayToStep = (day: number) =>
+  (day * travelConfig.hoursInWeek) / travelConfig.stepHoursRatio
+export const convertHoursToStep = (hours: number) =>
+  hours / travelConfig.stepHoursRatio
