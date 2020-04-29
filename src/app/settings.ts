@@ -4,9 +4,11 @@ export const traceEnabled = false
 export const markCollisions = false
 
 export const virusSettings = {
-  incubation: 48,
-  ill: 48,
-  deathRate: 0.05,
+  // incubation: 48,
+  // ill: 48,
+  incubation: 2,
+  ill: 2,
+  deathRate: 0.01,
 }
 
 export const travelConfig = {
@@ -14,7 +16,7 @@ export const travelConfig = {
   distance: 0.4,
   distanceWithinTarget: 0.1,
   frameRate: 10,
-  endFrame: 0.1,
+  endFrame: 1,
 
   timeStep: 0.1,
   stepHoursRatio: 0.2,
@@ -22,7 +24,7 @@ export const travelConfig = {
 }
 
 export const populationConfig = {
-  homes: 30,
+  homes: 200,
   walkersPerHome: [1, 4],
   works: 10,
   worksPerWalker: [1, 2],
@@ -31,6 +33,17 @@ export const populationConfig = {
   entertainments: 10,
   entertainmentsPerWalker: [2, 5],
 }
+
+// export const populationConfig = {
+//   homes: 1,
+//   walkersPerHome: [1, 1],
+//   works: 2,
+//   worksPerWalker: [2, 2],
+//   shops: 1,
+//   shopsPerWalker: [1, 1],
+//   entertainments: 1,
+//   entertainmentsPerWalker: [1, 1],
+// }
 
 export const personHeight = 0.3
 export const personWidth = 0.1

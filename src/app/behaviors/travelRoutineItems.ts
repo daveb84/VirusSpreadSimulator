@@ -29,13 +29,24 @@ const createTemplates = (
   shops: FlatRegion[],
   entertainment: FlatRegion[]
 ) => {
+  // const dayTemplates: IRoutineDay[] = [
+  //   {
+  //     name: 'workday',
+  //     days: [1, 2, 3, 4, 5, 6, 7],
+  //     schedule: [
+  //       { locations: [home], end: [7.5, 9] },
+  //       { locations: work, end: [22, 23], locationDuration: [3, 4] },
+  //     ],
+  //   },
+  // ]
+
   const dayTemplates: IRoutineDay[] = [
     {
       name: 'workday',
       days: [1, 2, 3, 4, 5],
       schedule: [
         { locations: [home], end: [7.5, 9] },
-        { locations: work, end: [12, 13] },
+        { locations: work, end: [12, 13], locationDuration: [3, 4] },
         {
           locations: shops,
           end: [12.5, 14],

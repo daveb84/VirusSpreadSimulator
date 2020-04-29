@@ -67,6 +67,7 @@ export class Virus {
 
       case VirusState.Ill:
         this.mesh.material = this.materials.ill
+        this.updateIsolation(true)
         const recover = Math.random() > virusSettings.deathRate
 
         if (recover) {

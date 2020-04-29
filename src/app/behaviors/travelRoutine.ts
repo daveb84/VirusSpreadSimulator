@@ -14,8 +14,10 @@ export class RoutineMoveFactory implements ITravelMoveFactory {
   private leaveTime: number | null = null
   private nextLocationTime: number | null = null
 
+  private manyTargets: boolean
   private target: FlatRegion
   private targetOptions: FlatRegion[]
+  private targetOptionsVisited: FlatRegion[]
 
   constructor(
     private getProcessStep: () => IProcessStep,
@@ -53,47 +55,67 @@ export class RoutineMoveFactory implements ITravelMoveFactory {
   }
 
   private init() {
-    this.currentIndex = 0
-    this.targetOptions = [...this.routineItems[0].locations]
-    this.nextLocation()
-
-    if (!this.target) {
-      this.target = this.targetOptions[0]
-    }
+    this.nextSchedule(0)
   }
 
   private setTarget(weekHour: number, position: Vector3) {
-    if (weekHour > this.leaveTime) {
-      this.nextSchedule()
-    } else if (
-      this.arriveTime === null &&
-      this.target.containsPosition(position)
-    ) {
+    if (this.leaveTime !== null && weekHour > this.leaveTime) {
+      this.nextSchedule(weekHour)
+      return
+    }
+
+    if (this.arriveTime === null && this.target.containsPosition(position)) {
       this.setArrived(weekHour)
-    } else if (weekHour > this.nextLocationTime) {
-      this.nextLocation()
+      return
+    }
+
+    if (this.nextLocationTime !== null && weekHour > this.nextLocationTime) {
+      this.nextLocation(weekHour)
+      return
     }
   }
 
-  private nextSchedule() {
-    this.currentIndex++
-    if (this.currentIndex > this.routineItems.length - 1) {
-      this.currentIndex = 0
+  private nextSchedule(weekHour: number, index: number = null) {
+    if (index === null) {
+      this.currentIndex++
+      if (this.currentIndex > this.routineItems.length - 1) {
+        this.currentIndex = 0
+      }
+    } else {
+      this.currentIndex = index
     }
+
     const next = this.routineItems[this.currentIndex]
     this.arriveTime = null
     this.leaveTime = null
     this.nextLocationTime = null
 
+    this.manyTargets =
+      next.locations.length > 1 && next.locationDuration !== undefined
+    this.target = null
     this.targetOptions = [...next.locations]
-    this.nextLocation()
+    this.targetOptionsVisited = []
+    this.nextLocation(weekHour)
   }
 
-  private nextLocation() {
-    if (this.targetOptions.length > 1) {
-      const targetIndex = generateNumber(0, this.targetOptions.length - 1, true)
-      this.target = this.targetOptions.splice(targetIndex, 1)[0]
+  private nextLocation(weekHour: number) {
+    if (!this.manyTargets) {
+      this.target = this.targetOptions[0]
+      return
     }
+
+    if (this.targetOptions.length === 0) {
+      this.targetOptions = [...this.targetOptionsVisited]
+    }
+
+    const targetIndex = generateNumber(0, this.targetOptions.length - 1, true)
+    this.target = this.targetOptions.splice(targetIndex, 1)[0]
+    this.targetOptionsVisited.push(this.target)
+
+    const item = this.routineItems[this.currentIndex]
+    this.nextLocationTime =
+      weekHour +
+      generateNumber(item.locationDuration[0], item.locationDuration[1])
   }
 
   private setArrived(weekHour: number) {
