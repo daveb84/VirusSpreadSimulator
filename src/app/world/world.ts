@@ -12,7 +12,7 @@ import { generateNumber, pickRandom, FlatRegion } from '../vectors'
 import { RoutineMoveFactory } from '../behaviors'
 
 const populationConfig = {
-  home: 5,
+  home: 1,
   walkerHomes: [1, 1],
   work: 1,
   walkerWorks: [1, 1],

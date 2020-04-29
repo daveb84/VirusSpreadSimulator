@@ -1,5 +1,5 @@
 import { FlatRegion } from '../vectors'
-import { convertDayToStep, convertHoursToStep } from '../utils'
+import { convertDayToHours } from '../utils'
 
 interface IRoutineDay {
   name: string
@@ -101,15 +101,15 @@ export const createRoutineItems = (
   }
   dayTemplates.forEach((dayTemplate) => {
     dayTemplate.days.forEach((day) => {
-      const dayStep = convertDayToStep(day - 1)
+      const dayHours = convertDayToHours(day - 1)
 
       dayTemplate.schedule.forEach((schedule) => {
         if (schedule.chance === undefined || Math.random() < schedule.chance) {
           const item: IRoutineItem = {
             locations: schedule.locations,
-            locationDuration: normaliseRange(0, schedule.locationDuration),
+            locationDuration: schedule.locationDuration,
             start: previous.end,
-            end: normaliseRange(dayStep, schedule.end),
+            end: [schedule.end[0] + dayHours, schedule.end[1] + dayHours],
           }
 
           items.push(item)
@@ -120,15 +120,4 @@ export const createRoutineItems = (
   })
 
   return items
-}
-
-const normaliseRange = (dayStep: number, range: number[]) => {
-  if (!range) {
-    return undefined
-  }
-
-  return [
-    convertHoursToStep(range[0]) + dayStep,
-    convertHoursToStep(range[1]) + dayStep,
-  ]
 }
