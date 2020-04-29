@@ -1,7 +1,9 @@
 import { getCommonMaterials } from '../materials'
-import { virusSettings } from '../settings'
+import { virusSettings, regions } from '../settings'
 import { Mesh } from '@babylonjs/core'
 import { onProcessCycleBegin, IProcessStep } from '../appEvents'
+import { Travel } from './travel'
+import { FlatRegion } from '../vectors'
 
 export enum VirusState {
   NotCaught = 0,
@@ -15,6 +17,7 @@ export class Virus {
   private _state: VirusState
   private materials = getCommonMaterials()
   private isolating = false
+  private dead = false
 
   public get state() {
     return this._state
@@ -30,11 +33,19 @@ export class Virus {
     return this._state === VirusState.NotCaught
   }
 
+  public get isIsolating() {
+    return this.isolating
+  }
+
+  public get isDead() {
+    return this.dead
+  }
+
   constructor(
     public readonly mesh: Mesh,
     private getProcessStep: () => IProcessStep,
-    private onIsolationChanged: (isolate: boolean) => void,
-    private onDie: () => void
+    private travel: Travel,
+    private home?: FlatRegion
   ) {
     this._state = VirusState.NotCaught
   }
@@ -47,52 +58,81 @@ export class Virus {
 
   private setState(state: VirusState) {
     this._state = state
+
+    switch (state) {
+      case VirusState.Incubating:
+        this.mesh.material = this.materials.incubating
+        this.setStateDelayed(VirusState.Ill, virusSettings.incubation)
+        break
+
+      case VirusState.Ill:
+        this.mesh.material = this.materials.ill
+        const recover = Math.random() > virusSettings.deathRate
+
+        if (recover) {
+          this.setStateDelayed(VirusState.Recovered, virusSettings.ill)
+        } else {
+          this.setStateDelayed(VirusState.Died, virusSettings.ill)
+        }
+        break
+
+      case VirusState.Recovered:
+        this.mesh.material = this.materials.recovered
+        this.updateIsolation(false)
+        break
+
+      case VirusState.Died:
+        this.mesh.material = this.materials.died
+        this.die()
+        break
+    }
+
     if (state === VirusState.Incubating) {
       this.mesh.material = this.materials.incubating
-      this.setStateDelayed(VirusState.Ill, virusSettings.incubation, true)
+      this.setStateDelayed(VirusState.Ill, virusSettings.incubation)
     } else if (state === VirusState.Ill) {
       this.mesh.material = this.materials.ill
-
-      const recover = Math.random() > virusSettings.deathRate
-      if (recover) {
-        this.setStateDelayed(VirusState.Recovered, virusSettings.ill)
-      } else {
-        this.setDelayed(() => {
-          this.mesh.material = this.materials.died
-          this._state = VirusState.Died
-          this.onDie()
-        }, virusSettings.ill)
-      }
+      this.updateIsolation(true)
     } else if (state === VirusState.Recovered) {
       this.mesh.material = this.materials.recovered
     }
   }
 
-  private setStateDelayed(state: VirusState, delay: number, isolate = false) {
-    const action = () => this.setStateAndIsolate(state, isolate)
-    this.setDelayed(action, delay)
-  }
-
-  private setStateAndIsolate(state: VirusState, isolate = false) {
-    this.setState(state)
-
-    const previousIsolating = this.isolating
-    this.isolating = isolate
-
-    if (isolate !== previousIsolating) {
-      this.onIsolationChanged(isolate)
-    }
-  }
-
-  private setDelayed(action: () => void, delay: number) {
+  private setStateDelayed(state: VirusState, delay: number) {
     const targetStep = this.getProcessStep().sceneStepId + delay
 
     const observer = onProcessCycleBegin.add((event: IProcessStep) => {
       if (event.sceneStepId >= targetStep) {
-        action()
+        this.setState(state)
 
         onProcessCycleBegin.remove(observer)
       }
     })
+  }
+
+  updateIsolation(isolate: boolean) {
+    if (isolate !== this.isolating) {
+      this.isolating = isolate
+
+      if (this.isolating) {
+        this.travel.stop()
+
+        if (this.home) {
+          this.mesh.position = this.home.getRandomPoint()
+        }
+
+        this.mesh.rotation.z = Math.PI / 2
+      } else {
+        this.mesh.rotation.z = 0
+        this.travel.start()
+      }
+    }
+  }
+
+  die() {
+    this.travel.stop()
+    this.dead = true
+    this.mesh.position = regions.walkerGraveYard.getRandomPoint()
+    this.mesh.rotation.z = Math.PI / 2
   }
 }
