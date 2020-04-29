@@ -1,6 +1,7 @@
 import { ITravelMove, ITravelMoveFactory } from './travel'
 import { Vector3, Animation } from '@babylonjs/core'
-import { generateNumber, FlatRegion } from '../vectors'
+import { FlatRegion } from '../vectors'
+import { generateNumber } from '../utils'
 import { travelConfig } from '../settings'
 import { IProcessStep } from '../appEvents'
 import { IRoutineItem, createRoutineItems } from './travelRoutineItems'

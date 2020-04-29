@@ -1,4 +1,4 @@
-import { generateNumber } from './random'
+import { generateNumber } from '../utils'
 import { Vector3, Scene, MeshBuilder, Color3 } from '@babylonjs/core'
 
 export interface IFlatRegion {

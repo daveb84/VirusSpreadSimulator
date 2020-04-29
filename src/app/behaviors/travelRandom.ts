@@ -1,6 +1,6 @@
 import { ITravelMove, ITravelMoveFactory } from './travel'
 import { Vector3, Animation } from '@babylonjs/core'
-import { generateNumber } from '../vectors'
+import { generateNumber } from '../utils'
 import { travelConfig } from '../settings'
 
 export class RandomMoveFactory implements ITravelMoveFactory {

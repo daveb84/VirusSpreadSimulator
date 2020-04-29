@@ -8,7 +8,8 @@ import {
 } from './buildingFactory'
 import { BuildingPopulation, PlacedBuilding } from './buildingPopulation'
 import { regions } from '../settings'
-import { generateNumber, pickRandom, FlatRegion } from '../vectors'
+import { generateNumber, pickRandom } from '../utils'
+import { FlatRegion } from '../vectors'
 import { RoutineMoveFactory } from '../behaviors'
 
 const populationConfig = {
