@@ -21,6 +21,7 @@ export interface IRoutineItem {
   multipleLocations?: boolean
   start: number[]
   end: number[]
+  chance?: number
 }
 
 const createTemplates = (
@@ -116,20 +117,19 @@ export const createRoutineItems = (
       const dayHours = (day - 1) * 24
 
       dayTemplate.schedule.forEach((schedule, index) => {
-        if (schedule.chance === undefined || Math.random() < schedule.chance) {
-          const item: IRoutineItem = {
-            key: `${dayTemplate.name}${day}:${dayHours} schedule:${index}`,
-            locations: schedule.locations,
-            locationDuration: schedule.locationDuration,
-            start: previous.end,
-            end: [schedule.end[0] + dayHours, schedule.end[1] + dayHours],
-          }
-
-          item.key += ` end:${item.end[0]}-${item.end[1]}`
-
-          items.push(item)
-          previous = item
+        const item: IRoutineItem = {
+          key: `${dayTemplate.name}${day}:${dayHours} schedule:${index}`,
+          locations: schedule.locations,
+          locationDuration: schedule.locationDuration,
+          start: previous.end,
+          end: [schedule.end[0] + dayHours, schedule.end[1] + dayHours],
+          chance: schedule.chance,
         }
+
+        item.key += ` end:${item.end[0]}-${item.end[1]}`
+
+        items.push(item)
+        previous = item
       })
     })
   })

@@ -17,7 +17,7 @@ export class Walker {
 
   constructor(
     scene: Scene,
-    private home: FlatRegion,
+    public home: FlatRegion,
     getProcessStep: () => IProcessStep,
     travelMoves: ITravelMoveFactory
   ) {
@@ -68,7 +68,15 @@ export class Walker {
     this.travel.stop()
   }
 
-  infect() {
+  infect(spreaders?: Walker[]) {
+    if (spreaders) {
+      const atHome = this.home.containsPosition(this.mesh.position)
+
+      if (atHome && !spreaders.some((x) => x.home === this.home)) {
+        return
+      }
+    }
+
     this.virus.infect()
   }
 

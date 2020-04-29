@@ -116,7 +116,7 @@ export class WalkerProcessor {
   }
 
   private processInfection(walkers: IWalkerPosition[]) {
-    const groupByGridCell: any = {}
+    const groupByGridCell: { [index: number]: Walker[] } = {}
 
     walkers
       .filter((x) => x.cell)
@@ -127,12 +127,12 @@ export class WalkerProcessor {
       })
 
     for (let index in groupByGridCell) {
-      const canSpread = groupByGridCell[index].some((x) => x.canSpreadVirus)
+      const canSpread = groupByGridCell[index].filter((x) => x.canSpreadVirus)
 
-      if (canSpread) {
+      if (canSpread.length > 0) {
         groupByGridCell[index]
           .filter((x) => x.canCatchVirus)
-          .forEach((x) => x.infect())
+          .forEach((x) => x.infect(canSpread))
       }
     }
   }

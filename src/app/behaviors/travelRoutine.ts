@@ -114,6 +114,11 @@ export class RoutineMoveFactory implements ITravelMoveFactory {
     this.log('setNextSchedule', step)
 
     const next = this.routineItems[this.currentIndex]
+    if (next.chance !== undefined && Math.random() > next.chance) {
+      this.setNextSchedule(step)
+      return
+    }
+
     this.arriveTime = null
     this.nextLocationTime = defaultNextTime()
     this.leaveTime = this.getNextTime(next.end, step)
