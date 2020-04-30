@@ -115,6 +115,7 @@ class App {
   }
 
   setLockdownLevel(level: number, walkerIndex?: number) {
+    this.lockdownLevel = level
     if (walkerIndex > -1) {
       const walker = this.findWalker(walkerIndex)
 
