@@ -70,22 +70,27 @@ export class World {
         populationConfig.walkersPerHome[1],
         true
       )
-      this.addHome(numberWalkers)
+      this.addWalkersInNewHome(numberWalkers)
     }
   }
 
-  addHome(walkers: number) {
+  addWalkersInNewHome(walkers: number) {
     const home = createBuildingForType(BuildingType.Home)
 
     const placedBuilding = this.buildingPopulation.addBuilding(home)
+
+    const addedWalkers: Walker[] = []
 
     if (placedBuilding) {
       for (let i = 0; i < walkers; i++) {
         const walker = this.createWalker(placedBuilding.location)
 
         this.walkers.push(walker)
+        addedWalkers.push(walker)
       }
     }
+
+    return addedWalkers
   }
 
   addWalker() {
@@ -128,9 +133,14 @@ export class World {
       lockdownShops
     )
 
-    const travelMoves = new RoutineMoveFactory(getProcessStep, routineItems)
+    const travelMoves = new RoutineMoveFactory(
+      getProcessStep,
+      home,
+      routineItems
+    )
     const lockdownTravelMoves = new RoutineMoveFactory(
       getProcessStep,
+      home,
       lockdownRoutineItems
     )
 

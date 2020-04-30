@@ -36,12 +36,20 @@ onClick('start-button', () => app.start())
 onClick('stop-button', () => app.stop())
 
 // bind lockdown
-onChange('lockdown-cb', (event) => {
-  app.lockdown((event.target as any).checked)
+// onChange('lockdown-cb', (event) => {
+//   app.lockdown((event.target as any).checked)
+// })
+
+onClick('lockdown-button', () => {
+  const level = parseInt(val('lockdown-tb'))
+
+  if (!isNaN(level)) {
+    app.setLockdownLevel(level / 100)
+  }
 })
 
 // bind add
-const add = () => {
+const add = (withHome: boolean) => () => {
   const amountVal = val('amount-tb')
 
   const checkBox = el('infected-cb') as HTMLInputElement
@@ -49,11 +57,12 @@ const add = () => {
   const amount = parseInt(amountVal)
 
   if (!isNaN(amount)) {
-    app.add(amount, checkBox.checked)
+    app.add(amount, checkBox.checked, withHome)
   }
 }
 
-onClick('add-button', add)
+onClick('add-button', add(false))
+onClick('add-home-button', add(true))
 
 // bind selected walker
 let selectedWalker = -1

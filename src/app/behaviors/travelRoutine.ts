@@ -44,8 +44,11 @@ export class RoutineMoveFactory implements ITravelMoveFactory {
   private targetOptions: FlatRegion[]
   private targetOptionsVisited: FlatRegion[]
 
+  private lockdownLevel: number = 0
+
   constructor(
     private getProcessStep: () => IProcessStep,
+    private home: FlatRegion,
     private routineItems: IRoutineItem[]
   ) {
     this.init()
@@ -73,6 +76,10 @@ export class RoutineMoveFactory implements ITravelMoveFactory {
     }
 
     return move
+  }
+
+  setLockdownLevel(level: number) {
+    this.lockdownLevel = level
   }
 
   private init() {
@@ -117,12 +124,22 @@ export class RoutineMoveFactory implements ITravelMoveFactory {
     this.locationArriveTime = null
     this.nextLocationTime = defaultNextTime()
 
-    this.manyTargets =
-      next.locations.length > 1 && next.locationDuration !== undefined
-    this.target = null
-    this.targetOptions = [...next.locations]
-    this.targetOptionsVisited = []
+    this.setTargetOptions(next)
     this.setNextLocation(step)
+  }
+
+  private setTargetOptions(item: IRoutineItem) {
+    this.target = null
+    this.targetOptionsVisited = []
+
+    if (this.lockdownLevel > 0 && Math.random() < this.lockdownLevel) {
+      this.targetOptions = [this.home]
+    } else {
+      this.targetOptions = [...item.locations]
+    }
+
+    this.manyTargets =
+      this.targetOptions.length > 1 && item.locationDuration !== undefined
   }
 
   private setNextLocation(step: IProcessStep) {

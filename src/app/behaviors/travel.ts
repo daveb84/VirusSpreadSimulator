@@ -10,6 +10,7 @@ export interface ITravelMove {
 
 export interface ITravelMoveFactory {
   createNextMove: (position: Vector3, target?: Vector3) => ITravelMove
+  setLockdownLevel: (level: number) => void
 }
 
 export class Travel {
@@ -21,7 +22,7 @@ export class Travel {
 
   private moveCompleteHandlers: Array<() => void> = []
 
-  constructor(public mesh: Mesh, private moveFactory: ITravelMoveFactory) {}
+  constructor(public mesh: Mesh, private _moveFactory: ITravelMoveFactory) {}
 
   public get moving() {
     return this._moving
@@ -45,13 +46,17 @@ export class Travel {
   }
 
   public updateMoveFactory(moveFactory: ITravelMoveFactory) {
-    this.moveFactory = moveFactory
+    this._moveFactory = moveFactory
+  }
+
+  public get moveFactory() {
+    return this._moveFactory
   }
 
   public move(target?: Vector3) {
     this.moveFrom = this.mesh.position.clone()
 
-    const nextMove = this.moveFactory.createNextMove(this.moveFrom, target)
+    const nextMove = this._moveFactory.createNextMove(this.moveFrom, target)
 
     this.moveTo = nextMove.target
 

@@ -83,8 +83,11 @@ export class Walker {
 
   lockdown(lockdown: boolean) {
     const moves = lockdown ? this.lockdownTravelMoves : this.travelMoves
-
     this.travel.updateMoveFactory(moves)
+  }
+
+  setLockdownLevel(level: number) {
+    this.travel.moveFactory.setLockdownLevel(level)
   }
 
   setPosition(position: Vector3) {

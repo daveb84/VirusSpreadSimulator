@@ -24,6 +24,8 @@ export class RandomMoveFactory implements ITravelMoveFactory {
     return move
   }
 
+  setLockdownLevel(level: number) {}
+
   private getTarget(position: Vector3, target?: Vector3) {
     if (target) {
       return target

@@ -32,6 +32,7 @@ class App {
 
   private moving: boolean = false
   private isLockedDown: boolean = false
+  private lockdownLevel: number = 0
 
   constructor(canvas: HTMLCanvasElement) {
     this.engine = new Engine(canvas, false, {
@@ -74,13 +75,8 @@ class App {
     this.walkers.forEach((w) => w.stop())
   }
 
-  add(amount: number, infected: boolean) {
-    const newWalkers = this.createWalkers(amount, infected)
-    this.walkers.push(...newWalkers)
-
-    if (this.moving) {
-      newWalkers.forEach((c) => c.start())
-    }
+  add(amount: number, infected: boolean, withHome: boolean) {
+    this.createWalkers(amount, withHome, infected)
   }
 
   moveWalker(walkerIndex: number, moveIndex: number, start: boolean) {
@@ -118,6 +114,16 @@ class App {
     this.walkers.forEach((x) => x.lockdown(this.isLockedDown))
   }
 
+  setLockdownLevel(level: number, walkerIndex?: number) {
+    if (walkerIndex > -1) {
+      const walker = this.findWalker(walkerIndex)
+
+      walker.setLockdownLevel(level)
+    }
+
+    this.walkers.forEach((x) => x.setLockdownLevel(level))
+  }
+
   getState() {
     const state: IAppState = {
       walkers: this.walkers.length,
@@ -150,20 +156,37 @@ class App {
     return walker
   }
 
-  private createWalkers(quantity: number, infected: boolean = false) {
-    const walkers: Walker[] = []
+  private createWalkers(
+    quantity: number,
+    withHome: boolean = false,
+    infected: boolean = false
+  ) {
+    if (withHome) {
+      const added = this.world.addWalkersInNewHome(quantity)
 
-    for (let i = 0; i < quantity; i++) {
-      const walker = this.world.addWalker()
+      this.setWalkers(added, infected)
+    } else {
+      for (let i = 0; i < quantity; i++) {
+        const walker = this.world.addWalker()
 
+        this.setWalkers([walker], infected)
+      }
+    }
+  }
+
+  private setWalkers(walkers: Walker[], infected: boolean) {
+    walkers.forEach((x) => {
       if (infected) {
-        walker.infect()
+        x.infect()
       }
 
-      walkers.push(walker)
-    }
+      x.lockdown(this.isLockedDown)
+      x.setLockdownLevel(this.lockdownLevel)
 
-    return walkers
+      if (this.moving) {
+        x.start()
+      }
+    })
   }
 
   private clickWalker(pick: PickingInfo) {
