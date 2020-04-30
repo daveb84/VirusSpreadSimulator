@@ -17,12 +17,27 @@ const defaultNextTime = (): INextTime => ({
   week: null,
 })
 
+interface IRoutineIndex {
+  index: number
+  isNextWeek: boolean
+}
+
+interface INextRoutineItem {
+  next: IRoutineItem
+  nextIndex: number
+  leaveTime: INextTime
+  skippedChance?: boolean
+  skippedLeaveTime?: boolean
+}
+
 export class RoutineMoveFactory implements ITravelMoveFactory {
   private currentIndex = -1
-  private arriveTime: number | null = null
 
   private leaveTime = defaultNextTime()
   private nextLocationTime = defaultNextTime()
+
+  private itemStartTime: number | null = null
+  private locationArriveTime: number | null = null
 
   private manyTargets: boolean
   private target: FlatRegion
@@ -61,7 +76,7 @@ export class RoutineMoveFactory implements ITravelMoveFactory {
   }
 
   private init() {
-    this.setNextSchedule(this.getProcessStep(), 0)
+    this.setNextSchedule(this.getProcessStep())
   }
 
   private setTarget(step: IProcessStep, position: Vector3) {
@@ -70,58 +85,37 @@ export class RoutineMoveFactory implements ITravelMoveFactory {
       return
     }
 
-    if (this.arriveTime === null && this.target.containsPosition(position)) {
+    if (
+      this.locationArriveTime === null &&
+      this.target.containsPosition(position)
+    ) {
       this.setArrived(step)
       return
     }
 
     if (this.isNextTimeDue(this.nextLocationTime, step)) {
       this.setNextLocation(step)
-      this.arriveTime = null
+      this.locationArriveTime = null
       return
     }
 
     // this.log('No action', step)
   }
 
-  private setNextSchedule(step: IProcessStep, index: number = null) {
-    if (index === null) {
-      index =
-        this.currentIndex < this.routineItems.length - 1
-          ? this.currentIndex + 1
-          : 0
-      while (index !== this.currentIndex) {
-        const item = this.routineItems[index]
+  private setNextSchedule(step: IProcessStep) {
+    const { next, leaveTime, nextIndex } = this.getNextValidItem(
+      this.currentIndex,
+      step
+    )
 
-        if (item.endRelative) {
-          break
-        }
-
-        if (item.end[1] > step.weekHours) {
-          break
-        }
-
-        index++
-        if (index > this.routineItems.length - 1) {
-          index = 0
-          break
-        }
-      }
-    }
-
-    this.currentIndex = index
+    this.itemStartTime = step.weekHours
+    this.currentIndex = nextIndex
+    this.leaveTime = leaveTime
 
     this.log('setNextSchedule', step)
 
-    const next = this.routineItems[this.currentIndex]
-    if (next.chance !== undefined && Math.random() > next.chance) {
-      this.setNextSchedule(step)
-      return
-    }
-
-    this.arriveTime = null
+    this.locationArriveTime = null
     this.nextLocationTime = defaultNextTime()
-    this.leaveTime = this.getNextTime(next.end, step, next.endRelative)
 
     this.manyTargets =
       next.locations.length > 1 && next.locationDuration !== undefined
@@ -149,39 +143,142 @@ export class RoutineMoveFactory implements ITravelMoveFactory {
 
   private setArrived(step: IProcessStep) {
     this.log('setArrived', step)
-    this.arriveTime = step.weekHours
-    this.setNextLocationTime(step)
+    this.locationArriveTime = step.weekHours
+
+    const item = this.routineItems[this.currentIndex]
+    this.nextLocationTime = this.getNextTime(item.locationDuration, step, true)
+  }
+
+  private getNextIndex(currentIndex?: number): IRoutineIndex {
+    currentIndex = currentIndex === undefined ? this.currentIndex : currentIndex
+    let isNextWeek = false
+
+    currentIndex++
+    if (currentIndex > this.routineItems.length - 1) {
+      currentIndex = 0
+      isNextWeek = true
+    }
+
+    return { index: currentIndex, isNextWeek }
+  }
+
+  private getNextValidItem(
+    currentIndex: number,
+    step: IProcessStep,
+    trace: INextRoutineItem[] = []
+  ) {
+    let nextItem: INextRoutineItem
+
+    let current: IRoutineItem
+    let nextIndex: IRoutineIndex
+
+    if (currentIndex < 0) {
+      current = null
+      nextIndex = {
+        index: 0,
+        isNextWeek: false,
+      }
+    } else {
+      current = this.routineItems[currentIndex]
+      nextIndex = this.getNextIndex(currentIndex)
+    }
+
+    while (true) {
+      nextItem = this.getNextItem(nextIndex, step)
+
+      if (!nextItem.skippedLeaveTime && !nextItem.skippedChance) {
+        if (current && nextItem.next.name === current.name) {
+          const debugInfo = {
+            step,
+            current,
+            currentLeaveTime: this.leaveTime,
+            currentStartTime: this.itemStartTime,
+            skipped: trace,
+            ...nextItem,
+          }
+
+          if (nextItem.next.day === current.day) {
+            console.warn(
+              'SAME-DAY-WARNING: The next travel schedule item is the same by item and day',
+              debugInfo
+            )
+          } else {
+            console.warn(
+              'SAME-ITEM-WARNING: The next travel schedule item is the same by item',
+              debugInfo
+            )
+          }
+        }
+
+        break
+      }
+
+      trace.push(nextItem)
+      nextIndex = this.getNextIndex(nextIndex.index)
+    }
+
+    return nextItem
+  }
+
+  private getNextItem(
+    index: IRoutineIndex,
+    step: IProcessStep
+  ): INextRoutineItem {
+    const next = this.routineItems[index.index]
+    const leaveTime = this.getNextTime(
+      next.end,
+      step,
+      next.endRelative,
+      index.isNextWeek
+    )
+
+    let skippedLeaveTime = false
+    let skippedChance = false
+
+    if (leaveTime.time === null) {
+      skippedLeaveTime = true
+    } else if (next.chance !== undefined && Math.random() > next.chance) {
+      skippedChance = true
+    }
+    return {
+      next,
+      nextIndex: index.index,
+      leaveTime,
+      skippedLeaveTime,
+      skippedChance,
+    }
   }
 
   private getNextTime(
     range: number[],
     step: IProcessStep,
-    addWeekHour = false
+    relative = false,
+    isNextWeek = false
   ): INextTime {
-    let time: number = null
-    let isNextWeek: boolean = false
-    let week: number = null
+    const result = defaultNextTime()
 
     if (range) {
-      if (addWeekHour) {
-        time = generateNumber(range[0], range[1]) + step.weekHours
-      } else {
+      if (relative) {
+        result.time = generateNumber(range[0], range[1]) + step.weekHours
+
+        if (result.time > travelConfig.hoursInWeek) {
+          result.time = result.time % travelConfig.hoursInWeek
+          result.isNextWeek = true
+        }
+      } else if (isNextWeek) {
+        result.time = generateNumber(range[0], range[1])
+        result.isNextWeek = true
+      } else if (range[1] > step.weekHours) {
         const startTime = range[0] < step.weekHours ? step.weekHours : range[0]
-        time = generateNumber(startTime, range[1])
+        result.time = generateNumber(startTime, range[1])
       }
 
-      if (time > travelConfig.hoursInWeek) {
-        isNextWeek = true
-        time = time % travelConfig.hoursInWeek
-        week = getWeekFromHours(step.hours) + 1
+      if (result.isNextWeek) {
+        result.week = getWeekFromHours(step.hours) + 1
       }
     }
-    return { time, isNextWeek, week }
-  }
 
-  private setNextLocationTime(step: IProcessStep) {
-    const item = this.routineItems[this.currentIndex]
-    this.nextLocationTime = this.getNextTime(item.locationDuration, step, true)
+    return result
   }
 
   private isNextTimeDue(time: INextTime, step: IProcessStep) {
@@ -227,11 +324,14 @@ export class RoutineMoveFactory implements ITravelMoveFactory {
     return animation
   }
 
+  private loggingEnabled = false
   private log(message: string, step: IProcessStep) {
-    console.log(
-      `${message} hours:${step.hours} weekHours: ${step.weekHours} item: ${
-        this.routineItems[this.currentIndex].key
-      }`
-    )
+    if (this.loggingEnabled) {
+      console.log(
+        `${message} hours:${step.hours} weekHours: ${step.weekHours} item: ${
+          this.routineItems[this.currentIndex].debugInfo
+        }`
+      )
+    }
   }
 }

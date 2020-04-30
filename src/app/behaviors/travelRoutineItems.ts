@@ -8,6 +8,7 @@ interface IRoutineDay {
 }
 
 interface IRoutineDayItem {
+  name: string
   locations: FlatRegion[]
   locationDuration?: number[]
   end: number[]
@@ -16,10 +17,11 @@ interface IRoutineDayItem {
 }
 
 export interface IRoutineItem {
-  key: string
+  day: number
+  name: string
+  debugInfo: string
   locations: FlatRegion[]
   locationDuration?: number[]
-  start: number[]
   end: number[]
   chance?: number
   endRelative?: boolean
@@ -46,32 +48,40 @@ const createTemplates = (
 
   const dayTemplates: IRoutineDay[] = [
     {
-      name: 'workday',
+      name: 'weekday',
       days: [1, 2, 3, 4, 5],
       schedule: [
-        { locations: [home], end: [7.5, 9] },
-        { locations: work, end: [12, 13] },
+        { name: 'home', locations: [home], end: [7.5, 9] },
+        { name: 'work-morning', locations: work, end: [12, 13] },
         {
+          name: 'lunch',
           locations: shops,
           end: [0.75, 1.5],
           endRelative: true,
         },
-        { locations: work, end: [16, 18] },
-        { locations: entertainment, end: [19, 23], chance: 0.2 },
+        { name: 'work-afternoon', locations: work, end: [16, 18] },
+        {
+          name: 'evening',
+          locations: entertainment,
+          end: [19, 23],
+          chance: 0.2,
+        },
       ],
     },
     {
       name: 'saturday',
       days: [6],
       schedule: [
-        { locations: [home], end: [9, 15] },
+        { name: 'home', locations: [home], end: [9, 15] },
         {
+          name: 'day-out',
           locations: [...shops, ...entertainment],
           end: [11, 16],
           locationDuration: [1, 2],
         },
-        { locations: [home], end: [16, 20] },
+        { name: 'home-afternoon', locations: [home], end: [16, 20] },
         {
+          name: 'night-out',
           locations: [...shops, ...entertainment],
           end: [22, 27],
           locationDuration: [1, 2],
@@ -83,11 +93,13 @@ const createTemplates = (
       name: 'sunday',
       days: [7],
       schedule: [
-        { locations: [home], end: [8, 10] },
+        { name: 'home', locations: [home], end: [8, 10] },
         {
+          name: 'day-out',
           locations: entertainment,
           end: [17, 18],
           locationDuration: [0, 1],
+          chance: 0.5,
         },
       ],
     },
@@ -111,8 +123,9 @@ const createLockdownTemplates = (
     name: 'weekend',
     days: [6, 7],
     schedule: [
-      { locations: [home], end: [5, 22] },
+      { name: 'home', locations: [home], end: [5, 22] },
       {
+        name: 'shop',
         locations: shops,
         end: [1, 1.5],
         endRelative: true,
@@ -127,19 +140,21 @@ const createLockdownTemplates = (
       name: 'weekday',
       days: [1, 2, 3, 4, 5],
       schedule: [
-        { locations: [home], end: [6, 10] },
-        { locations: work, end: [11, 12.5] },
+        { name: 'home', locations: [home], end: [6, 10] },
+        { name: 'work-morning', locations: work, end: [11, 12.5] },
         {
+          name: 'lunch',
           locations: shops,
           end: [0.75, 1.5],
           endRelative: true,
           chance: 0.5,
         },
-        { locations: work, end: [16, 20] },
+        { name: 'work-afternoon', locations: work, end: [16, 20] },
       ],
     })
     dayTemplates.push(weekend)
   } else {
+    weekend.name = 'everyday'
     weekend.days = [1, 2, 3, 4, 5, 6, 7]
     dayTemplates.push(weekend)
   }
@@ -170,23 +185,18 @@ export const createLockdownRoutineItems = (
 const convertTemplates = (dayTemplates: IRoutineDay[]) => {
   const items: IRoutineItem[] = []
 
-  let previous: IRoutineItem = {
-    key: '',
-    start: [0, 0],
-    end: [0, 0],
-    locations: [],
-  }
   dayTemplates.forEach((dayTemplate) => {
     dayTemplate.days.forEach((day) => {
       const dayHours = (day - 1) * 24
 
       dayTemplate.schedule.forEach((schedule, index) => {
         if (schedule.locations.length > 0) {
-          const item: IRoutineItem = {
-            key: `${dayTemplate.name}${day}:${dayHours} schedule:${index}`,
+          const item = {
+            name: `${dayTemplate.name} ${schedule.name}`,
+            debugInfo: '',
+            day: day,
             locations: schedule.locations,
             locationDuration: schedule.locationDuration,
-            start: previous.end,
             endRelative: schedule.endRelative,
             end: schedule.endRelative
               ? schedule.end
@@ -194,10 +204,9 @@ const convertTemplates = (dayTemplates: IRoutineDay[]) => {
             chance: schedule.chance,
           }
 
-          item.key += ` end:${item.end[0]}-${item.end[1]}`
+          item.debugInfo = `${dayTemplate.name} ${day}:${dayHours} schedule:${item.name} ${index} end:${item.end[0]}-${item.end[1]}`
 
           items.push(item)
-          previous = item
         }
       })
     })
