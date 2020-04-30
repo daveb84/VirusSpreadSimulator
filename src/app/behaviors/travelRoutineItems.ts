@@ -12,6 +12,7 @@ interface IRoutineDayItem {
   locationDuration?: number[]
   end: number[]
   chance?: number
+  endRelative?: boolean
 }
 
 export interface IRoutineItem {
@@ -21,6 +22,7 @@ export interface IRoutineItem {
   start: number[]
   end: number[]
   chance?: number
+  endRelative?: boolean
 }
 
 const createTemplates = (
@@ -29,13 +31,15 @@ const createTemplates = (
   shops: FlatRegion[],
   entertainment: FlatRegion[]
 ) => {
-  // const dayTemplates: IRoutineDay[] = [
+  // const dayTemplates2: IRoutineDay[] = [
   //   {
   //     name: 'workday',
   //     days: [1, 2, 3, 4, 5, 6, 7],
   //     schedule: [
-  //       { locations: [home], end: [7.5, 9] },
-  //       { locations: work, end: [22, 23], locationDuration: [3, 4] },
+  //       { locations: [home], end: [3, 3] },
+  //       { locations: work, end: [5, 16] },
+  //       { locations: shops, end: [3, 4], endRelative: true, locationDuration: [1, 1] },
+  //       { locations: work, end: [23, 23] },
   //     ],
   //   },
   // ]
@@ -49,8 +53,8 @@ const createTemplates = (
         { locations: work, end: [12, 13] },
         {
           locations: shops,
-          end: [12.5, 14],
-          locationDuration: [0.5, 0.75],
+          end: [0.75, 1.5],
+          endRelative: true,
         },
         { locations: work, end: [16, 18] },
         { locations: entertainment, end: [19, 23], chance: 0.2 },
@@ -107,11 +111,12 @@ const createLockdownTemplates = (
     name: 'weekend',
     days: [6, 7],
     schedule: [
-      { locations: [home], end: [10, 16] },
+      { locations: [home], end: [5, 22] },
       {
         locations: shops,
-        end: [11, 18],
-        locationDuration: [0.5, 0.75],
+        end: [1, 1.5],
+        endRelative: true,
+        locationDuration: [0.5, 1],
         chance: 0.5,
       },
     ],
@@ -122,15 +127,15 @@ const createLockdownTemplates = (
       name: 'weekday',
       days: [1, 2, 3, 4, 5],
       schedule: [
-        { locations: [home], end: [7.5, 9] },
-        { locations: work, end: [12, 13] },
+        { locations: [home], end: [6, 10] },
+        { locations: work, end: [11, 12.5] },
         {
           locations: shops,
-          end: [12.5, 14],
-          locationDuration: [0.5, 0.75],
+          end: [0.75, 1.5],
+          endRelative: true,
           chance: 0.5,
         },
-        { locations: work, end: [16, 18] },
+        { locations: work, end: [16, 20] },
       ],
     })
     dayTemplates.push(weekend)
@@ -182,7 +187,10 @@ const convertTemplates = (dayTemplates: IRoutineDay[]) => {
             locations: schedule.locations,
             locationDuration: schedule.locationDuration,
             start: previous.end,
-            end: [schedule.end[0] + dayHours, schedule.end[1] + dayHours],
+            endRelative: schedule.endRelative,
+            end: schedule.endRelative
+              ? schedule.end
+              : [schedule.end[0] + dayHours, schedule.end[1] + dayHours],
             chance: schedule.chance,
           }
 

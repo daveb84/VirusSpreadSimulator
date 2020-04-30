@@ -91,7 +91,13 @@ export class RoutineMoveFactory implements ITravelMoveFactory {
           ? this.currentIndex + 1
           : 0
       while (index !== this.currentIndex) {
-        if (this.routineItems[index].end[1] > step.weekHours) {
+        const item = this.routineItems[index]
+
+        if (item.endRelative) {
+          break
+        }
+
+        if (item.end[1] > step.weekHours) {
           break
         }
 
@@ -115,7 +121,7 @@ export class RoutineMoveFactory implements ITravelMoveFactory {
 
     this.arriveTime = null
     this.nextLocationTime = defaultNextTime()
-    this.leaveTime = this.getNextTime(next.end, step)
+    this.leaveTime = this.getNextTime(next.end, step, next.endRelative)
 
     this.manyTargets =
       next.locations.length > 1 && next.locationDuration !== undefined
@@ -222,6 +228,10 @@ export class RoutineMoveFactory implements ITravelMoveFactory {
   }
 
   private log(message: string, step: IProcessStep) {
-    //console.log(`${message} hours:${step.hours} weekHours: ${step.weekHours} item: ${this.routineItems[this.currentIndex].key}`)
+    console.log(
+      `${message} hours:${step.hours} weekHours: ${step.weekHours} item: ${
+        this.routineItems[this.currentIndex].key
+      }`
+    )
   }
 }
