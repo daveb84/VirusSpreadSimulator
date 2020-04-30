@@ -101,7 +101,7 @@ export class WalkerProcessor {
 
     onProcessCycleBegin.notifyObservers(this.currentStep)
     if (stepChanged) {
-      const displayText = getWeekHourDisplayText(weekHoursWhole)
+      const displayText = getWeekHourDisplayText(hours)
 
       onProcessWeekHour.notifyObservers(displayText)
     }

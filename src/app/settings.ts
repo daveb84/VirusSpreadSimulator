@@ -4,11 +4,11 @@ export const traceEnabled = false
 export const markCollisions = false
 
 export const virusSettings = {
-  incubation: 24 * 5,
-  ill: 24 * 5,
+  incubation: 24,
+  ill: 24,
   // incubation: 2,
   // ill: 2,
-  deathRate: 0.05,
+  deathRate: 0.1,
 }
 
 export const travelConfig = {
