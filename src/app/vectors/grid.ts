@@ -96,7 +96,6 @@ export class Grid {
 
   public getDivisions(rowsWide: number, columnsWide: number) {
     let row = 0
-    let rowDiv = 0
 
     const divisions: GridDivision[] = []
 
@@ -106,52 +105,83 @@ export class Grid {
 
       if (rowEnd < this._rows) {
         let column = 0
-        let columnDiv = 0
 
         while (column < this._columns) {
           const columnStart = column
           const columnEnd = columnStart + columnsWide - 1
 
           if (columnEnd < this._columns) {
-            const startCell = this._cellLookup[rowStart][columnStart]
-            const endCell = this._cellLookup[rowEnd][columnEnd]
-
-            const region = {
-              y: this.parent.y,
-              minX: startCell.minX,
-              minZ: startCell.minZ,
-              maxX: endCell.maxX,
-              maxZ: endCell.maxZ,
-            }
-
-            const indexes = this.getCells(
+            const division = this.createGridDivision(
               rowStart,
               rowEnd,
               columnStart,
               columnEnd
             )
 
-            const division = new GridDivision(region, indexes)
             divisions.push(division)
           }
 
-          columnDiv++
           column += columnsWide
         }
       }
-
-      rowDiv++
       row += rowsWide
     }
 
     return divisions
   }
 
+  public getRegionFromCell(
+    center: GridCell,
+    rowRadius: number,
+    columnRadius: number
+  ) {
+    const row = {
+      from: center.rowIndex - rowRadius,
+      to: center.rowIndex + rowRadius,
+    }
+    this.adjustGridRegion(row, this._rows - 1)
+
+    const col = {
+      from: center.columnIndex - columnRadius,
+      to: center.columnIndex + columnRadius,
+    }
+    this.adjustGridRegion(col, this._columns - 1)
+
+    const division = this.createGridDivision(row.from, row.to, col.from, col.to)
+
+    return division
+  }
+
+  private adjustGridRegion(indexes: { from: number; to: number }, max: number) {
+    if (indexes.from >= 0 && indexes.to <= max) {
+      return
+    }
+
+    if (indexes.from < 0) {
+      indexes.to += Math.abs(indexes.from)
+      indexes.from = 0
+    }
+
+    if (indexes.to >= max) {
+      indexes.from -= max - indexes.to
+      indexes.to = max
+    }
+
+    if (indexes.from < 0) {
+      indexes.from = 0
+    }
+  }
+
   public getGridCell(position: Vector3) {
     return this.gridCellResolver(position)
   }
 
-  private getCells(rowStart, rowEnd, columnStart, columnEnd) {
+  private createGridDivision(
+    rowStart: number,
+    rowEnd: number,
+    columnStart: number,
+    columnEnd: number
+  ) {
     const cells: GridCell[] = []
     let row = rowStart
 
@@ -168,7 +198,18 @@ export class Grid {
       row++
     }
 
-    return cells
+    const start = cells[0]
+    const end = cells[cells.length - 1]
+
+    const region = {
+      y: this.parent.y,
+      minX: start.minX,
+      minZ: start.minZ,
+      maxX: end.maxX,
+      maxZ: end.maxZ,
+    }
+
+    return new GridDivision(region, cells)
   }
 }
 

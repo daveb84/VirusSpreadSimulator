@@ -23,15 +23,29 @@ export const travelConfig = {
   hoursInWeek: 24 * 7,
 }
 
+export const personHeight = 0.3
+export const personWidth = 0.1
+
+const gridRows = 20
+const gridColumns = 20
+
+const gridSquareWidth = 0.5
+const gridSquareDepth = 0.5
+
+const infectionGridSquareRatio = 5
+
 export const populationConfig = {
-  homes: 20,
+  homes: 50,
+  homeRegionRows: Math.ceil(gridRows / 2),
+  homeRegionColumns: Math.ceil(gridColumns / 2),
+
   walkersPerHome: [1, 4],
-  works: 10,
-  worksPerWalker: [1, 2],
-  shops: 10,
-  shopsPerWalker: [3, 8],
-  entertainments: 10,
-  entertainmentsPerWalker: [2, 5],
+  works: 15,
+  worksPerWalker: [1, 1],
+  shops: 20,
+  shopsPerWalker: [10, 20],
+  entertainments: 20,
+  entertainmentsPerWalker: [10, 20],
 
   lockdownShopsPerWalker: [1, 3],
   lockdownWorkRatio: 0.2,
@@ -40,6 +54,9 @@ export const populationConfig = {
 
 // export const populationConfig = {
 //   homes: 1,
+//   homeRegionRows: 5,
+//   homeRegionColumns: 5,
+
 //   walkersPerHome: [1, 1],
 //   works: 1,
 //   worksPerWalker: [1, 1],
@@ -52,17 +69,6 @@ export const populationConfig = {
 //   lockdownWorkRatio: 0.3,
 //   lockdownShopRatio: 0.5,
 // }
-
-export const personHeight = 0.3
-export const personWidth = 0.1
-
-const gridRows = 20
-const gridColumns = 20
-
-const gridSquareWidth = 0.5
-const gridSquareDepth = 0.5
-
-const infectionGridSquareRatio = 5
 
 const createRegions = () => {
   const getBound = (squareSize: number, amount: number) => {

@@ -9,7 +9,7 @@ import {
 import { BuildingPopulation, PlacedBuilding } from './buildingPopulation'
 import { regions } from '../settings'
 import { generateNumber, pickRandom } from '../utils'
-import { FlatRegion } from '../vectors'
+import { FlatRegion, GridDivision } from '../vectors'
 import { RoutineMoveFactory } from '../behaviors'
 import { populationConfig } from '../settings'
 import {
@@ -56,6 +56,7 @@ export class World {
     const placedShops = this.buildingPopulation.placedBuildings.filter(
       (x) => x.building.type === BuildingType.Shop
     )
+
     const lockdownShopsAmount = Math.floor(
       placedShops.length * populationConfig.lockdownShopRatio
     )
@@ -83,7 +84,7 @@ export class World {
 
     if (placedBuilding) {
       for (let i = 0; i < walkers; i++) {
-        const walker = this.createWalker(placedBuilding.location)
+        const walker = this.createWalker(placedBuilding)
 
         this.walkers.push(walker)
         addedWalkers.push(walker)
@@ -94,7 +95,7 @@ export class World {
   }
 
   addWalker() {
-    const home = this.pickRandomLocation(BuildingType.Home, [1, 1])[0]
+    const home = this.pickBuilding(BuildingType.Home, [1, 1])[0]
 
     const walker = this.createWalker(home)
     this.walkers.push(walker)
@@ -102,66 +103,99 @@ export class World {
     return walker
   }
 
-  private createWalker(home: FlatRegion) {
-    const work = this.pickRandomLocation(
+  private createWalker(home: PlacedBuilding) {
+    const homeRegion = regions.buildingGrid.getRegionFromCell(
+      home.location.cells[0],
+      populationConfig.homeRegionRows,
+      populationConfig.homeRegionColumns
+    )
+
+    const work = this.pickBuildingForRegion(
       BuildingType.Work,
-      populationConfig.worksPerWalker
+      populationConfig.worksPerWalker,
+      homeRegion
     )
 
-    const shops = this.pickRandomLocation(
+    const shops = this.pickBuildingForRegion(
       BuildingType.Shop,
-      populationConfig.shopsPerWalker
+      populationConfig.shopsPerWalker,
+      homeRegion
     )
 
-    const entertainment = this.pickRandomLocation(
+    const entertainment = this.pickBuildingForRegion(
       BuildingType.Entertainment,
-      populationConfig.entertainmentsPerWalker
+      populationConfig.entertainmentsPerWalker,
+      homeRegion
     )
 
-    const lockdownShops = this.pickRandomLocation(
+    const lockdownShops = this.pickBuildingForRegion(
       BuildingType.Shop,
       populationConfig.lockdownShopsPerWalker,
+      homeRegion,
       this.lockdownShops
     )
 
     const getProcessStep = () => this.processor.getProcessStep()
 
-    const routineItems = createRoutineItems(home, work, shops, entertainment)
+    const routineItems = createRoutineItems(
+      home.location,
+      work,
+      shops,
+      entertainment
+    )
     const lockdownRoutineItems = createLockdownRoutineItems(
-      home,
+      home.location,
       work,
       lockdownShops
     )
 
     const travelMoves = new RoutineMoveFactory(
       getProcessStep,
-      home,
+      home.location,
       routineItems
     )
+
     const lockdownTravelMoves = new RoutineMoveFactory(
       getProcessStep,
-      home,
+      home.location,
       lockdownRoutineItems
     )
 
     return new Walker(
       this.scene,
-      home,
+      home.location,
       getProcessStep,
       travelMoves,
       lockdownTravelMoves
     )
   }
 
-  private pickRandomLocation(
+  private pickBuilding(type: BuildingType, range: number[]) {
+    const buildings = this.buildingPopulation.placedBuildings.filter(
+      (x) => x.building.type === type
+    )
+
+    return pickRandom(buildings, range[0], range[1])
+  }
+
+  private pickBuildingForRegion(
     type: BuildingType,
     range: number[],
+    homeRegion: GridDivision,
     collection?: PlacedBuilding[]
   ) {
     const buildings = (
       collection || this.buildingPopulation.placedBuildings
     ).filter((x) => x.building.type === type)
 
-    return pickRandom(buildings, range[0], range[1]).map((x) => x.location)
+    const forRegion = buildings.filter((x) =>
+      homeRegion.containsPosition(x.location.midPoint)
+    )
+
+    const picked = forRegion.length
+      ? pickRandom(forRegion, range[0], range[1])
+      : pickRandom(buildings, 1, 1)
+
+    return picked.map((x) => x.location)
   }
 }

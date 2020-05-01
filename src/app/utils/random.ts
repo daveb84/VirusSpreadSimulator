@@ -36,12 +36,18 @@ export const generateColor = () =>
 export const pickRandom = <T>(items: T[], min: number, max: number) => {
   const amount = generateNumber(min, max, true)
 
+  const pickFrom = [...items]
   const picked: T[] = []
 
   for (let i = 0; i < amount; i++) {
-    const index = generateNumber(0, items.length - 1, true)
+    if (i > pickFrom.length - 1) {
+      break
+    }
 
-    picked.push(items[index])
+    const index = generateNumber(0, pickFrom.length - 1, true)
+    const selected = pickFrom.splice(index, 1)[0]
+
+    picked.push(selected)
   }
 
   return picked
