@@ -19,8 +19,7 @@ export class Walker {
     scene: Scene,
     public home: FlatRegion,
     getProcessStep: () => IProcessStep,
-    private travelMoves: ITravelMoveFactory,
-    private lockdownTravelMoves?: ITravelMoveFactory
+    travelMoves: ITravelMoveFactory
   ) {
     this.person = new Person(scene)
 
@@ -79,14 +78,6 @@ export class Walker {
     }
 
     this.virus.infect()
-  }
-
-  lockdown(lockdown: boolean) {
-    if (!this.lockdownTravelMoves) {
-      throw 'Walker has no lockdown travel moves defined'
-    }
-    const moves = lockdown ? this.lockdownTravelMoves : this.travelMoves
-    this.travel.updateMoveFactory(moves)
   }
 
   setLockdownLevel(level: number) {

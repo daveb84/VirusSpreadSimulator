@@ -31,7 +31,6 @@ class App {
   private world: World
 
   private moving: boolean = false
-  private isLockedDown: boolean = false
   private lockdownLevel: number = 0
 
   constructor(canvas: HTMLCanvasElement) {
@@ -108,12 +107,6 @@ class App {
     }
   }
 
-  lockdown(lockdown?: boolean) {
-    this.isLockedDown = lockdown !== undefined ? lockdown : !this.isLockedDown
-
-    this.walkers.forEach((x) => x.lockdown(this.isLockedDown))
-  }
-
   setLockdownLevel(level: number, walkerIndex?: number) {
     this.lockdownLevel = level
     if (walkerIndex > -1) {
@@ -181,7 +174,6 @@ class App {
         x.infect()
       }
 
-      x.lockdown(this.isLockedDown)
       x.setLockdownLevel(this.lockdownLevel)
 
       if (this.moving) {
