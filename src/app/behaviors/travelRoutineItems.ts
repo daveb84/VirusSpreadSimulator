@@ -1,5 +1,5 @@
 import { FlatRegion } from '../vectors'
-import { populationConfig, regions } from '../settings'
+import { populationConfig } from '../settings'
 
 interface IRoutineDay {
   name: string

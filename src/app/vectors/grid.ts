@@ -107,43 +107,43 @@ export class Grid {
     this._cellLookup[row][column].draw(scene, color)
   }
 
-  public getDivisions(
+  public getRegions(
     rowsWide: number,
     columnsWide: number,
-    region?: IGridRegion
+    withinRegion?: IGridRegion
   ) {
-    if (!region) {
-      region = {
+    if (!withinRegion) {
+      withinRegion = {
         startRow: 0,
         endRow: this._rows - 1,
         startColumn: 0,
         endColumn: this._columns - 1,
       }
     }
-    let row = region.startRow
+    let row = withinRegion.startRow
 
-    const divisions: GridDivision[] = []
+    const regions: GridRegion[] = []
 
-    while (row <= region.endRow) {
+    while (row <= withinRegion.endRow) {
       const rowStart = row
       const rowEnd = rowStart + rowsWide - 1
 
-      if (rowEnd <= region.endRow) {
-        let column = region.startColumn
+      if (rowEnd <= withinRegion.endRow) {
+        let column = withinRegion.startColumn
 
-        while (column <= region.endColumn) {
+        while (column <= withinRegion.endColumn) {
           const columnStart = column
           const columnEnd = columnStart + columnsWide - 1
 
-          if (columnEnd <= region.endColumn) {
-            const division = this.createGridDivision(
+          if (columnEnd <= withinRegion.endColumn) {
+            const region = this.createGridRegion(
               rowStart,
               rowEnd,
               columnStart,
               columnEnd
             )
 
-            divisions.push(division)
+            regions.push(region)
           }
 
           column += columnsWide
@@ -153,10 +153,10 @@ export class Grid {
       row += rowsWide
     }
 
-    return divisions
+    return regions
   }
 
-  public getRegionFromCell(
+  public getRegionByRadius(
     center: GridCell,
     rowRadius: number,
     columnRadius: number
@@ -173,9 +173,9 @@ export class Grid {
     }
     this.adjustGridRegion(col, this._columns - 1)
 
-    const division = this.createGridDivision(row.from, row.to, col.from, col.to)
+    const gridRegion = this.createGridRegion(row.from, row.to, col.from, col.to)
 
-    return division
+    return gridRegion
   }
 
   private adjustGridRegion(indexes: { from: number; to: number }, max: number) {
@@ -202,7 +202,7 @@ export class Grid {
     return this.gridCellResolver(position)
   }
 
-  private createGridDivision(
+  private createGridRegion(
     rowStart: number,
     rowEnd: number,
     columnStart: number,
@@ -235,9 +235,9 @@ export class Grid {
       maxZ: end.maxZ,
     }
 
-    const division = new GridDivision(region, cells)
+    const gridRegion = new GridRegion(region, cells)
 
-    return division
+    return gridRegion
   }
 }
 
@@ -269,7 +269,7 @@ export class GridCell extends FlatRegion {
   }
 }
 
-export class GridDivision extends FlatRegion implements IGridRegion {
+export class GridRegion extends FlatRegion implements IGridRegion {
   constructor(region: IFlatRegion, public readonly cells: GridCell[]) {
     super(region)
 

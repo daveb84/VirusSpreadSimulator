@@ -1,4 +1,4 @@
-import { Grid, GridDivision, IGridRegion } from '../vectors'
+import { Grid, GridRegion, IGridRegion } from '../vectors'
 import { getCommonMaterials } from '../materials/common'
 import { Vector3, Scene } from '@babylonjs/core'
 import { Building } from '../meshes'
@@ -59,7 +59,7 @@ export class BuildingPopulation {
     building: IBuildingConfig,
     region?: IGridRegion
   ) {
-    const locations = this.grid.getDivisions(
+    const locations = this.grid.getRegions(
       building.rows,
       building.columns,
       region
@@ -74,7 +74,7 @@ export class BuildingPopulation {
     })
   }
 
-  private chooseLocation(building: IBuildingConfig, locations: GridDivision[]) {
+  private chooseLocation(building: IBuildingConfig, locations: GridRegion[]) {
     if (!locations.length) {
       return null
     }
@@ -123,6 +123,6 @@ export class BuildingPopulation {
 export class PlacedBuilding {
   constructor(
     public building: IBuildingConfig,
-    public location: GridDivision | null
+    public location: GridRegion | null
   ) {}
 }

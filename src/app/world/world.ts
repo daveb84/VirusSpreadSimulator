@@ -9,7 +9,7 @@ import {
 import { BuildingPopulation, PlacedBuilding } from './buildingPopulation'
 import { regions } from '../settings'
 import { generateNumber, pickRandom } from '../utils'
-import { GridDivision, IGridRegion } from '../vectors'
+import { GridRegion, IGridRegion } from '../vectors'
 import { RoutineMoveFactory } from '../behaviors'
 import { populationConfig } from '../settings'
 import {
@@ -78,11 +78,11 @@ export class World {
   }
 
   private getRegions(): IGridRegion[] {
-    const divisions = regions.buildingGrid.getDivisions(
+    const gridRegions = regions.buildingGrid.getRegions(
       populationConfig.gridRegionRows,
       populationConfig.gridRegionColumns
     )
-    return divisions
+    return gridRegions
   }
 
   addWalkersInNewHome(walkers: number) {
@@ -114,7 +114,7 @@ export class World {
   }
 
   private createWalker(home: PlacedBuilding) {
-    const homeRegion = regions.buildingGrid.getRegionFromCell(
+    const homeRegion = regions.buildingGrid.getRegionByRadius(
       home.location.cells[0],
       populationConfig.homeRegionRows,
       populationConfig.homeRegionColumns
@@ -191,7 +191,7 @@ export class World {
   private pickBuildingForRegion(
     type: BuildingType,
     range: number[],
-    homeRegion: GridDivision,
+    region: GridRegion,
     collection?: PlacedBuilding[]
   ) {
     const buildings = (
@@ -199,7 +199,7 @@ export class World {
     ).filter((x) => x.building.type === type)
 
     const forRegion = buildings.filter((x) =>
-      homeRegion.containsPosition(x.location.midPoint)
+      region.containsPosition(x.location.midPoint)
     )
 
     const picked = forRegion.length
