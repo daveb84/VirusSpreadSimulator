@@ -35,45 +35,66 @@ const gridSquareDepth = 0.5
 const infectionGridSquareRatio = 5
 
 export const populationConfig = {
+  gridRegion: {
+    rows: Math.ceil(gridRows / 2),
+    columns: Math.ceil(gridRows / 2),
+  },
+
   gridRegionRows: Math.ceil(gridRows / 2),
   gridRegionColumns: Math.ceil(gridRows / 2),
 
   homes: 15,
-  homeRegionRows: Math.ceil(gridRows / 2),
-  homeRegionColumns: Math.ceil(gridColumns / 2),
-
   walkersPerHome: [1, 4],
+  homeRegion: {
+    rows: Math.ceil(gridRows / 2),
+    columns: Math.ceil(gridColumns / 2),
+  },
+
   works: 3,
   worksPerWalker: [1, 1],
+  worksShopsPerWalker: [1, 3],
+  worksEntertainmentPerWalker: [1, 3],
+  workRegion: {
+    rows: Math.ceil(gridRows / 2),
+    columns: Math.ceil(gridColumns / 2),
+  },
+
   shops: 5,
   shopsPerWalker: [3, 5],
   entertainments: 5,
   entertainmentsPerWalker: [3, 5],
 
-  lockdownShopsPerWalker: [1, 3],
   lockdownWorkRatio: 0.2,
-  lockdownShopRatio: 0.3,
 }
 
 // export const populationConfig = {
-//   gridRegionRows: Math.ceil(gridRows / 2),
-//   gridRegionColumns: Math.ceil(gridRows / 2),
+//   gridRegion: {
+//     rows: Math.ceil(gridRows / 2),
+//     columns: Math.ceil(gridRows / 2),
+//   },
 
 //   homes: 1,
-//   homeRegionRows: Math.ceil(gridRows / 2),
-//   homeRegionColumns: Math.ceil(gridColumns / 2),
-
 //   walkersPerHome: [1, 1],
+//   homeRegion: {
+//     rows: Math.ceil(gridRows / 2),
+//     columns: Math.ceil(gridColumns / 2),
+//   },
+
 //   works: 1,
 //   worksPerWalker: [1, 1],
+//   worksShopsPerWalker: [1, 1],
+//   worksEntertainmentPerWalker: [1, 1],
+//   workRegion: {
+//     rows: Math.ceil(gridRows / 2),
+//     columns: Math.ceil(gridColumns / 2),
+//   },
+
 //   shops: 1,
 //   shopsPerWalker: [1, 1],
 //   entertainments: 1,
 //   entertainmentsPerWalker: [1, 1],
 
-//   lockdownShopsPerWalker: [1, 3],
-//   lockdownWorkRatio: 0.3,
-//   lockdownShopRatio: 0.5,
+//   lockdownWorkRatio: 0.2,
 // }
 
 const createRegions = () => {

@@ -20,7 +20,7 @@ export class Walker {
     public home: FlatRegion,
     getProcessStep: () => IProcessStep,
     private travelMoves: ITravelMoveFactory,
-    private lockdownTravelMoves: ITravelMoveFactory
+    private lockdownTravelMoves?: ITravelMoveFactory
   ) {
     this.person = new Person(scene)
 
@@ -82,6 +82,9 @@ export class Walker {
   }
 
   lockdown(lockdown: boolean) {
+    if (!this.lockdownTravelMoves) {
+      throw 'Walker has no lockdown travel moves defined'
+    }
     const moves = lockdown ? this.lockdownTravelMoves : this.travelMoves
     this.travel.updateMoveFactory(moves)
   }
