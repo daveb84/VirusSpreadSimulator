@@ -1,6 +1,13 @@
 import { FlatRegion, IFlatRegion } from './region'
 import { Scene, Color3, Vector3 } from '@babylonjs/core'
 
+export interface IGridRegion {
+  startRow: number
+  endRow: number
+  startColumn: number
+  endColumn: number
+}
+
 export class Grid {
   private _rows: number
   private _columns: number
@@ -16,6 +23,12 @@ export class Grid {
   }
   public get cellLookup() {
     return this._cellLookup
+  }
+  public get rows() {
+    return this._rows
+  }
+  public get columns() {
+    return this._columns
   }
 
   constructor(private parent: FlatRegion, rows: number, columns: number) {
@@ -94,23 +107,35 @@ export class Grid {
     this._cellLookup[row][column].draw(scene, color)
   }
 
-  public getDivisions(rowsWide: number, columnsWide: number) {
-    let row = 0
+  public getDivisions(
+    rowsWide: number,
+    columnsWide: number,
+    region?: IGridRegion
+  ) {
+    if (!region) {
+      region = {
+        startRow: 0,
+        endRow: this._rows - 1,
+        startColumn: 0,
+        endColumn: this._columns - 1,
+      }
+    }
+    let row = region.startRow
 
     const divisions: GridDivision[] = []
 
-    while (row < this._rows) {
+    while (row <= region.endRow) {
       const rowStart = row
       const rowEnd = rowStart + rowsWide - 1
 
-      if (rowEnd < this._rows) {
-        let column = 0
+      if (rowEnd <= region.endRow) {
+        let column = region.startColumn
 
-        while (column < this._columns) {
+        while (column <= region.endColumn) {
           const columnStart = column
           const columnEnd = columnStart + columnsWide - 1
 
-          if (columnEnd < this._columns) {
+          if (columnEnd <= region.endColumn) {
             const division = this.createGridDivision(
               rowStart,
               rowEnd,
@@ -124,6 +149,7 @@ export class Grid {
           column += columnsWide
         }
       }
+
       row += rowsWide
     }
 
@@ -209,7 +235,9 @@ export class Grid {
       maxZ: end.maxZ,
     }
 
-    return new GridDivision(region, cells)
+    const division = new GridDivision(region, cells)
+
+    return division
   }
 }
 
@@ -241,8 +269,21 @@ export class GridCell extends FlatRegion {
   }
 }
 
-export class GridDivision extends FlatRegion {
+export class GridDivision extends FlatRegion implements IGridRegion {
   constructor(region: IFlatRegion, public readonly cells: GridCell[]) {
     super(region)
+
+    const last = cells[cells.length - 1]
+
+    this.startRow = cells[0].rowIndex
+    this.endRow = last.rowIndex
+
+    this.startColumn = cells[0].columnIndex
+    this.endColumn = last.columnIndex
   }
+
+  startRow: number
+  endRow: number
+  startColumn: number
+  endColumn: number
 }

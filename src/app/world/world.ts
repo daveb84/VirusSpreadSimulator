@@ -9,7 +9,7 @@ import {
 import { BuildingPopulation, PlacedBuilding } from './buildingPopulation'
 import { regions } from '../settings'
 import { generateNumber, pickRandom } from '../utils'
-import { FlatRegion, GridDivision } from '../vectors'
+import { GridDivision, IGridRegion } from '../vectors'
 import { RoutineMoveFactory } from '../behaviors'
 import { populationConfig } from '../settings'
 import {
@@ -36,43 +36,53 @@ export class World {
   private lockdownShops: PlacedBuilding[]
 
   private populate() {
-    const shops = createBuildingsForType(
-      populationConfig.shops,
-      BuildingType.Shop
-    )
-    const work = createBuildingsForType(
-      populationConfig.works,
-      BuildingType.Work
-    )
-    const entertainment = createBuildingsForType(
-      populationConfig.entertainments,
-      BuildingType.Entertainment
-    )
-
-    const buildings = [...shops, ...work, ...entertainment]
-
-    buildings.forEach((b) => this.buildingPopulation.addBuilding(b))
-
-    const placedShops = this.buildingPopulation.placedBuildings.filter(
-      (x) => x.building.type === BuildingType.Shop
-    )
-
-    const lockdownShopsAmount = Math.floor(
-      placedShops.length * populationConfig.lockdownShopRatio
-    )
-
-    this.lockdownShops = [
-      ...pickRandom(placedShops, lockdownShopsAmount, lockdownShopsAmount),
-    ]
-
-    for (let i = 0; i < populationConfig.homes; i++) {
-      const numberWalkers = generateNumber(
-        populationConfig.walkersPerHome[0],
-        populationConfig.walkersPerHome[1],
-        true
+    this.getRegions().forEach((region) => {
+      const shops = createBuildingsForType(
+        populationConfig.shops,
+        BuildingType.Shop
       )
-      this.addWalkersInNewHome(numberWalkers)
-    }
+      const work = createBuildingsForType(
+        populationConfig.works,
+        BuildingType.Work
+      )
+      const entertainment = createBuildingsForType(
+        populationConfig.entertainments,
+        BuildingType.Entertainment
+      )
+
+      const buildings = [...shops, ...work, ...entertainment]
+
+      buildings.forEach((b) => this.buildingPopulation.addBuilding(b, region))
+
+      const placedShops = this.buildingPopulation.placedBuildings.filter(
+        (x) => x.building.type === BuildingType.Shop
+      )
+
+      const lockdownShopsAmount = Math.floor(
+        placedShops.length * populationConfig.lockdownShopRatio
+      )
+
+      this.lockdownShops = [
+        ...pickRandom(placedShops, lockdownShopsAmount, lockdownShopsAmount),
+      ]
+
+      for (let i = 0; i < populationConfig.homes; i++) {
+        const numberWalkers = generateNumber(
+          populationConfig.walkersPerHome[0],
+          populationConfig.walkersPerHome[1],
+          true
+        )
+        this.addWalkersInNewHome(numberWalkers)
+      }
+    })
+  }
+
+  private getRegions(): IGridRegion[] {
+    const divisions = regions.buildingGrid.getDivisions(
+      populationConfig.gridRegionRows,
+      populationConfig.gridRegionColumns
+    )
+    return divisions
   }
 
   addWalkersInNewHome(walkers: number) {
